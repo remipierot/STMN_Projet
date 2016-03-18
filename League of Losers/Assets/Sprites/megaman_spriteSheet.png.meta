@@ -1,0 +1,853 @@
+fileFormatVersion: 2
+guid: 59ef142b5bc820f44b737bc6f7ed039f
+timeCreated: 1458216076
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: megaman_spriteSheet_0
+    21300002: megaman_spriteSheet_1
+    21300004: megaman_spriteSheet_2
+    21300006: megaman_spriteSheet_3
+    21300008: megaman_spriteSheet_4
+    21300010: megaman_spriteSheet_5
+    21300012: megaman_spriteSheet_6
+    21300014: megaman_spriteSheet_7
+    21300016: megaman_spriteSheet_8
+    21300018: megaman_spriteSheet_9
+    21300020: megaman_spriteSheet_10
+    21300022: megaman_spriteSheet_11
+    21300024: megaman_spriteSheet_12
+    21300026: megaman_spriteSheet_13
+    21300028: megaman_spriteSheet_14
+    21300030: megaman_spriteSheet_15
+    21300032: megaman_spriteSheet_16
+    21300034: megaman_spriteSheet_17
+    21300036: megaman_spriteSheet_18
+    21300038: megaman_spriteSheet_19
+    21300040: megaman_spriteSheet_20
+    21300042: megaman_spriteSheet_21
+    21300044: megaman_spriteSheet_22
+    21300046: megaman_spriteSheet_23
+    21300048: megaman_spriteSheet_24
+    21300050: megaman_spriteSheet_25
+    21300052: megaman_spriteSheet_26
+    21300054: megaman_spriteSheet_27
+    21300056: megaman_spriteSheet_28
+    21300058: megaman_spriteSheet_29
+    21300060: megaman_spriteSheet_30
+    21300062: megaman_spriteSheet_31
+    21300064: megaman_spriteSheet_32
+    21300066: megaman_spriteSheet_33
+    21300068: megaman_spriteSheet_34
+    21300070: megaman_spriteSheet_35
+    21300072: megaman_spriteSheet_36
+    21300074: megaman_spriteSheet_37
+    21300076: megaman_spriteSheet_38
+    21300078: megaman_spriteSheet_39
+    21300080: megaman_spriteSheet_40
+    21300082: megaman_spriteSheet_41
+    21300084: megaman_spriteSheet_42
+    21300086: megaman_spriteSheet_43
+    21300088: megaman_spriteSheet_44
+    21300090: megaman_spriteSheet_45
+    21300092: megaman_spriteSheet_46
+    21300094: megaman_spriteSheet_47
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 50
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: megaman_spriteSheet_0
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 217
+        width: 34
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 26.5}
+        - {x: -7, y: 25.5}
+        - {x: -17, y: 20.5}
+        - {x: -17, y: -26.5}
+        - {x: 11, y: -26.5}
+        - {x: 17, y: -23.5}
+        - {x: 17, y: 22.5}
+        - {x: 10, y: 26.5}
+    - name: megaman_spriteSheet_1
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 213
+        width: 26
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_2
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 227
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 20}
+        - {x: -6, y: 19}
+        - {x: -15, y: -2}
+        - {x: -17, y: -12}
+        - {x: -17, y: -20}
+        - {x: 17, y: -20}
+        - {x: 17, y: 17}
+        - {x: 16, y: 20}
+    - name: megaman_spriteSheet_3
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 230
+        width: 26
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_4
+      rect:
+        serializedVersion: 2
+        x: 286
+        y: 229
+        width: 26
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_5
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 237
+        width: 43
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_6
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 216
+        width: 23
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_7
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 230
+        width: 36
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 18.5}
+        - {x: -11, y: 17.5}
+        - {x: -18, y: -7.5}
+        - {x: -18, y: -18.5}
+        - {x: 14, y: -18.5}
+        - {x: 18, y: -17.5}
+        - {x: 18, y: 9.5}
+        - {x: 10, y: 18.5}
+    - name: megaman_spriteSheet_8
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 227
+        width: 44
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -2, y: -18.5}
+        - {x: 17, y: -18.5}
+        - {x: 22, y: -14.5}
+        - {x: 22, y: 18.5}
+        - {x: -10, y: 18.5}
+        - {x: -22, y: 15.5}
+        - {x: -22, y: 3.5}
+        - {x: -17, y: 0.5}
+        - {x: -14, y: -2.5}
+        - {x: -22, y: -12.5}
+        - {x: -22, y: -18.5}
+        - {x: -5, y: -18.5}
+        - {x: -3, y: -13.5}
+        - {x: -3, y: -10.5}
+        - {x: -3, y: -17.5}
+    - name: megaman_spriteSheet_9
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 227
+        width: 38
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 7, y: 20}
+        - {x: -8, y: 20}
+        - {x: -19, y: 12}
+        - {x: -19, y: -20}
+        - {x: 4, y: -20}
+        - {x: 19, y: -7}
+        - {x: 19, y: 13}
+        - {x: 18, y: 14}
+    - name: megaman_spriteSheet_10
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 230
+        width: 40
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -9, y: 19.5}
+        - {x: -20, y: 13.5}
+        - {x: -20, y: -19.5}
+        - {x: 17, y: -19.5}
+        - {x: 20, y: -8.5}
+        - {x: 20, y: 14.5}
+        - {x: 16, y: 19.5}
+    - name: megaman_spriteSheet_11
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 161
+        width: 29
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_12
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 161
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 24.5}
+        - {x: -20, y: 20.5}
+        - {x: -20, y: 7.5}
+        - {x: -19, y: 6.5}
+        - {x: -14, y: 3.5}
+        - {x: -9, y: 3.5}
+        - {x: -10, y: 3.5}
+        - {x: -16, y: 2.5}
+        - {x: -16, y: -18.5}
+        - {x: -4, y: -24.5}
+        - {x: 13, y: -24.5}
+        - {x: 20, y: -8.5}
+        - {x: 20, y: 24.5}
+    - name: megaman_spriteSheet_13
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 181
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: 20}
+        - {x: -17, y: 4}
+        - {x: -17, y: -20}
+        - {x: 17, y: -20}
+        - {x: 17, y: 20}
+    - name: megaman_spriteSheet_14
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 187
+        width: 44
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -2, y: 17.5}
+        - {x: -22, y: -2.5}
+        - {x: -22, y: -14.5}
+        - {x: 1, y: -17.5}
+        - {x: 21, y: -17.5}
+        - {x: 22, y: -15.5}
+        - {x: 22, y: 15.5}
+        - {x: 17, y: 17.5}
+    - name: megaman_spriteSheet_15
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 177
+        width: 30
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_16
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 204
+        width: 47
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_17
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 166
+        width: 26
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_18
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 187
+        width: 47
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -1.5, y: 18.5}
+        - {x: -5.5, y: 17.5}
+        - {x: -23.5, y: 0.5}
+        - {x: -23.5, y: -13.5}
+        - {x: -3.5, y: -18.5}
+        - {x: 17.5, y: -18.5}
+        - {x: 23.5, y: -16.5}
+        - {x: 23.5, y: 11.5}
+        - {x: 16.5, y: 18.5}
+    - name: megaman_spriteSheet_19
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 171
+        width: 31
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_20
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 171
+        width: 38
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 8, y: 25.5}
+        - {x: -19, y: 25.5}
+        - {x: -19, y: -25.5}
+        - {x: 3, y: -25.5}
+        - {x: 19, y: -6.5}
+        - {x: 19, y: 22.5}
+    - name: megaman_spriteSheet_21
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 189
+        width: 45
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -2.5, y: -19}
+        - {x: 15.5, y: -19}
+        - {x: 16.5, y: -15}
+        - {x: 11.5, y: -8}
+        - {x: 7.5, y: -4}
+        - {x: 19.5, y: -4}
+        - {x: 22.5, y: -1}
+        - {x: 22.5, y: 6}
+        - {x: 10.5, y: 19}
+        - {x: -7.5, y: 19}
+        - {x: -22.5, y: -4}
+        - {x: -22.5, y: -19}
+        - {x: -5.5, y: -19}
+        - {x: -3.5, y: -14}
+        - {x: -3.5, y: -11}
+        - {x: -3.5, y: -18}
+    - name: megaman_spriteSheet_22
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 136
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 20}
+        - {x: -17, y: 0}
+        - {x: -17, y: -20}
+        - {x: 17, y: -20}
+        - {x: 17, y: 20}
+    - name: megaman_spriteSheet_23
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 145
+        width: 37
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -6.5, y: 17.5}
+        - {x: -18.5, y: 8.5}
+        - {x: -18.5, y: -17.5}
+        - {x: 18.5, y: -17.5}
+        - {x: 18.5, y: 17.5}
+    - name: megaman_spriteSheet_24
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 121
+        width: 29
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_25
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 162
+        width: 29
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_26
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 149
+        width: 36
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 18.5}
+        - {x: -11, y: 17.5}
+        - {x: -18, y: -7.5}
+        - {x: -18, y: -18.5}
+        - {x: 14, y: -18.5}
+        - {x: 18, y: -17.5}
+        - {x: 18, y: 9.5}
+        - {x: 10, y: 18.5}
+    - name: megaman_spriteSheet_27
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 125
+        width: 38
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 13, y: 19.5}
+        - {x: -4, y: 19.5}
+        - {x: -19, y: -4.5}
+        - {x: -19, y: -19.5}
+        - {x: 19, y: -19.5}
+        - {x: 19, y: 12.5}
+    - name: megaman_spriteSheet_28
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 122
+        width: 40
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 24}
+        - {x: -20, y: 22}
+        - {x: -20, y: -22}
+        - {x: -18, y: -24}
+        - {x: -3, y: -24}
+        - {x: 5, y: -20}
+        - {x: 20, y: -3}
+        - {x: 20, y: 21}
+        - {x: 11, y: 24}
+    - name: megaman_spriteSheet_29
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 103
+        width: 29
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_30
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 93
+        width: 26
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_31
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 88
+        width: 34
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -4, y: 20}
+        - {x: -6, y: 19}
+        - {x: -15, y: -2}
+        - {x: -17, y: -12}
+        - {x: -17, y: -20}
+        - {x: 17, y: -20}
+        - {x: 17, y: 17}
+        - {x: 16, y: 20}
+    - name: megaman_spriteSheet_32
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 102
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_33
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 68
+        width: 30
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_34
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 106
+        width: 32
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -15, y: -3.5}
+        - {x: -16, y: -9.5}
+        - {x: -16, y: -21.5}
+        - {x: 16, y: -21.5}
+        - {x: 16, y: -4.5}
+        - {x: 13, y: 21.5}
+        - {x: -7, y: 21.5}
+        - {x: -11, y: 14.5}
+    - name: megaman_spriteSheet_35
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 106
+        width: 30
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_36
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 107
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -11, y: 17.5}
+        - {x: -18, y: 6.5}
+        - {x: -18, y: -16.5}
+        - {x: -17, y: -17.5}
+        - {x: 4, y: -17.5}
+        - {x: 18, y: -1.5}
+        - {x: 18, y: 6.5}
+        - {x: 9, y: 17.5}
+    - name: megaman_spriteSheet_37
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 68
+        width: 28
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_38
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 77
+        width: 38
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 7, y: 20}
+        - {x: -8, y: 20}
+        - {x: -19, y: 12}
+        - {x: -19, y: -20}
+        - {x: 4, y: -20}
+        - {x: 19, y: -7}
+        - {x: 19, y: 13}
+        - {x: 18, y: 14}
+    - name: megaman_spriteSheet_39
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 44
+        width: 32
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 27}
+        - {x: -16, y: -27}
+        - {x: 3, y: -27}
+        - {x: 16, y: -7}
+        - {x: 16, y: 22}
+        - {x: 10, y: 27}
+    - name: megaman_spriteSheet_40
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 43
+        width: 42
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -11, y: 24}
+        - {x: -21, y: 21}
+        - {x: -21, y: -6}
+        - {x: -17, y: -24}
+        - {x: 16, y: -24}
+        - {x: 21, y: -13}
+        - {x: 21, y: 22}
+        - {x: 18, y: 24}
+    - name: megaman_spriteSheet_41
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 42
+        width: 35
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8.5, y: 20}
+        - {x: -17.5, y: -6}
+        - {x: -17.5, y: -20}
+        - {x: 17.5, y: -20}
+        - {x: 17.5, y: 12}
+        - {x: 15.5, y: 20}
+    - name: megaman_spriteSheet_42
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 56
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_43
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 55
+        width: 36
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -9, y: 23.5}
+        - {x: -13, y: 21.5}
+        - {x: -18, y: 13.5}
+        - {x: -18, y: -7.5}
+        - {x: -11, y: -23.5}
+        - {x: 14, y: -23.5}
+        - {x: 18, y: -11.5}
+        - {x: 18, y: 19.5}
+        - {x: 13, y: 23.5}
+    - name: megaman_spriteSheet_44
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 59
+        width: 29
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_45
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 64
+        width: 43
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -11.5, y: 17.5}
+        - {x: -21.5, y: 8.5}
+        - {x: -21.5, y: -17.5}
+        - {x: 17.5, y: -17.5}
+        - {x: 21.5, y: -10.5}
+        - {x: 21.5, y: 13.5}
+        - {x: 12.5, y: 17.5}
+    - name: megaman_spriteSheet_46
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 35
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - name: megaman_spriteSheet_47
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 16
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 5.5, y: 21.5}
+        - {x: -11.5, y: 21.5}
+        - {x: -18.5, y: 11.5}
+        - {x: -18.5, y: -21.5}
+        - {x: 5.5, y: -21.5}
+        - {x: 18.5, y: -7.5}
+        - {x: 18.5, y: -1.5}
+        - {x: 8.5, y: 20.5}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

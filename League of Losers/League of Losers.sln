@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{52335A54-B5DA-7342-5D6C-7DE1C8DD95F7}") = "League of Losers", "Assembly-CSharp.csproj", "{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
