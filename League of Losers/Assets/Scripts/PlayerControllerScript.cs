@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PlayerControllerScript : MonoBehaviour
 {
@@ -19,11 +20,15 @@ public class PlayerControllerScript : MonoBehaviour
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private float m_GroundCheckHeight = 0f;     //Hauteur locale du ground check (déterminée grâce aux dimensions du sprite au démarrage)
 
-    void Start ()
+
+    PhotonView m_PhotonView;    //Déclaration du Network
+
+    void Awake() //Changement de start en awake
     {
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
         m_GroundCheckHeight = -GetComponent<SpriteRenderer>().bounds.extents.y;
+        m_PhotonView = GetComponent<PhotonView>();
     }
 
     void Update ()
@@ -37,6 +42,7 @@ public class PlayerControllerScript : MonoBehaviour
         //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
         m_PlayerAnimator.SetBool("OnGround", m_Grounded);
         m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
+        m_PhotonView.RPC("isGrounded", PhotonTargets.All); // on le précise au réseau
 
         //Gestion du saut
         if (Input.GetButtonUp("Jump"))
@@ -49,6 +55,7 @@ public class PlayerControllerScript : MonoBehaviour
                 //Important de reset la velocity pour ne pas en tenir compte quand on fait un double saut
                 m_Body.velocity = Vector2.zero;
                 m_Body.AddForce(new Vector2(0, JumpStrength));
+                m_PhotonView.RPC("DoJump", PhotonTargets.All);
             }
         }
 
@@ -67,7 +74,9 @@ public class PlayerControllerScript : MonoBehaviour
             //Si l'on est au sol, passer en animation de course
             if (m_Grounded)
             {
-                _ChangeState(STATE_RUN);
+                //_ChangeState(STATE_RUN);
+                m_PhotonView.RPC("isRunning", PhotonTargets.All,STATE_RUN);
+
             }
         }
         else
@@ -76,6 +85,7 @@ public class PlayerControllerScript : MonoBehaviour
             if (m_Grounded)
             {
                 _ChangeState(STATE_IDLE);
+                m_PhotonView.RPC("isIdling", PhotonTargets.All, STATE_IDLE);
             }
         }
     }
@@ -102,4 +112,29 @@ public class PlayerControllerScript : MonoBehaviour
             m_CurrentState = State;
         }
     }
+
+    [PunRPC]
+    void DoJump()
+    {
+        m_Body.velocity = Vector2.zero;
+        m_Body.AddForce(new Vector2(0, JumpStrength));
+    }
+
+    [PunRPC]
+    void isGrounded()
+    {
+        m_PlayerAnimator.SetTrigger("OnGround");
+    }
+
+    [PunRPC]
+    void isRunning(int State)
+    {
+        _ChangeState(State);
+    }
+    [PunRPC]
+    void isGrounded(int State)
+    {
+        _ChangeState(State);
+    }
+
 }

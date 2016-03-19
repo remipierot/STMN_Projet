@@ -1,7 +1,11 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2008
 
+Project("{52335A54-B5DA-7342-5D6C-7DE1C8DD95F7}") = "League of Losers", "Assembly-CSharp-firstpass.csproj", "{FDBDE143-C394-4441-06EC-155514038029}"
+EndProject
 Project("{52335A54-B5DA-7342-5D6C-7DE1C8DD95F7}") = "League of Losers", "Assembly-CSharp.csproj", "{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}"
+EndProject
+Project("{52335A54-B5DA-7342-5D6C-7DE1C8DD95F7}") = "League of Losers", "Assembly-CSharp-Editor.csproj", "{96B3FD51-4E9C-8558-790A-4432DBAC3BEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDBDE143-C394-4441-06EC-155514038029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDBDE143-C394-4441-06EC-155514038029}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDBDE143-C394-4441-06EC-155514038029}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDBDE143-C394-4441-06EC-155514038029}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00DC8BD7-4354-D639-5B24-4DB37BDC7FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96B3FD51-4E9C-8558-790A-4432DBAC3BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96B3FD51-4E9C-8558-790A-4432DBAC3BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96B3FD51-4E9C-8558-790A-4432DBAC3BEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96B3FD51-4E9C-8558-790A-4432DBAC3BEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
