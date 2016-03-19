@@ -10,7 +10,6 @@ public class PlayerControllerScript : MonoBehaviour
 
     public float RunningSpeed = 4,      //Vitesse de course
                  JumpStrength = 250;    //Force de saut
-    public LayerMask GroundLayer;       //Layer associé au sol
 
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
@@ -19,15 +18,15 @@ public class PlayerControllerScript : MonoBehaviour
                  m_DoubleJumped = false;        //Flag indiquant si le Player a fait un double saut
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private float m_GroundCheckHeight = 0f;     //Hauteur locale du ground check (déterminée grâce aux dimensions du sprite au démarrage)
+	private LayerMask m_GroundLayer;       		//Layer associé au sol
+	private PhotonView m_PhotonView;    		//Objet lié au Network
 
-
-    PhotonView m_PhotonView;    //Déclaration du Network
-
-    void Awake() //Changement de start en awake
+    void Awake()
     {
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
         m_GroundCheckHeight = -GetComponent<SpriteRenderer>().bounds.extents.y;
+		m_GroundLayer = LayerMask.NameToLayer("Floor");
         m_PhotonView = GetComponent<PhotonView>();
     }
 
@@ -37,12 +36,8 @@ public class PlayerControllerScript : MonoBehaviour
         float horizontal;
 
         //Vérifie la collision entre le sol et le Player
-        m_Grounded = Physics2D.OverlapCircle(transform.TransformPoint(0, m_GroundCheckHeight, 0), 0.1f, GroundLayer);
-
-        //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
-        m_PlayerAnimator.SetBool("OnGround", m_Grounded);
-        m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
-        m_PhotonView.RPC("isGrounded", PhotonTargets.All); // on le précise au réseau
+        m_Grounded = Physics2D.OverlapCircle(transform.TransformPoint(0, m_GroundCheckHeight, 0), 0.1f, m_GroundLayer);
+		m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.All);
 
         //Gestion du saut
         if (Input.GetButtonUp("Jump"))
@@ -51,11 +46,7 @@ public class PlayerControllerScript : MonoBehaviour
             if (m_Grounded || !m_DoubleJumped)
             {
                 m_DoubleJumped = !m_Grounded;
-
-                //Important de reset la velocity pour ne pas en tenir compte quand on fait un double saut
-                m_Body.velocity = Vector2.zero;
-                m_Body.AddForce(new Vector2(0, JumpStrength));
-                m_PhotonView.RPC("DoJump", PhotonTargets.All);
+                m_PhotonView.RPC("PhJump", PhotonTargets.All);
             }
         }
 
@@ -66,17 +57,15 @@ public class PlayerControllerScript : MonoBehaviour
         {
             //Vérifier que le regard est dans la bonne direction
             translation = (horizontal > 0) ? Vector3.right : Vector3.left;
-            _ChangeDirection(horizontal > 0);
+            m_PhotonView.RPC("PhChangeDirection", PhotonTargets.All, horizontal > 0);
 
             //Déplacement
-            transform.Translate(translation * RunningSpeed * Time.deltaTime);
+			m_PhotonView.RPC("PhMove", PhotonTargets.All, translation);
 
             //Si l'on est au sol, passer en animation de course
             if (m_Grounded)
             {
-                //_ChangeState(STATE_RUN);
-                m_PhotonView.RPC("isRunning", PhotonTargets.All,STATE_RUN);
-
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.All, STATE_RUN);
             }
         }
         else
@@ -84,8 +73,7 @@ public class PlayerControllerScript : MonoBehaviour
             //Si l'on est au sol, passer en animation d'attente
             if (m_Grounded)
             {
-                _ChangeState(STATE_IDLE);
-                m_PhotonView.RPC("isIdling", PhotonTargets.All, STATE_IDLE);
+				m_PhotonView.RPC("PhChangeState", PhotonTargets.All, STATE_IDLE);
             }
         }
     }
@@ -113,28 +101,53 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
-    [PunRPC]
-    void DoJump()
-    {
-        m_Body.velocity = Vector2.zero;
-        m_Body.AddForce(new Vector2(0, JumpStrength));
-    }
+	//Donne la force au Rigidbody2D de sauter
+	private void _Jump ()
+	{
+		m_Body.velocity = Vector2.zero;
+		m_Body.AddForce(new Vector2(0, JumpStrength));
+	}
+
+	//Déplace le Player horizontalement
+	private void _Move (Vector3 Translation)
+	{
+		transform.Translate(Translation * RunningSpeed * Time.deltaTime);
+	}
+
+	//Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
+	private void _SendGroundInfos ()
+	{
+		m_PlayerAnimator.SetBool("OnGround", m_Grounded);
+		m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
+	}
+
+	[PunRPC]
+	void PhChangeDirection (bool Direction)
+	{
+		_ChangeDirection(Direction);
+	}
+	
+	[PunRPC]
+	void PhChangeState (int State)
+	{
+		_ChangeState(State);
+	}
 
     [PunRPC]
-    void isGrounded()
+    void PhJump()
     {
-        m_PlayerAnimator.SetTrigger("OnGround");
+		_Jump();
     }
 
-    [PunRPC]
-    void isRunning(int State)
-    {
-        _ChangeState(State);
-    }
-    [PunRPC]
-    void isGrounded(int State)
-    {
-        _ChangeState(State);
-    }
+	[PunRPC]
+	void PhMove(Vector3 Translation)
+	{
+		_Move(Translation);
+	}
 
+    [PunRPC]
+    void PhSendGroundInfos ()
+    {
+		_SendGroundInfos();
+    }
 }
