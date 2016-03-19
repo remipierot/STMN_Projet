@@ -28,8 +28,8 @@ public class PlayerControllerScript : MonoBehaviour
 
     void Update ()
     {
-        bool direction;
         Vector3 translation;
+        float horizontal;
 
         //Vérifie la collision entre le sol et le Player
         m_Grounded = Physics2D.OverlapCircle(transform.TransformPoint(0, m_GroundCheckHeight, 0), 0.1f, GroundLayer);
@@ -39,7 +39,7 @@ public class PlayerControllerScript : MonoBehaviour
         m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
 
         //Gestion du saut
-        if (Input.GetKeyUp("up"))
+        if (Input.GetButtonUp("Jump"))
         {
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
@@ -52,13 +52,14 @@ public class PlayerControllerScript : MonoBehaviour
             }
         }
 
+        horizontal = Input.GetAxisRaw("Horizontal");
+
         //Gestion du déplacement horizontal
-        if (Input.GetKey("right") ^ Input.GetKey("left"))
+        if (horizontal != 0)
         {
             //Vérifier que le regard est dans la bonne direction
-            direction = Input.GetKey("right");
-            translation = (direction == FACE_RIGHT) ? Vector3.right : Vector3.left;
-            _ChangeDirection(direction);
+            translation = (horizontal > 0) ? Vector3.right : Vector3.left;
+            _ChangeDirection(horizontal > 0);
 
             //Déplacement
             transform.Translate(translation * RunningSpeed * Time.deltaTime);
