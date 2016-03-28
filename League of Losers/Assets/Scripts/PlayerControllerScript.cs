@@ -18,26 +18,32 @@ public class PlayerControllerScript : MonoBehaviour
                  m_DoubleJumped = false;        //Flag indiquant si le Player a fait un double saut
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private float m_GroundCheckHeight = 0f;     //Hauteur locale du ground check (déterminée grâce aux dimensions du sprite au démarrage)
-	private LayerMask m_GroundLayer;       		//Layer associé au sol
-	private PhotonView m_PhotonView;    		//Objet lié au Network
+    private LayerMask m_GroundLayer;       		//Layer associé au sol
+    private PhotonView m_PhotonView;    		//Objet lié au Network
 
     void Awake()
     {
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
         m_GroundCheckHeight = -GetComponent<SpriteRenderer>().bounds.extents.y;
-		m_GroundLayer = LayerMask.NameToLayer("Floor");
+        m_GroundLayer = LayerMask.NameToLayer("Floor");
         m_PhotonView = GetComponent<PhotonView>();
     }
 
-    void Update ()
+    void Update()
     {
+        if (m_PhotonView.isMine == false)
+        {
+            return;
+        }
+
         Vector3 translation;
         float horizontal;
 
         //Vérifie la collision entre le sol et le Player
         m_Grounded = Physics2D.OverlapCircle(transform.TransformPoint(0, m_GroundCheckHeight, 0), 0.1f, m_GroundLayer);
-		m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.All);
+        _SendGroundInfos();
+        m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.Others);
 
         //Gestion du saut
         if (Input.GetButtonUp("Jump"))
@@ -46,7 +52,8 @@ public class PlayerControllerScript : MonoBehaviour
             if (m_Grounded || !m_DoubleJumped)
             {
                 m_DoubleJumped = !m_Grounded;
-                m_PhotonView.RPC("PhJump", PhotonTargets.All);
+                _Jump(); //Applique d'abord au personnage
+                m_PhotonView.RPC("PhJump", PhotonTargets.Others); //Puis envoie en ligne -> Modification on envoie PhotonTargets.Other
             }
         }
 
@@ -57,15 +64,18 @@ public class PlayerControllerScript : MonoBehaviour
         {
             //Vérifier que le regard est dans la bonne direction
             translation = (horizontal > 0) ? Vector3.right : Vector3.left;
-            m_PhotonView.RPC("PhChangeDirection", PhotonTargets.All, horizontal > 0);
+            _ChangeDirection(horizontal > 0);
+            m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
 
             //Déplacement
-			m_PhotonView.RPC("PhMove", PhotonTargets.All, translation);
+            transform.Translate(translation * RunningSpeed * Time.deltaTime);
+            m_PhotonView.RPC("PhMove", PhotonTargets.Others, translation);
 
             //Si l'on est au sol, passer en animation de course
             if (m_Grounded)
             {
-                m_PhotonView.RPC("PhChangeState", PhotonTargets.All, STATE_RUN);
+                _ChangeState(STATE_RUN);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_RUN);
             }
         }
         else
@@ -73,13 +83,20 @@ public class PlayerControllerScript : MonoBehaviour
             //Si l'on est au sol, passer en animation d'attente
             if (m_Grounded)
             {
-				m_PhotonView.RPC("PhChangeState", PhotonTargets.All, STATE_IDLE);
+                _ChangeState(STATE_IDLE);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
             }
         }
     }
 
+    void FixedUpdate()
+    {
+        
+    }
+
+
     //Changer la direction de regard du Player
-    private void _ChangeDirection (bool Direction)
+    private void _ChangeDirection(bool Direction)
     {
         if (m_CurrentFacing != Direction)
         {
@@ -92,7 +109,7 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     //Changer l'état d'animation
-    private void _ChangeState (int State)
+    private void _ChangeState(int State)
     {
         if (m_CurrentState != State)
         {
@@ -101,53 +118,58 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
-	//Donne la force au Rigidbody2D de sauter
-	private void _Jump ()
-	{
-		m_Body.velocity = Vector2.zero;
-		m_Body.AddForce(new Vector2(0, JumpStrength));
-	}
+    //Donne la force au Rigidbody2D de sauter
+    private void _Jump()
+    {
+        m_Body.velocity = Vector2.zero;
+        m_Body.AddForce(new Vector2(0, JumpStrength));
+    }
 
-	//Déplace le Player horizontalement
-	private void _Move (Vector3 Translation)
-	{
-		transform.Translate(Translation * RunningSpeed * Time.deltaTime);
-	}
+    //Déplace le Player horizontalement
+    private void _Move(Vector3 Translation)
+    {
+        transform.Translate(Translation * RunningSpeed * Time.deltaTime);
+    }
 
-	//Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
-	private void _SendGroundInfos ()
-	{
-		m_PlayerAnimator.SetBool("OnGround", m_Grounded);
-		m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
-	}
+    //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
+    private void _SendGroundInfos()
+    {
+        m_PlayerAnimator.SetBool("OnGround", m_Grounded);
+        m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
+    }
 
-	[PunRPC]
-	void PhChangeDirection (bool Direction)
-	{
-		_ChangeDirection(Direction);
-	}
-	
-	[PunRPC]
-	void PhChangeState (int State)
-	{
-		_ChangeState(State);
-	}
+    [PunRPC]
+    void PhChangeDirection(bool Direction)
+    {
+        _ChangeDirection(Direction);
+    }
+
+    [PunRPC]
+    void PhChangeState(int State)
+    {
+        _ChangeState(State);
+    }
 
     [PunRPC]
     void PhJump()
     {
-		_Jump();
+        _Jump();
     }
-
-	[PunRPC]
-	void PhMove(Vector3 Translation)
-	{
-		_Move(Translation);
-	}
 
     [PunRPC]
-    void PhSendGroundInfos ()
+    void PhMove(Vector3 Translation)
     {
-		_SendGroundInfos();
+        _Move(Translation);
     }
+
+    [PunRPC]
+    void PhSendGroundInfos()
+    {
+        _SendGroundInfos();
+    }
+
+
+
+
+
 }

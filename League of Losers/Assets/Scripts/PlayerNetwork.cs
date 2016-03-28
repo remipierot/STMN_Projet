@@ -2,10 +2,10 @@
 using System.Collections;
 
 public class PlayerNetwork : MonoBehaviour {
-    const string VERSION = "v0.1"; 				//Version du jeu
-    public string RoomName = "Test", 			//Nom de la salle par défaut
-				  PlayerPrefabName = "Megaman"; //Le nom du prefab des joueurs qui apparaissent
-	public GameObject SpawnPoint; 				//Le point d'apparition des joueurs
+    const string VERSION = "v0.1"; //version du jeu
+    public string roomName = "Test"; //Nom de la salle par défaut
+    public string playerPrefabName = "Megaman"; //Le nom du prefab des joueurs qui apparaissent
+    public GameObject spawnPoint; // Le point d'apparition des joueurs
 
     void Start()
     {
@@ -16,16 +16,13 @@ public class PlayerNetwork : MonoBehaviour {
     void OnJoinedLobby()
     {
         Debug.Log("Lobby joined");
-
-		//Déclaration de la pièce
-        RoomOptions roomOptions = new RoomOptions() { isVisible = false, maxPlayers = 4 }; 
-        PhotonNetwork.JoinOrCreateRoom(RoomName, roomOptions, TypedLobby.Default);
+        RoomOptions roomOptions = new RoomOptions() { isVisible = false, maxPlayers = 4 }; //Déclaration de la piece
+        PhotonNetwork.JoinOrCreateRoom(roomName,roomOptions,TypedLobby.Default);
     }
     
     void OnJoinedRoom()
     {
-		//Instancie le joueur quand il arrive dans la pièce
-        PhotonNetwork.Instantiate(PlayerPrefabName, SpawnPoint.transform.position, SpawnPoint.transform.rotation, 0); 
+        PhotonNetwork.Instantiate(playerPrefabName, spawnPoint.transform.position, spawnPoint.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
         Debug.Log("Connecté à la partie");
     }
 }
