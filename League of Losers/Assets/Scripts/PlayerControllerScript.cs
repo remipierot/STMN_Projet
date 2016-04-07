@@ -41,7 +41,7 @@ public class PlayerControllerScript : MonoBehaviour
         float horizontal;
 
         //Vérifie la collision entre le sol et le Player
-        m_Grounded = Physics2D.OverlapCircle(transform.TransformPoint(0, m_GroundCheckHeight, 0), 0.1f, m_GroundLayer);
+        m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f;
         _SendGroundInfos();
         m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.Others);
 
@@ -88,12 +88,6 @@ public class PlayerControllerScript : MonoBehaviour
             }
         }
     }
-
-    void FixedUpdate()
-    {
-        
-    }
-
 
     //Changer la direction de regard du Player
     private void _ChangeDirection(bool Direction)
