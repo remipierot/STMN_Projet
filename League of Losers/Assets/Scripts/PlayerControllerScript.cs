@@ -8,8 +8,10 @@ public class PlayerControllerScript : MonoBehaviour
     const bool FACE_RIGHT = true,   //Regard du Player vers la droite
                FACE_LEFT = false;   //Regard du Player vers la gauche
 
-    public float RunningSpeed = 4,      //Vitesse de course
-                 JumpStrength = 250;    //Force de saut
+    public float RunningSpeed = 4,          //Vitesse de course
+                 JumpStrength = 400,        //Force de saut
+                 DashStrength = 10,         //Force du dash (multiplicateur du vecteur déplacement de base)
+                 MsBetweenDashes = 2000;    //Temps minimum entre 2 dash (en millisecondes)
 
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
@@ -18,6 +20,7 @@ public class PlayerControllerScript : MonoBehaviour
                  m_DoubleJumped = false;        //Flag indiquant si le Player a fait un double saut
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private PhotonView m_PhotonView;    		//Objet lié au Network
+    private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
 
     void Awake()
     {
@@ -33,14 +36,14 @@ public class PlayerControllerScript : MonoBehaviour
             return;
         }
 
-        Vector2 translation;
+        Vector2 translation = Vector2.zero;
         float horizontal;
 
         //Vérifie la collision entre le sol et le Player
         m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f;
 
         //Gestion du saut
-        if (Input.GetButtonUp("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
@@ -62,6 +65,12 @@ public class PlayerControllerScript : MonoBehaviour
             translation = (horizontal > 0) ? Vector2.right : Vector2.left;
             _ChangeDirection(horizontal > 0);
             m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
+
+            if (Input.GetButtonDown("Fire1") && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+            {
+                translation *= DashStrength;
+                m_LastDashTime = Time.realtimeSinceStartup * 1000;
+            }
 
             //Déplacement
             _Move(translation);
@@ -144,6 +153,5 @@ public class PlayerControllerScript : MonoBehaviour
     {
         m_PlayerAnimator.SetBool("OnGround", Grounded);
         m_PlayerAnimator.SetFloat("VerticalSpeed", VerticalSpeed);
-        //_SendGroundInfos();
     }
 }
