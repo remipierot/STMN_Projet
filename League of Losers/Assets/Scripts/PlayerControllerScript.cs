@@ -17,16 +17,12 @@ public class PlayerControllerScript : MonoBehaviour
                  m_Grounded = true,             //Flag indiquant si le Player est au sol ou non
                  m_DoubleJumped = false;        //Flag indiquant si le Player a fait un double saut
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
-    private float m_GroundCheckHeight = 0f;     //Hauteur locale du ground check (déterminée grâce aux dimensions du sprite au démarrage)
-    private LayerMask m_GroundLayer;       		//Layer associé au sol
     private PhotonView m_PhotonView;    		//Objet lié au Network
 
     void Awake()
     {
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
-        m_GroundCheckHeight = -GetComponent<SpriteRenderer>().bounds.extents.y;
-        m_GroundLayer = LayerMask.NameToLayer("Floor");
         m_PhotonView = GetComponent<PhotonView>();
     }
 
@@ -37,13 +33,11 @@ public class PlayerControllerScript : MonoBehaviour
             return;
         }
 
-        Vector3 translation;
+        Vector2 translation;
         float horizontal;
 
         //Vérifie la collision entre le sol et le Player
         m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f;
-        _SendGroundInfos();
-        m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.Others);
 
         //Gestion du saut
         if (Input.GetButtonUp("Jump"))
@@ -52,10 +46,12 @@ public class PlayerControllerScript : MonoBehaviour
             if (m_Grounded || !m_DoubleJumped)
             {
                 m_DoubleJumped = !m_Grounded;
-                _Jump(); //Applique d'abord au personnage
-                m_PhotonView.RPC("PhJump", PhotonTargets.Others); //Puis envoie en ligne -> Modification on envoie PhotonTargets.Other
+                _Jump();
             }
         }
+
+        _SendGroundInfos();
+        m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.Others, m_Grounded, m_Body.velocity.y);
 
         horizontal = Input.GetAxisRaw("Horizontal");
 
@@ -63,13 +59,12 @@ public class PlayerControllerScript : MonoBehaviour
         if (horizontal != 0)
         {
             //Vérifier que le regard est dans la bonne direction
-            translation = (horizontal > 0) ? Vector3.right : Vector3.left;
+            translation = (horizontal > 0) ? Vector2.right : Vector2.left;
             _ChangeDirection(horizontal > 0);
             m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
 
             //Déplacement
-            transform.Translate(translation * RunningSpeed * Time.deltaTime);
-            m_PhotonView.RPC("PhMove", PhotonTargets.Others, translation);
+            _Move(translation);
 
             //Si l'on est au sol, passer en animation de course
             if (m_Grounded)
@@ -120,7 +115,7 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     //Déplace le Player horizontalement
-    private void _Move(Vector3 Translation)
+    private void _Move(Vector2 Translation)
     {
         transform.Translate(Translation * RunningSpeed * Time.deltaTime);
     }
@@ -145,25 +140,10 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     [PunRPC]
-    void PhJump()
+    void PhSendGroundInfos(bool Grounded, float VerticalSpeed)
     {
-        _Jump();
+        m_PlayerAnimator.SetBool("OnGround", Grounded);
+        m_PlayerAnimator.SetFloat("VerticalSpeed", VerticalSpeed);
+        //_SendGroundInfos();
     }
-
-    [PunRPC]
-    void PhMove(Vector3 Translation)
-    {
-        _Move(Translation);
-    }
-
-    [PunRPC]
-    void PhSendGroundInfos()
-    {
-        _SendGroundInfos();
-    }
-
-
-
-
-
 }
