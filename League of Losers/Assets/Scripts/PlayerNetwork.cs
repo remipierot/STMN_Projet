@@ -16,7 +16,7 @@ public class PlayerNetwork : MonoBehaviour {
     void OnJoinedLobby()
     {
         Debug.Log("Lobby joined");
-        RoomOptions roomOptions = new RoomOptions() { isVisible = false, maxPlayers = 4 }; //Déclaration de la piece
+        RoomOptions roomOptions = new RoomOptions() { isVisible = true, maxPlayers = 4 }; //Déclaration de la piece
         PhotonNetwork.JoinOrCreateRoom(roomName,roomOptions,TypedLobby.Default);
     }
     

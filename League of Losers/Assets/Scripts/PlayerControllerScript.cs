@@ -147,6 +147,15 @@ public class PlayerControllerScript : MonoBehaviour
     {
         _ChangeState(State);
     }
+    [PunRPC]
+    void PhTakeDamage(bool direction)
+    {
+        m_Body.velocity = Vector2.zero;
+        if (direction)
+            m_Body.AddForce(new Vector2(200, 500));
+        else
+            m_Body.AddForce(new Vector2(-200, 500));
+    }
 
     [PunRPC]
     void PhSendGroundInfos(bool Grounded, float VerticalSpeed)
