@@ -37,10 +37,11 @@ public class PlayerAttackScript : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D coll) {
         //if (coll.gameObject.tag == "Enemy")
         //    coll.gameObject.SendMessage("ApplyDamage", 10);
+        Debug.Log("Collision avec " + coll.gameObject.name + ", attaque: " + ((attacking > 0) ? "oui": "non") + ", tag: " + coll.gameObject.tag);
         if (attacking > 0 && coll.gameObject.tag == "Player")
         {
             Rigidbody2D otherBody = coll.gameObject.GetComponent<Rigidbody2D>();
-            ((PhotonView)(coll.gameObject.GetComponent("PhotonView"))).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x > otherBody.transform.position.x);
+            ((PhotonView)(coll.gameObject.GetComponent("PhotonView"))).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x);
             Debug.Log("Attaque le joueur " + coll.gameObject.name);
             /*
             projectile
