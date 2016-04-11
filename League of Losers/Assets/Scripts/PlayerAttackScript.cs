@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerAttackScript : MonoBehaviour {
     
@@ -11,8 +12,9 @@ public class PlayerAttackScript : MonoBehaviour {
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
     private PhotonView m_PhotonView;    		//Objet lié au Network
     
-    private int attacking = 0;
-    private int attackLength = 10;
+    private bool attacking = false;
+    
+    private static List<GameObject> playersInAttackRange = new List<GameObject>();
     
     void Awake() {
         m_PlayerAnimator = GetComponent<Animator>();
@@ -29,26 +31,28 @@ public class PlayerAttackScript : MonoBehaviour {
             return;
         
         if (Input.GetButtonDown("Attack"))
-            attacking = attackLength;
-        else if (attacking > 0)
-            attacking--;
+        {
+            foreach (var player in playersInAttackRange)
+            {
+                Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
+                ((PhotonView)(player.GetComponent("PhotonView"))).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x);
+                PhotonNetwork.player.AddScore(1);
+                /*
+                projectile
+                Instantiate(brick, new Vector3(x, y, 0), Quaternion.identity);
+                cube.AddComponent<Rigidbody2D>();
+                cube.transform.position = new Vector3(x, y, 0);
+                //*/
+            }
+        }
 	}
     
-    void OnCollisionEnter2D(Collision2D coll) {
-        //if (coll.gameObject.tag == "Enemy")
-        //    coll.gameObject.SendMessage("ApplyDamage", 10);
-        Debug.Log("Collision avec " + coll.gameObject.name + ", attaque: " + ((attacking > 0) ? "oui": "non") + ", tag: " + coll.gameObject.tag);
-        if (attacking > 0 && coll.gameObject.tag == "Player")
-        {
-            Rigidbody2D otherBody = coll.gameObject.GetComponent<Rigidbody2D>();
-            ((PhotonView)(coll.gameObject.GetComponent("PhotonView"))).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x);
-            Debug.Log("Attaque le joueur " + coll.gameObject.name);
-            /*
-            projectile
-            Instantiate(brick, new Vector3(x, y, 0), Quaternion.identity);
-            cube.AddComponent<Rigidbody2D>();
-            cube.transform.position = new Vector3(x, y, 0);
-            //*/
-        }
+    void OnTriggerEnter2D(Collider2D coll) {
+        if (coll.gameObject.tag == "Player")
+            playersInAttackRange.Add(coll.gameObject);
+    }
+    void OnTriggerExit2D(Collider2D coll) {
+        if (coll.gameObject.tag == "Player")
+            playersInAttackRange.Remove(coll.gameObject);
     }
 }

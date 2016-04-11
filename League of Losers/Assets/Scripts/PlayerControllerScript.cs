@@ -41,6 +41,14 @@ public class PlayerControllerScript : MonoBehaviour
         m_PhotonView = GetComponent<PhotonView>();
         
         playerList.Add(this.gameObject);
+        // nettoie la liste
+        List<GameObject> playersToDelete = new List<GameObject>();
+        foreach (var player in playerList)
+            if (player == null)
+                playersToDelete.Add(player);
+        foreach (var player in playersToDelete)
+            playerList.Remove(player);
+        
         foreach (var player in playerList)
         {
             foreach (var collision1 in player.GetComponents<BoxCollider2D>())
@@ -221,16 +229,9 @@ public class PlayerControllerScript : MonoBehaviour
     {
         // fonction potentiellement à améliorer dans le futur
         
-        if (m_PhotonView.isMine)
-            Debug.Log("Hit");
         if ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs)
-        {
             // pas de spam
-            
-            if (m_PhotonView.isMine)
-                Debug.Log("Spam");
             return;
-        }
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
         
         m_Lives--;
@@ -239,8 +240,6 @@ public class PlayerControllerScript : MonoBehaviour
             // game over
             m_Body.isKinematic = false;
             //transform.Translate(new Vector2(0,-50000));
-            if (m_PhotonView.isMine)
-                Debug.Log("GAME OVER");
         }
         
         m_Body.velocity = Vector2.zero;
