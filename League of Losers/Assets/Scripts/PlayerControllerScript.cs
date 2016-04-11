@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerControllerScript : MonoBehaviour
 {
@@ -30,12 +31,31 @@ public class PlayerControllerScript : MonoBehaviour
     private Vector2 translation;
     
     private float originalGravityScale;
+    
+    private static List<GameObject> playerList = new List<GameObject>();
 
     void Awake()
     {
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
+        
+        playerList.Add(this.gameObject);
+        foreach (var player in playerList)
+        {
+            foreach (var collision1 in player.GetComponents<BoxCollider2D>())
+            {
+                if (collision1.isTrigger)
+                    continue;
+                foreach (var collision2 in this.GetComponents<BoxCollider2D>())
+                {
+                    if (collision2.isTrigger)
+                        continue;
+                    Physics2D.IgnoreCollision(collision1, collision2);
+                }
+            }
+        }
+        Debug.Log("Objet ajouté");
     }
 
     void Update()
