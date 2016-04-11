@@ -23,6 +23,7 @@ public class PlayerControllerScript : MonoBehaviour
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private PhotonView m_PhotonView;    		//Objet lié au Network
     private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
+    private Vector2 translation;
     
     private float originalGravityScale;
 
@@ -46,6 +47,9 @@ public class PlayerControllerScript : MonoBehaviour
             m_Body.drag = 0;
             _ChangeState(STATE_IDLE);
         }
+
+        //Déplacement
+        _Move(translation);
         
         
         // -------- tout ce qui vient après n'est exécuté que si le personnage est contrôlé par le joueur --------
@@ -53,7 +57,7 @@ public class PlayerControllerScript : MonoBehaviour
         if (m_PhotonView.isMine == false)
             return;
 
-        Vector2 translation = Vector2.zero;
+        translation = Vector2.zero;
         float horizontal = Input.GetAxisRaw("Horizontal");
 
         //Gestion du saut
@@ -91,15 +95,12 @@ public class PlayerControllerScript : MonoBehaviour
         }
 
         //Gestion du déplacement horizontal
-        else if (horizontal != 0)
+        else if (horizontal != 0 && m_CurrentState != STATE_DASH)
         {
             //Vérifier que le regard est dans la bonne direction
             translation = (horizontal > 0) ? Vector2.right : Vector2.left;
             _ChangeDirection(horizontal > 0);
             m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
-
-            //Déplacement
-            _Move(translation);
 
             //Si l'on est au sol, passer en animation de course
             if (m_Grounded)
