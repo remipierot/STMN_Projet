@@ -57,20 +57,28 @@ public class PlayerControllerScript : MonoBehaviour
         m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.Others, m_Grounded, m_Body.velocity.y);
 
         horizontal = Input.GetAxisRaw("Horizontal");
+        
+        // Gestion du dash
+        if (Input.GetKey("a") && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+        {
+            translation = Vector2.left * DashStrength;
+            m_LastDashTime = Time.realtimeSinceStartup * 1000;
+            _Move(translation);
+        }
+        else if (Input.GetKey("e") && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+        {
+            translation = Vector2.right * DashStrength;
+            m_LastDashTime = Time.realtimeSinceStartup * 1000;
+            _Move(translation);
+        }
 
         //Gestion du déplacement horizontal
-        if (horizontal != 0)
+        else if (horizontal != 0)
         {
             //Vérifier que le regard est dans la bonne direction
             translation = (horizontal > 0) ? Vector2.right : Vector2.left;
             _ChangeDirection(horizontal > 0);
             m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
-
-            if (Input.GetButtonDown("Fire1") && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
-            {
-                translation *= DashStrength;
-                m_LastDashTime = Time.realtimeSinceStartup * 1000;
-            }
 
             //Déplacement
             _Move(translation);
