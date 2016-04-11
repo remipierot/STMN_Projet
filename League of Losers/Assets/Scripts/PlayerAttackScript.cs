@@ -29,10 +29,7 @@ public class PlayerAttackScript : MonoBehaviour {
             return;
         
         if (Input.GetButtonDown("Fire1"))
-        {
-            Debug.Log("Atck");
             attacking = attackLength;
-        }
         else if (attacking > 0)
             attacking--;
 	}
@@ -43,7 +40,7 @@ public class PlayerAttackScript : MonoBehaviour {
         if (attacking > 0 && coll.gameObject.tag == "Player")
         {
             Rigidbody2D otherBody = coll.gameObject.GetComponent<Rigidbody2D>();
-            m_PhotonView.RPC("PhTakeDamage", PhotonTargets.Others, m_Body.transform.position.x > otherBody.transform.position.x);
+            ((PhotonView)(coll.gameObject.GetComponent("PhotonView"))).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x > otherBody.transform.position.x);
             Debug.Log("Attaque le joueur " + coll.gameObject.name);
             /*
             projectile
