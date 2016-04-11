@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Collections;
 
 
-public class RechercheLobby : MonoBehaviour {
+public class RechercheLobby : MonoBehaviour
+{
 
     private bool spawn = false;
     private int maxPlayer = 1;
@@ -18,14 +19,12 @@ public class RechercheLobby : MonoBehaviour {
     public string Version = "v0.1";
     private Vector3 up;
     private Vector2 scrollPosition;
-    private bool spawnandloaded;
     private bool seConnecter = false;
 
     void Start()
     {
         PhotonNetwork.player.name = PlayerPrefs.GetString("Username", "My Player name");
         chatMessages = new List<string>();
-        PhotonNetwork.ConnectUsingSettings(Version);
     }
 
     void OnDestroy()
@@ -50,7 +49,7 @@ public class RechercheLobby : MonoBehaviour {
 
     void Connect()
     {
-       
+        PhotonNetwork.ConnectUsingSettings(Version);
     }
 
     void OnGUI()
@@ -69,7 +68,7 @@ public class RechercheLobby : MonoBehaviour {
             PhotonNetwork.player.name = GUILayout.TextField(PhotonNetwork.player.name);
             GUILayout.EndHorizontal();
 
-          
+
 
             if (GUILayout.Button("Jouer"))
             {
@@ -79,7 +78,7 @@ public class RechercheLobby : MonoBehaviour {
 
             if (GUILayout.Button("Quitter "))
             {
-
+                Application.Quit();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
@@ -87,6 +86,7 @@ public class RechercheLobby : MonoBehaviour {
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
+
         if (PhotonNetwork.connected == true && connecting == false)
         {
             GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
@@ -100,7 +100,6 @@ public class RechercheLobby : MonoBehaviour {
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
-
         }
 
         if (PhotonNetwork.insideLobby == true)
@@ -115,7 +114,7 @@ public class RechercheLobby : MonoBehaviour {
 
             GUILayout.Label("Session Name:");
             roomName = GUILayout.TextField(roomName);
-            GUILayout.Label("Max amount of players 1 - 20:");
+            GUILayout.Label("Max amount of players 1 - 4:");
             maxPlayerString = GUILayout.TextField(maxPlayerString, 2);
             if (maxPlayerString != "")
             {
@@ -136,7 +135,7 @@ public class RechercheLobby : MonoBehaviour {
                 {
                     seConnecter = true;
                     RoomOptions roomOptions = new RoomOptions() { isVisible = true, maxPlayers = 4 }; //Déclaration de la piece
-                    PhotonNetwork.JoinOrCreateRoom("Test", roomOptions, TypedLobby.Default);
+                    PhotonNetwork.JoinOrCreateRoom(roomName, roomOptions, TypedLobby.Default);
                 }
             }
 
@@ -148,18 +147,14 @@ public class RechercheLobby : MonoBehaviour {
 
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true, GUILayout.Width(400), GUILayout.Height(300));
 
-            
-            int i = 0;
             foreach (RoomInfo game in PhotonNetwork.GetRoomList())
             {
                 GUI.color = Color.green;
                 GUILayout.Box(game.name + " " + game.playerCount + "/" + game.maxPlayers + " " + game.visible);
-                Debug.Log(i);
                 if (GUILayout.Button("Join Session"))
                 {
                     PhotonNetwork.JoinRoom(game.name);
                 }
-                i++;
             }
             GUILayout.EndScrollView();
             GUILayout.EndArea();
@@ -182,13 +177,14 @@ public class RechercheLobby : MonoBehaviour {
         Debug.Log("OnJoinedRoom");
         connecting = false;
         spawn = true;
+        PhotonNetwork.Instantiate("Megaman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
     }
 
     void OnLevelWasLoaded(int level)
     {
         if (level == 1)
         { //Replace 1 with what your scene number is. You can check what it is in the build settings.
-            spawnandloaded = true;
+
         }
     }
 
@@ -198,9 +194,7 @@ public class RechercheLobby : MonoBehaviour {
         {
             spawn = false;
             seConnecter = false;
-            PhotonNetwork.Instantiate("Megaman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
             Debug.Log("Connecté à la partie");
         }
     }
-
 }
