@@ -49,6 +49,10 @@ public class PlayerControllerScript : MonoBehaviour
         }
 
         //Déplacement
+        if (m_CurrentState == STATE_RUN)
+            translation = m_CurrentFacing ? Vector2.right : Vector2.left;
+        else
+            translation = Vector2.zero;
         _Move(translation);
         
         
@@ -57,7 +61,6 @@ public class PlayerControllerScript : MonoBehaviour
         if (m_PhotonView.isMine == false)
             return;
 
-        translation = Vector2.zero;
         float horizontal = Input.GetAxisRaw("Horizontal");
 
         //Gestion du saut
@@ -98,7 +101,6 @@ public class PlayerControllerScript : MonoBehaviour
         else if (horizontal != 0 && m_CurrentState != STATE_DASH)
         {
             //Vérifier que le regard est dans la bonne direction
-            translation = (horizontal > 0) ? Vector2.right : Vector2.left;
             _ChangeDirection(horizontal > 0);
             m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
 
