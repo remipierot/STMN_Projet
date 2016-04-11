@@ -4,14 +4,16 @@ using System.Collections;
 public class PlayerControllerScript : MonoBehaviour
 {
     const int STATE_IDLE = 0,       //Animation d'attente (immobile)
-              STATE_RUN = 1;        //Animation de course
+              STATE_RUN = 1,        //Animation de course
+              STATE_DASH = 2;       //Dash (pas encore utilisé)
     const bool FACE_RIGHT = true,   //Regard du Player vers la droite
                FACE_LEFT = false;   //Regard du Player vers la gauche
 
     public float RunningSpeed = 4,          //Vitesse de course
                  JumpStrength = 400,        //Force de saut
-                 DashStrength = 10,         //Force du dash (multiplicateur du vecteur déplacement de base)
-                 MsBetweenDashes = 2000;    //Temps minimum entre 2 dash (en millisecondes)
+                 DashStrength = 1300,        //Force du dash
+                 MsBetweenDashes = 2000,    //Temps minimum entre 2 dash (en millisecondes)
+                 MsBeforeDashGravityRestored = 200; // Temps avant que la gravité soit restaurée lors d'un dash
 
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
@@ -21,6 +23,8 @@ public class PlayerControllerScript : MonoBehaviour
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private PhotonView m_PhotonView;    		//Objet lié au Network
     private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
+    
+    private float originalGravityScale;
 
     void Awake()
     {
@@ -31,19 +35,29 @@ public class PlayerControllerScript : MonoBehaviour
 
     void Update()
     {
-        if (m_PhotonView.isMine == false)
-        {
-            return;
-        }
-
-        Vector2 translation = Vector2.zero;
-        float horizontal;
-
         //Vérifie la collision entre le sol et le Player
         m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f;
+        _SendGroundInfos();
+        
+        // restauration de la gravité du personnage après le dash
+        if (m_CurrentState == STATE_DASH && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBeforeDashGravityRestored)
+        {
+            m_Body.gravityScale = originalGravityScale;
+            m_Body.drag = 0;
+            _ChangeState(STATE_IDLE);
+        }
+        
+        
+        // -------- tout ce qui vient après n'est exécuté que si le personnage est contrôlé par le joueur --------
+        
+        if (m_PhotonView.isMine == false)
+            return;
+
+        Vector2 translation = Vector2.zero;
+        float horizontal = Input.GetAxisRaw("Horizontal");
 
         //Gestion du saut
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && m_CurrentState != STATE_DASH)
         {
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
@@ -52,24 +66,28 @@ public class PlayerControllerScript : MonoBehaviour
                 _Jump();
             }
         }
-
-        _SendGroundInfos();
-        m_PhotonView.RPC("PhSendGroundInfos", PhotonTargets.Others, m_Grounded, m_Body.velocity.y);
-
-        horizontal = Input.GetAxisRaw("Horizontal");
         
         // Gestion du dash
-        if (Input.GetKey("a") && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+        float dash = Input.GetAxisRaw("Dash");
+        if (dash < 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
         {
-            translation = Vector2.left * DashStrength;
-            m_LastDashTime = Time.realtimeSinceStartup * 1000;
-            _Move(translation);
+            if (m_CurrentFacing)
+            {
+                _ChangeDirection(false);
+                m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, false);
+            }
+            _ChangeState(STATE_DASH);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
         }
-        else if (Input.GetKey("e") && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+        else if (dash > 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
         {
-            translation = Vector2.right * DashStrength;
-            m_LastDashTime = Time.realtimeSinceStartup * 1000;
-            _Move(translation);
+            if (!m_CurrentFacing)
+            {
+                _ChangeDirection(true);
+                m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, true);
+            }
+            _ChangeState(STATE_DASH);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
         }
 
         //Gestion du déplacement horizontal
@@ -93,7 +111,7 @@ public class PlayerControllerScript : MonoBehaviour
         else
         {
             //Si l'on est au sol, passer en animation d'attente
-            if (m_Grounded)
+            if (m_Grounded && m_CurrentState != STATE_IDLE && m_CurrentState != STATE_DASH)
             {
                 _ChangeState(STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
@@ -122,6 +140,12 @@ public class PlayerControllerScript : MonoBehaviour
             m_PlayerAnimator.SetInteger("State", State);
             m_CurrentState = State;
         }
+        switch (m_CurrentState)
+        {
+            case STATE_DASH:
+                _Dash();
+                break;
+        }
     }
 
     //Donne la force au Rigidbody2D de sauter
@@ -129,6 +153,19 @@ public class PlayerControllerScript : MonoBehaviour
     {
         m_Body.velocity = Vector2.zero;
         m_Body.AddForce(new Vector2(0, JumpStrength));
+    }
+    
+    private void _Dash()
+    {
+        m_Body.velocity = Vector2.zero;
+        if (m_CurrentFacing)
+            m_Body.AddForce(new Vector2(DashStrength, 0));
+        else
+            m_Body.AddForce(new Vector2(-DashStrength, 0));
+        originalGravityScale = m_Body.gravityScale;
+        m_Body.gravityScale = 0;
+        m_Body.drag = 10;
+        m_LastDashTime = Time.realtimeSinceStartup * 1000;
     }
 
     //Déplace le Player horizontalement
@@ -158,6 +195,7 @@ public class PlayerControllerScript : MonoBehaviour
     [PunRPC]
     void PhTakeDamage(bool direction)
     {
+        // à améliorer
         m_Body.velocity = Vector2.zero;
         if (direction)
             m_Body.AddForce(new Vector2(200, 500));

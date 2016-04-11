@@ -28,7 +28,7 @@ public class PlayerAttackScript : MonoBehaviour {
         if (!m_PhotonView.isMine)
             return;
         
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Attack"))
             attacking = attackLength;
         else if (attacking > 0)
             attacking--;
