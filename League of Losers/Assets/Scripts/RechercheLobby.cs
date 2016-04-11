@@ -159,6 +159,21 @@ public class RechercheLobby : MonoBehaviour
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
+
+        //Affichage du score et du nom
+        if (PhotonNetwork.inRoom) //Si on est dans une salle
+        {
+           GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height)); //On déclare une zone de dessin GUI
+           var playerList = new System.Text.StringBuilder();
+           foreach (var player in PhotonNetwork.playerList) //Pour chaque joueur de la salle
+           {
+               GUILayout.Label("Username: ");
+               GUILayout.Label(player.name); //nom
+               GUILayout.Label("Score: ");
+               GUILayout.Label(player.GetScore().ToString()); //score
+           }
+           GUILayout.EndArea();
+        }
     }
 
     void OnJoinedLobby()
