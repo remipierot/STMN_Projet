@@ -19,7 +19,6 @@ public class RechercheLobby : MonoBehaviour
     public string Version = "v0.1";
     private Vector3 up;
     private Vector2 scrollPosition;
-    private bool spawnandloaded;
     private bool seConnecter = false;
 
     void Start()
@@ -55,7 +54,6 @@ public class RechercheLobby : MonoBehaviour
 
     void OnGUI()
     {
-        Debug.Log(connecting);
         GUI.color = Color.grey;
         if (PhotonNetwork.connected == false && connecting == false)
         {
@@ -80,7 +78,7 @@ public class RechercheLobby : MonoBehaviour
 
             if (GUILayout.Button("Quitter "))
             {
-
+                Application.Quit();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
@@ -186,7 +184,7 @@ public class RechercheLobby : MonoBehaviour
     {
         if (level == 1)
         { //Replace 1 with what your scene number is. You can check what it is in the build settings.
-            spawnandloaded = true;
+
         }
     }
 
@@ -199,5 +197,4 @@ public class RechercheLobby : MonoBehaviour
             Debug.Log("Connecté à la partie");
         }
     }
-
 }
