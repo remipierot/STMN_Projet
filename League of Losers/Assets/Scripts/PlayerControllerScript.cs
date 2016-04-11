@@ -11,10 +11,13 @@ public class PlayerControllerScript : MonoBehaviour
 
     public float RunningSpeed = 4,          //Vitesse de course
                  JumpStrength = 400,        //Force de saut
-                 DashStrength = 1300,        //Force du dash
+                 DashStrength = 1300,       //Force du dash
                  MsBetweenDashes = 2000,    //Temps minimum entre 2 dash (en millisecondes)
-                 MsBeforeDashGravityRestored = 200; // Temps avant que la gravité soit restaurée lors d'un dash
-
+                 MsBeforeDashGravityRestored = 200, // Temps avant que la gravité soit restaurée lors d'un dash
+                 HitInvincibilityMs = 2000; // Temps durant lequel le joueur est invincible après s'être pris des dégâts
+    
+    private int m_Lives = 3; // nombre de vies restantes
+    
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
     private bool m_CurrentFacing = FACE_RIGHT,  //Direction courante du regard du Player
@@ -23,6 +26,7 @@ public class PlayerControllerScript : MonoBehaviour
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
     private PhotonView m_PhotonView;    		//Objet lié au Network
     private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
+    private float m_LastHitTime = 0;            //Dernière fois que le joueur a été touché (pour l'invincibilité)
     private Vector2 translation;
     
     private float originalGravityScale;
@@ -37,7 +41,7 @@ public class PlayerControllerScript : MonoBehaviour
     void Update()
     {
         //Vérifie la collision entre le sol et le Player
-        m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f;
+        m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f && m_CurrentState != STATE_DASH; // le dash désactive temporairement toute vélocité verticale
         _SendGroundInfos();
         
         // restauration de la gravité du personnage après le dash
@@ -114,7 +118,7 @@ public class PlayerControllerScript : MonoBehaviour
         else
         {
             //Si l'on est au sol, passer en animation d'attente
-            if (m_Grounded && m_CurrentState != STATE_IDLE && m_CurrentState != STATE_DASH)
+            if (/*m_Grounded &&*/ m_CurrentState != STATE_IDLE && m_CurrentState != STATE_DASH)
             {
                 _ChangeState(STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
@@ -127,10 +131,7 @@ public class PlayerControllerScript : MonoBehaviour
     {
         if (m_CurrentFacing != Direction)
         {
-            Vector3 flippedScale = transform.localScale;
-            flippedScale.x *= -1;
-            transform.localScale = flippedScale;
-
+            transform.right *= -1;
             m_CurrentFacing = Direction;
         }
     }
@@ -174,7 +175,7 @@ public class PlayerControllerScript : MonoBehaviour
     //Déplace le Player horizontalement
     private void _Move(Vector2 Translation)
     {
-        transform.Translate(Translation * RunningSpeed * Time.deltaTime);
+        transform.Translate(Translation * RunningSpeed * Time.deltaTime * transform.right.x);
     }
 
     //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
@@ -198,7 +199,30 @@ public class PlayerControllerScript : MonoBehaviour
     [PunRPC]
     void PhTakeDamage(bool direction)
     {
-        // à améliorer
+        // fonction potentiellement à améliorer dans le futur
+        
+        if (m_PhotonView.isMine)
+            Debug.Log("Hit");
+        if ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs)
+        {
+            // pas de spam
+            
+            if (m_PhotonView.isMine)
+                Debug.Log("Spam");
+            return;
+        }
+        m_LastHitTime = Time.realtimeSinceStartup * 1000;
+        
+        m_Lives--;
+        if (m_Lives == 0)
+        {
+            // game over
+            m_Body.isKinematic = false;
+            //transform.Translate(new Vector2(0,-50000));
+            if (m_PhotonView.isMine)
+                Debug.Log("GAME OVER");
+        }
+        
         m_Body.velocity = Vector2.zero;
         if (direction)
             m_Body.AddForce(new Vector2(200, 500));
