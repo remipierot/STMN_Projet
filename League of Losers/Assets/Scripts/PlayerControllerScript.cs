@@ -75,6 +75,14 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if( stream.isWriting == true )
+            stream.SendNext(m_Lives);
+        else
+            m_Lives = (int)stream.ReceiveNext();
+    }
+
     void Update()
     {
         //Vérifie la collision entre le sol et le Player
