@@ -63,7 +63,6 @@ public class PlayerControllerScript : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Objet ajouté");
     }
 
     void Update()
