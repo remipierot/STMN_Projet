@@ -6,7 +6,8 @@ public class PlayerControllerScript : MonoBehaviour
 {
     const int STATE_IDLE = 0,       //Animation d'attente (immobile)
               STATE_RUN = 1,        //Animation de course
-              STATE_DASH = 2;       //Dash (pas encore utilisé)
+              STATE_DASH = 2,       //Dash (pas encore utilisé)
+              STATE_AIMING = 3;     //Visée lors d'une attaque rangée
     const bool FACE_RIGHT = true,   //Regard du Player vers la droite
                FACE_LEFT = false;   //Regard du Player vers la gauche
 
@@ -33,12 +34,21 @@ public class PlayerControllerScript : MonoBehaviour
     private float originalGravityScale;
     
     private static List<GameObject> playerList = new List<GameObject>();
+    
+    public PhotonPlayer owner;
 
     void Awake()
     {
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
+        
+        // lie le gameobject au joueur
+        foreach (var player in PhotonNetwork.playerList)
+            if (player.ID == m_PhotonView.ownerId)
+                owner = player;
+        if (owner == null)
+            Debug.Log("Couldn't find PhotonPlayer !");
         
         playerList.Add(this.gameObject);
         // nettoie la liste
@@ -232,8 +242,13 @@ public class PlayerControllerScript : MonoBehaviour
     {
         _Jump();
     }
+    
+    public bool canTakeDamage()
+    {
+        return ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
+    }
     [PunRPC]
-    void PhTakeDamage(bool direction)
+    void PhTakeDamage(bool direction, PhotonPlayer attacker)
     {
         // fonction potentiellement à améliorer dans le futur
         
@@ -255,6 +270,8 @@ public class PlayerControllerScript : MonoBehaviour
             m_Body.AddForce(new Vector2(200, 500));
         else
             m_Body.AddForce(new Vector2(-200, 500));
+        
+        attacker.AddScore(1);
     }
 
     [PunRPC]
