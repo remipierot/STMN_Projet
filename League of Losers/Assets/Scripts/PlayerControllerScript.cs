@@ -102,6 +102,7 @@ public class PlayerControllerScript : MonoBehaviour
             {
                 m_DoubleJumped = !m_Grounded;
                 _Jump();
+                m_PhotonView.RPC("PhJump", PhotonTargets.Others);
             }
         }
         
@@ -132,11 +133,14 @@ public class PlayerControllerScript : MonoBehaviour
         else if (horizontal != 0 && m_CurrentState != STATE_DASH)
         {
             //Vérifier que le regard est dans la bonne direction
-            _ChangeDirection(horizontal > 0);
-            m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
+            if ((horizontal > 0) != m_CurrentFacing)
+            {
+                _ChangeDirection(horizontal > 0);
+                m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
+            }
 
-            //Si l'on est au sol, passer en animation de course
-            if (m_Grounded)
+            //passer en animation de course
+            if (m_CurrentState != STATE_RUN)
             {
                 _ChangeState(STATE_RUN);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_RUN);
@@ -144,8 +148,8 @@ public class PlayerControllerScript : MonoBehaviour
         }
         else
         {
-            //Si l'on est au sol, passer en animation d'attente
-            if (/*m_Grounded &&*/ m_CurrentState != STATE_IDLE && m_CurrentState != STATE_DASH)
+            //passe en animation d'attente
+            if (m_CurrentState != STATE_IDLE && m_CurrentState != STATE_DASH)
             {
                 _ChangeState(STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
@@ -222,6 +226,11 @@ public class PlayerControllerScript : MonoBehaviour
     void PhChangeState(int State)
     {
         _ChangeState(State);
+    }
+    [PunRPC]
+    void PhJump()
+    {
+        _Jump();
     }
     [PunRPC]
     void PhTakeDamage(bool direction)
