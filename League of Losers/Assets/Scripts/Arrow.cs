@@ -7,16 +7,21 @@ public class Arrow : MonoBehaviour {
     private Rigidbody2D m_Body;
     private bool m_Broken = false; // flèche cassée et en train de tomber, ne peut faire de dégât
     private bool m_Fixed = false; // flèche plantée dans le sol
+    public PhotonView m_PhotonView; // synchronisation de la flèche
     
     public bool isBroken() { return m_Broken || m_Fixed; }
     public void _break() {
         m_Broken = true;
         m_Body.velocity = new Vector2((m_Body.velocity.x>0)?1:-1, 0);
+        m_Body.angularVelocity = 650;
+        // pas besoin de synchroniser la flèche pendant qu'elle retombe au sol...
+        m_PhotonView.synchronization = ViewSynchronization.Off;
     }
 
 	// Use this for initialization
 	void Start () {
         m_Body = GetComponent<Rigidbody2D>();
+        m_PhotonView = GetComponent<PhotonView>();
 	}
 	
 	// Update is called once per frame
@@ -37,11 +42,14 @@ public class Arrow : MonoBehaviour {
         
         if (coll.gameObject.tag == "ArenaEdge")
         {
+            
+            Debug.Log("Collision - edge");
             // bord du terrain - on supprime la flèche
             Destroy(this.gameObject);
         }
         else if (coll.gameObject.tag == "Player")
         {
+            Debug.Log("Collision - player");
             if (!m_Broken)
                 if (((PlayerControllerScript)(coll.gameObject.GetComponent<PlayerControllerScript>())).owner != m_Owner)
                 {
@@ -52,9 +60,11 @@ public class Arrow : MonoBehaviour {
         }
         else if (coll.gameObject.tag == "Projectile")
         {
+            Debug.Log("Collision - projectile");
             Arrow arrow = coll.gameObject.GetComponent<Arrow>();
             if (!arrow.isBroken())
             {
+                Debug.Log("broken");
                 // collision avec une autre flèche
                 arrow._break();
                 _break();
@@ -64,10 +74,12 @@ public class Arrow : MonoBehaviour {
         }
         else
         {
+            Debug.Log("Collision - terrain");
             // collision du terrain - on bloque la flèche
             GetComponent<Rigidbody2D>().isKinematic = true;
             m_Broken = true;
             m_Fixed = true;
+            m_PhotonView.synchronization = ViewSynchronization.Off;
         }
     }
     
