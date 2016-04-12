@@ -17,6 +17,26 @@ public class Arrow : MonoBehaviour {
         // pas besoin de synchroniser la flèche pendant qu'elle retombe au sol...
         m_PhotonView.synchronization = ViewSynchronization.Off;
     }
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            stream.SendNext(m_Owner.ID);
+            stream.SendNext(m_Broken);
+            stream.SendNext(m_Fixed);
+        }
+        else
+        {
+            int id = (int) stream.ReceiveNext();
+            m_Broken = (bool) stream.ReceiveNext();
+            m_Fixed = (bool) stream.ReceiveNext();
+            foreach (var player in PhotonNetwork.playerList)
+                if (player.ID == m_PhotonView.ownerId)
+                    m_Owner = player;
+        }
+        Debug.Log("SERIALIZE, mode=" + (stream.isWriting ? "write": "read"));
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -51,7 +71,7 @@ public class Arrow : MonoBehaviour {
                 if (((PlayerControllerScript)(coll.gameObject.GetComponent<PlayerControllerScript>())).owner != m_Owner)
                 {
                     // collision avec le joueur, on lui enlève une vie
-                    ((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.velocity.x > 0, m_Owner);
+                    //((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.velocity.x > 0, m_Owner);
                     _break();
                 }
         }
