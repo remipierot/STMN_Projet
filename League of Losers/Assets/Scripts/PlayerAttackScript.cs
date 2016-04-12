@@ -67,7 +67,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (direction.y < 0)
                     angle *= -1;
                 Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, angle));
-                Rigidbody2D projectileClone = (Rigidbody2D) Instantiate(m_Projectile, transform.position, directionQuat);
+                Rigidbody2D projectileClone = PhotonNetwork.Instantiate(m_Projectile, transform.position, directionQuat, 0);
                 projectileClone.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
                 projectileClone.velocity = direction * 15;
             }
