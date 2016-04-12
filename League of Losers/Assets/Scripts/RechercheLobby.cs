@@ -187,12 +187,18 @@ public class RechercheLobby : MonoBehaviour
         PhotonNetwork.CreateRoom(null);
     }
 
+    public void instantiate()
+    {
+        PhotonNetwork.Instantiate("Megaman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+    }
+
+
     void OnJoinedRoom()
     {
         Debug.Log("OnJoinedRoom");
         connecting = false;
         spawn = true;
-        PhotonNetwork.Instantiate("Megaman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+        instantiate();
     }
 
     void OnLevelWasLoaded(int level)

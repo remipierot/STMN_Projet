@@ -17,7 +17,7 @@ public class PlayerControllerScript : MonoBehaviour
                  MsBeforeDashGravityRestored = 200, // Temps avant que la gravité soit restaurée lors d'un dash
                  HitInvincibilityMs = 2000; // Temps durant lequel le joueur est invincible après s'être pris des dégâts
     
-    private int m_Lives = 3; // nombre de vies restantes
+    public int m_Lives = 3; // nombre de vies restantes
     
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
@@ -25,7 +25,7 @@ public class PlayerControllerScript : MonoBehaviour
                  m_Grounded = true,             //Flag indiquant si le Player est au sol ou non
                  m_DoubleJumped = false;        //Flag indiquant si le Player a fait un double saut
     private int m_CurrentState = STATE_IDLE;    //Etat d'animation courant
-    private PhotonView m_PhotonView;    		//Objet lié au Network
+    public PhotonView m_PhotonView;    		//Objet lié au Network
     private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
     private float m_LastHitTime = 0;            //Dernière fois que le joueur a été touché (pour l'invincibilité)
     private Vector2 translation;
@@ -246,8 +246,9 @@ public class PlayerControllerScript : MonoBehaviour
         if (m_Lives == 0)
         {
             // game over
-            m_Body.isKinematic = false;
-            //transform.Translate(new Vector2(0,-50000));
+            PhSendDestruction();
+            m_PhotonView.RPC("PhSendDestruction", PhotonTargets.Others, STATE_IDLE);
+            m_Lives = 3;
         }
         
         m_Body.velocity = Vector2.zero;
@@ -262,5 +263,13 @@ public class PlayerControllerScript : MonoBehaviour
     {
         m_PlayerAnimator.SetBool("OnGround", Grounded);
         m_PlayerAnimator.SetFloat("VerticalSpeed", VerticalSpeed);
+    }
+
+    [PunRPC]
+    void PhSendDestruction()
+    {
+        Destroy(gameObject);
+        RechercheLobby recherche = GetComponent<RechercheLobby>();
+        recherche.instantiate();
     }
 }
