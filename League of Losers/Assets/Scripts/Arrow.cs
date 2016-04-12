@@ -42,14 +42,11 @@ public class Arrow : MonoBehaviour {
         
         if (coll.gameObject.tag == "ArenaEdge")
         {
-            
-            Debug.Log("Collision - edge");
             // bord du terrain - on supprime la flèche
             Destroy(this.gameObject);
         }
         else if (coll.gameObject.tag == "Player")
         {
-            Debug.Log("Collision - player");
             if (!m_Broken)
                 if (((PlayerControllerScript)(coll.gameObject.GetComponent<PlayerControllerScript>())).owner != m_Owner)
                 {
@@ -60,11 +57,9 @@ public class Arrow : MonoBehaviour {
         }
         else if (coll.gameObject.tag == "Projectile")
         {
-            Debug.Log("Collision - projectile");
             Arrow arrow = coll.gameObject.GetComponent<Arrow>();
             if (!arrow.isBroken())
             {
-                Debug.Log("broken");
                 // collision avec une autre flèche
                 arrow._break();
                 _break();
@@ -74,7 +69,6 @@ public class Arrow : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Collision - terrain");
             // collision du terrain - on bloque la flèche
             GetComponent<Rigidbody2D>().isKinematic = true;
             m_Broken = true;
