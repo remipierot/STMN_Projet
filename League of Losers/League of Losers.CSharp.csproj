@@ -134,8 +134,15 @@
     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\SmoothSyncMovement.cs" />
     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\SupportLogger.cs" />
     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\TimeKeeper.cs" />
+    <Compile Include="Assets\Scripts\Arrow.cs" />
+    <Compile Include="Assets\Scripts\BackgroundRandomiser.cs" />
+    <Compile Include="Assets\Scripts\GUI\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\GUI\Obsolete\GUIMainMenu.cs" />
+    <Compile Include="Assets\Scripts\PlayerAttackScript.cs" />
     <Compile Include="Assets\Scripts\PlayerControllerScript.cs" />
+    <Compile Include="Assets\Scripts\PlayerGUI.cs" />
     <Compile Include="Assets\Scripts\PlayerNetwork.cs" />
+    <Compile Include="Assets\Scripts\RechercheLobby.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Photon Unity Networking\changelog.txt" />

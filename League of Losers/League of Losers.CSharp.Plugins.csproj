@@ -82,6 +82,14 @@
     <Compile Include="Assets\Plugins\Spriter2UnityDX\Runtime\EntityRenderer.cs" />
     <Compile Include="Assets\Plugins\Spriter2UnityDX\Runtime\SortingOrderUpdater.cs" />
     <Compile Include="Assets\Plugins\Spriter2UnityDX\Runtime\TextureController.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\Examples\DynamicCellHeight\DynamicHeightCell.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\Examples\DynamicCellHeight\DynamicHeightTableViewController.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\Examples\Simple\ScrollingEventsHandler.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\Examples\Simple\SimpleTableViewController.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\Examples\Simple\VisibleCounterCell.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\ITableViewDataSource.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\TableView.cs" />
+    <Compile Include="Assets\Plugins\TSTableView\TableViewCell.cs" />
     <Compile Include="Assets\Plugins\WebSocket\WebSocket.cs" />
   </ItemGroup>
   <ItemGroup>
