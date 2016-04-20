@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerNetwork : MonoBehaviour {
     const string VERSION = "v0.1"; //version du jeu
     public string roomName = "Test"; //Nom de la salle par défaut
-    public string playerPrefabName = "Megaman"; //Le nom du prefab des joueurs qui apparaissent
+    public string playerPrefabName = "Bowman"; //Le nom du prefab des joueurs qui apparaissent
     public GameObject spawnPoint; // Le point d'apparition des joueurs
 
     void Start()

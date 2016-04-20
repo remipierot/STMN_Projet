@@ -189,7 +189,9 @@ public class RechercheLobby : MonoBehaviour
 
     public void instantiate()
     {
-        PhotonNetwork.Instantiate("Megaman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+        //Instancie le joueur quand il arrive dans la pièce
+        
+        PhotonNetwork.Instantiate("Bowman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
     }
 
 

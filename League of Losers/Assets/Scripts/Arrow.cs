@@ -7,7 +7,7 @@ public class Arrow : MonoBehaviour {
     private Rigidbody2D m_Body;
     private bool m_Broken = false; // flèche cassée et en train de tomber, ne peut faire de dégât
     private bool m_Fixed = false; // flèche plantée dans le sol
-    public PhotonView m_PhotonView; // synchronisation de la flèche
+    private PhotonView m_PhotonView; // synchronisation de la flèche
     
     public bool isBroken() { return m_Broken || m_Fixed; }
     public void _break() {
@@ -71,7 +71,7 @@ public class Arrow : MonoBehaviour {
                 if (((PlayerControllerScript)(coll.gameObject.GetComponent<PlayerControllerScript>())).owner != m_Owner)
                 {
                     // collision avec le joueur, on lui enlève une vie
-                    //((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.velocity.x > 0, m_Owner);
+                    ((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.velocity.x > 0, m_Owner);
                     _break();
                 }
         }

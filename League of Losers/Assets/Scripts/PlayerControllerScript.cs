@@ -6,8 +6,10 @@ public class PlayerControllerScript : MonoBehaviour
 {
     const int STATE_IDLE = 0,       //Animation d'attente (immobile)
               STATE_RUN = 1,        //Animation de course
-              STATE_DASH = 2,       //Dash (pas encore utilisé)
-              STATE_AIMING = 3;     //Visée lors d'une attaque rangée
+              STATE_DASH = 2,       //Dash
+              STATE_AIMING = 3,     //Visée lors d'une attaque rangée
+              STATE_GRAPPLE = 4,    //Utilisation du grappin
+              STATE_JUMP = 5;       //Saut
     const bool FACE_RIGHT = true,   //Regard du Player vers la droite
                FACE_LEFT = false;   //Regard du Player vers la gauche
 
@@ -20,6 +22,8 @@ public class PlayerControllerScript : MonoBehaviour
     
     public int m_Lives = 3; // nombre de vies restantes
     
+    public BoxCollider2D m_Box;
+    
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
     private bool m_CurrentFacing = FACE_RIGHT,  //Direction courante du regard du Player
@@ -29,6 +33,7 @@ public class PlayerControllerScript : MonoBehaviour
     public PhotonView m_PhotonView;    		//Objet lié au Network
     private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
     private float m_LastHitTime = 0;            //Dernière fois que le joueur a été touché (pour l'invincibilité)
+    private float m_GroundTimer = 0;            //Dernière fois que le joueur est entré en collision avec le sol (pour la détection de m_Grounded)
     private Vector2 translation;
     
     private float originalGravityScale;
@@ -77,9 +82,13 @@ public class PlayerControllerScript : MonoBehaviour
 
     void Update()
     {
-        //Vérifie la collision entre le sol et le Player
-        m_Grounded = m_Body.velocity.y < 0.09f && m_Body.velocity.y > -0.09f && m_CurrentState != STATE_DASH; // le dash désactive temporairement toute vélocité verticale
-        _SendGroundInfos();
+        if (m_Grounded && Mathf.Abs(m_Body.velocity.y) > .1 &&
+            (Time.realtimeSinceStartup * 1000 - m_GroundTimer) >= 100)
+        {
+            // le joueur est en train de tomber
+            m_Grounded = false;
+            _SendGroundInfos();
+        }
         
         // restauration de la gravité du personnage après le dash
         if (m_CurrentState == STATE_DASH && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBeforeDashGravityRestored)
@@ -166,6 +175,20 @@ public class PlayerControllerScript : MonoBehaviour
             }
         }
     }
+    
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        foreach (ContactPoint2D contact in collision.contacts) {
+            Vector2 norm = contact.normal;
+            norm.Normalize();
+            if (norm.y > .7)
+            {
+                m_Grounded = true;
+                m_GroundTimer = Time.realtimeSinceStartup * 1000;
+                _SendGroundInfos();
+            }
+        }
+    }
 
     //Changer la direction de regard du Player
     private void _ChangeDirection(bool Direction)
@@ -173,6 +196,7 @@ public class PlayerControllerScript : MonoBehaviour
         if (m_CurrentFacing != Direction)
         {
             transform.right *= -1;
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, -transform.localScale.z);
             m_CurrentFacing = Direction;
         }
     }
@@ -198,6 +222,10 @@ public class PlayerControllerScript : MonoBehaviour
     {
         m_Body.velocity = Vector2.zero;
         m_Body.AddForce(new Vector2(0, JumpStrength));
+        m_Grounded = false;
+        _ChangeState(STATE_JUMP);
+        _SendGroundInfos();
+        m_PlayerAnimator.SetTrigger("Jump");
     }
     
     private void _Dash()
@@ -211,6 +239,7 @@ public class PlayerControllerScript : MonoBehaviour
         m_Body.gravityScale = 0;
         m_Body.drag = 10;
         m_LastDashTime = Time.realtimeSinceStartup * 1000;
+        m_PlayerAnimator.SetTrigger("Dash");
     }
 
     //Déplace le Player horizontalement
@@ -222,8 +251,9 @@ public class PlayerControllerScript : MonoBehaviour
     //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
     private void _SendGroundInfos()
     {
-        m_PlayerAnimator.SetBool("OnGround", m_Grounded);
-        m_PlayerAnimator.SetFloat("VerticalSpeed", m_Body.velocity.y);
+        m_PlayerAnimator.SetBool("Grounded", m_Grounded);
+        if (!m_Grounded && m_CurrentState != STATE_JUMP)
+            m_PlayerAnimator.SetTrigger("Fall");
     }
 
     [PunRPC]
@@ -261,8 +291,9 @@ public class PlayerControllerScript : MonoBehaviour
         if (m_Lives == 0)
         {
             // game over
-            PhSendDestruction();
-            m_PhotonView.RPC("PhSendDestruction", PhotonTargets.Others, STATE_IDLE);
+            //PhSendDestruction();
+            //m_PhotonView.RPC("PhSendDestruction", PhotonTargets.Others, STATE_IDLE);
+            m_PlayerAnimator.SetTrigger("Die");
             m_Lives = 3;
         }
         
@@ -273,13 +304,8 @@ public class PlayerControllerScript : MonoBehaviour
             m_Body.AddForce(new Vector2(-200, 500));
         
         attacker.AddScore(1);
-    }
-
-    [PunRPC]
-    void PhSendGroundInfos(bool Grounded, float VerticalSpeed)
-    {
-        m_PlayerAnimator.SetBool("OnGround", Grounded);
-        m_PlayerAnimator.SetFloat("VerticalSpeed", VerticalSpeed);
+        
+        m_PlayerAnimator.SetTrigger("TakeDamage");
     }
 
     [PunRPC]

@@ -67,7 +67,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (direction.y < 0)
                     angle *= -1;
                 Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, angle));
-                GameObject projectileClone = PhotonNetwork.Instantiate("ArcherArrow", transform.position, directionQuat, 0);
+                GameObject projectileClone = PhotonNetwork.Instantiate("ArcherArrow", transform.position+new Vector3(0, .5f, 0), directionQuat, 0);
                 Rigidbody2D rb2d = projectileClone.GetComponent<Rigidbody2D>();
                 rb2d.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
                 rb2d.velocity = direction * 15;
