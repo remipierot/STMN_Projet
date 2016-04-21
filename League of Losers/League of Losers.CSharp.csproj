@@ -139,6 +139,7 @@
     <Compile Include="Assets\Scripts\GUI\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\GUI\Obsolete\GUIMainMenu.cs" />
     <Compile Include="Assets\Scripts\PlayerAttackScript.cs" />
+    <Compile Include="Assets\Scripts\PlayerColor.cs" />
     <Compile Include="Assets\Scripts\PlayerControllerScript.cs" />
     <Compile Include="Assets\Scripts\PlayerGUI.cs" />
     <Compile Include="Assets\Scripts\PlayerNetwork.cs" />

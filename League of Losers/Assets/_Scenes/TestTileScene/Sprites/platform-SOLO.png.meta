@@ -1,0 +1,95 @@
+fileFormatVersion: 2
+guid: 27f18aa4c094e0d419631f467ab8bce7
+timeCreated: 1461207885
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: platform-SOLO
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 1024
+  textureSettings:
+    filterMode: 2
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 512
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: platform-SOLO
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 512
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 253, y: -61}
+        - {x: 256, y: -45}
+        - {x: 256, y: -18}
+        - {x: 255, y: -15}
+        - {x: 239, y: 2}
+        - {x: 239, y: 14}
+        - {x: 233, y: 21}
+        - {x: 224, y: 42}
+        - {x: 220, y: 45}
+        - {x: -209, y: 45}
+        - {x: -213, y: 43}
+        - {x: -233, y: 14}
+        - {x: -234, y: 11}
+        - {x: -235, y: 6}
+        - {x: -243, y: -9}
+        - {x: -246, y: -12}
+        - {x: -249, y: -25}
+        - {x: -249, y: -39}
+        - {x: -241, y: -55}
+        - {x: -235, y: -66}
+        - {x: -234, y: -79}
+        - {x: -230, y: -83}
+        - {x: 243, y: -83}
+        - {x: 249, y: -80}
+        - {x: 256, y: -71}
+        - {x: 256, y: -70}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
