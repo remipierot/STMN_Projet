@@ -1,0 +1,380 @@
+fileFormatVersion: 2
+guid: 05283b2895784ef429cf19961df7ce48
+timeCreated: 1461741347
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: ArrowSpecialSP_0
+    21300002: ArrowSpecialSP_1
+    21300004: ArrowSpecialSP_2
+    21300006: ArrowSpecialSP_3
+    21300008: ArrowSpecialSP_4
+    21300010: ArrowSpecialSP_5
+    21300012: ArrowSpecialSP_6
+    21300014: ArrowSpecialSP_7
+    21300016: ArrowSpecialSP_8
+    21300018: ArrowSpecialSP_9
+    21300020: ArrowSpecialSP_10
+    21300022: ArrowSpecialSP_11
+    21300024: ArrowSpecialSP_12
+    21300026: ArrowSpecialSP_13
+    21300028: ArrowSpecialSP_14
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 2
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: ArrowSpecialSP_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 96, y: 33}
+        - {x: -109, y: 33}
+        - {x: -119, y: 13}
+        - {x: -119, y: -28}
+        - {x: -71, y: -61}
+        - {x: 40, y: -61}
+        - {x: 120, y: -28}
+        - {x: 125, y: -16}
+        - {x: 125, y: 10}
+    - name: ArrowSpecialSP_1
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 125, y: 12}
+        - {x: 110, y: 33}
+        - {x: -111, y: 33}
+        - {x: -117, y: 22}
+        - {x: -117, y: -1}
+        - {x: -101, y: -32}
+        - {x: -84, y: -44}
+        - {x: -39, y: -61}
+        - {x: 23, y: -61}
+        - {x: 38, y: -56}
+        - {x: 118, y: -28}
+        - {x: 125, y: -12}
+    - name: ArrowSpecialSP_2
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 112, y: 33}
+        - {x: -115, y: 33}
+        - {x: -115, y: -39}
+        - {x: -112, y: -43}
+        - {x: -55, y: -61}
+        - {x: 46, y: -61}
+        - {x: 117, y: -27}
+        - {x: 124, y: -13}
+        - {x: 124, y: 21}
+    - name: ArrowSpecialSP_3
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 105, y: 33}
+        - {x: -119, y: 33}
+        - {x: -119, y: -36}
+        - {x: -61, y: -61}
+        - {x: 61, y: -61}
+        - {x: 120, y: -32}
+        - {x: 122, y: -30}
+        - {x: 122, y: 9}
+    - name: ArrowSpecialSP_4
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -89, y: 33}
+        - {x: -121, y: 19}
+        - {x: -121, y: -61}
+        - {x: 115, y: -61}
+        - {x: 122, y: -33}
+        - {x: 122, y: 8}
+        - {x: 90, y: 33}
+    - name: ArrowSpecialSP_5
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -76, y: 33}
+        - {x: -122, y: 6}
+        - {x: -122, y: -58}
+        - {x: -105, y: -61}
+        - {x: 87, y: -61}
+        - {x: 125, y: -31}
+        - {x: 125, y: 15}
+        - {x: 110, y: 33}
+    - name: ArrowSpecialSP_6
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -98, y: 33}
+        - {x: -122, y: 21}
+        - {x: -122, y: -33}
+        - {x: -120, y: -47}
+        - {x: -52, y: -61}
+        - {x: 26, y: -61}
+        - {x: 125, y: -38}
+        - {x: 125, y: 29}
+        - {x: 108, y: 33}
+      - - {x: 45, y: 31}
+        - {x: 35, y: 22}
+        - {x: 35, y: 14}
+        - {x: 43, y: 14}
+        - {x: 50, y: 26}
+        - {x: 50, y: 31}
+    - name: ArrowSpecialSP_7
+      rect:
+        serializedVersion: 2
+        x: 1750
+        y: 122
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 108, y: 33}
+        - {x: -46, y: 33}
+        - {x: -114, y: 26}
+        - {x: -121, y: 16}
+        - {x: -121, y: -22}
+        - {x: -117, y: -29}
+        - {x: -94, y: -41}
+        - {x: -48, y: -61}
+        - {x: 20, y: -61}
+        - {x: 39, y: -59}
+        - {x: 121, y: -31}
+        - {x: 125, y: -22}
+        - {x: 125, y: 23}
+    - name: ArrowSpecialSP_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -119, y: 33}
+        - {x: -119, y: -16}
+        - {x: -118, y: -18}
+        - {x: -82, y: -61}
+        - {x: 90, y: -61}
+        - {x: 125, y: -49}
+        - {x: 125, y: 33}
+    - name: ArrowSpecialSP_9
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -116, y: 33}
+        - {x: -116, y: -61}
+        - {x: 121, y: -61}
+        - {x: 125, y: -41}
+        - {x: 125, y: 22}
+        - {x: 117, y: 33}
+    - name: ArrowSpecialSP_10
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -104, y: 33}
+        - {x: -117, y: 29}
+        - {x: -117, y: -25}
+        - {x: -62, y: -61}
+        - {x: 22, y: -61}
+        - {x: 122, y: -32}
+        - {x: 125, y: -24}
+        - {x: 125, y: 17}
+        - {x: 93, y: 33}
+    - name: ArrowSpecialSP_11
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 94, y: 25}
+        - {x: 76, y: 32}
+        - {x: 72, y: 33}
+        - {x: -86, y: 33}
+        - {x: -120, y: 22}
+        - {x: -120, y: -61}
+        - {x: 117, y: -61}
+        - {x: 122, y: -35}
+        - {x: 122, y: 4}
+        - {x: 121, y: 6}
+    - name: ArrowSpecialSP_12
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -83, y: 33}
+        - {x: -122, y: 13}
+        - {x: -122, y: -61}
+        - {x: 123, y: -61}
+        - {x: 123, y: 18}
+        - {x: 85, y: 33}
+    - name: ArrowSpecialSP_13
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 98, y: 33}
+        - {x: -121, y: 33}
+        - {x: -122, y: 30}
+        - {x: -122, y: -25}
+        - {x: -88, y: -55}
+        - {x: -48, y: -61}
+        - {x: 16, y: -61}
+        - {x: 95, y: -52}
+        - {x: 124, y: -17}
+        - {x: 124, y: 17}
+      - - {x: 40, y: 38}
+        - {x: 32, y: 27}
+        - {x: 32, y: 20}
+        - {x: 40, y: 20}
+        - {x: 47, y: 32}
+        - {x: 47, y: 38}
+    - name: ArrowSpecialSP_14
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 0
+        width: 250
+        height: 122
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -122, y: 33}
+        - {x: -122, y: -31}
+        - {x: -77, y: -61}
+        - {x: 40, y: -61}
+        - {x: 123, y: -32}
+        - {x: 125, y: -26}
+        - {x: 125, y: 23}
+        - {x: 117, y: 33}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
