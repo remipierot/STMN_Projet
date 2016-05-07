@@ -13,13 +13,16 @@ public class PlayerAttackScript : MonoBehaviour {
     private PhotonView m_PhotonView;    		    //Objet lié au Network
     private PlayerControllerScript m_ControlScript; //Script de contrôle du joueur
     private Transform m_BodyBone;                   //Bone de la partie supérieure du perso, lors de la visée
+    private Transform m_HandBone;                   //Bone de la main, auquel est attaché la flèche
     
     private bool attacking = false;                 // vrai si on est en train d'attaquer / de viser
     private bool wantAttack = false;                // vrai si le joueur est dans l'incapacité de viser (chute) mais veut viser
+    private bool isSpecialAttack = false;           // vrai pour une compétence spéciale (ex: flèche explosive)
     private float aimingAngle = 0;                  // angle visé lors de l'attaque
-    private float MsBeforeNextAngleUpdate = 150;     // temps avant la prochaine synchronisation d'angle de visée
+    private float MsBeforeNextAngleUpdate = 150;    // temps avant la prochaine synchronisation d'angle de visée
     private float AngleUpdateTimer = -1;            // timer de synchronisation d'angle de visée
     private Vector2 mouseStartPosition;
+    private GameObject projectileInstance;          // instance du projectile envoyé
     
     private List<GameObject> playersInAttackRange = new List<GameObject>();
     
@@ -28,6 +31,7 @@ public class PlayerAttackScript : MonoBehaviour {
         m_PhotonView = GetComponent<PhotonView>();
         m_ControlScript = GetComponent<PlayerControllerScript>();
         m_BodyBone = getChildByName(transform, "boneBODY");
+        m_HandBone = getChildByName(transform, "boneHANDF");
     }
     
     Transform getChildByName(Transform obj, string name)
@@ -74,21 +78,41 @@ public class PlayerAttackScript : MonoBehaviour {
         else
         {
             if (Input.GetButtonDown("Attack") && !attacking)
+            {
                 wantAttack = true;
+                isSpecialAttack = false;
+            }
+            if (Input.GetButtonDown("Skill") && !attacking)
+            {
+                wantAttack = true;
+                isSpecialAttack = true;
+            }
             if (m_ControlScript.CanAttack() && wantAttack)
             {
                 wantAttack = false;
                 attacking = true;
                 if (m_ControlScript.GetCurrentFacing())
-                    mouseStartPosition = new Vector2(Input.mousePosition.x-10, Input.mousePosition.y);
+                    mouseStartPosition = new Vector2(Input.mousePosition.x-40, Input.mousePosition.y);
                 else
-                    mouseStartPosition = new Vector2(Input.mousePosition.x+10, Input.mousePosition.y);
+                    mouseStartPosition = new Vector2(Input.mousePosition.x+40, Input.mousePosition.y);
                 // change la position du perso
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_AIMING);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_AIMING);
                 m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, true);
+                
+                if (isSpecialAttack)
+                {
+                    // ...
+                    // POULEEEEEEEEEEEEET !
+                    projectileInstance = PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
+                }
+                else
+                    projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
+                
+                projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
+                projectileInstance.transform.SetParent(m_HandBone, true);
             }
-            if (Input.GetButtonUp("Attack") && attacking)
+            if ((Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill")) && attacking)
             {
                 Vector2 direction = (Vector2)(Input.mousePosition) - mouseStartPosition;
                 if (direction.magnitude < 40)
@@ -100,10 +124,13 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (direction.y < 0)
                     angle *= -1;
                 Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, angle));
-                GameObject projectileClone = PhotonNetwork.Instantiate("ArcherArrow", transform.position+new Vector3(0, .5f, 0), directionQuat, 0);
-                Rigidbody2D rb2d = projectileClone.GetComponent<Rigidbody2D>();
-                rb2d.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
-                rb2d.velocity = direction * 15;
+                projectileInstance.GetComponent<Arrow>().Launch();
+                Rigidbody2D rb2d = projectileInstance.GetComponent<Rigidbody2D>();
+                if (isSpecialAttack)
+                    rb2d.velocity = direction * 7; // moins de vélocité, afin d'admirer ce superbe poulet
+                else
+                    rb2d.velocity = direction * 15;
+                projectileInstance.transform.parent = null;
                 attacking = false;
                 AngleUpdateTimer = Time.realtimeSinceStartup * 1000;
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
@@ -157,6 +184,19 @@ public class PlayerAttackScript : MonoBehaviour {
     void PhSetAttacking(bool attck)
     {
         attacking = attck;
+        if (attacking)
+        {
+            if (isSpecialAttack)
+                projectileInstance = PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position, m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
+            else
+                projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position, m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
+            projectileInstance.transform.SetParent(m_HandBone, true);
+            projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
+        }
+        else
+        {
+            projectileInstance.transform.parent = null;
+        }
     }
     
     void SetAimDir()
@@ -164,7 +204,6 @@ public class PlayerAttackScript : MonoBehaviour {
         Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, aimingAngle));
         if (aimingAngle > 180 || aimingAngle < 0)
         {
-            // YOUPI, ON EST PAS DANS LA MERDE.
             directionQuat *= (Quaternion.Euler(new Vector3(0, 180, 0)));
             m_BodyBone.rotation = directionQuat;
         }
@@ -182,6 +221,7 @@ public class PlayerAttackScript : MonoBehaviour {
         wantAttack = attacking;
         attacking = false;
         m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
+        Destroy(projectileInstance);
     }
     
     void OnTriggerEnter2D(Collider2D coll) {
