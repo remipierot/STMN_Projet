@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PlayerControllerScript : MonoBehaviour
 {
-    const int STATE_IDLE = 0,       //Animation d'attente (immobile)
+    public const int STATE_IDLE = 0,       //Animation d'attente (immobile)
               STATE_RUN = 1,        //Animation de course
               STATE_DASH = 2,       //Dash
               STATE_AIMING = 3,     //Visée lors d'une attaque rangée
@@ -26,6 +26,7 @@ public class PlayerControllerScript : MonoBehaviour
     
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
+    private PlayerAttackScript m_AttackScript;  //Script gérant l'attaque
     private bool m_CurrentFacing = FACE_RIGHT,  //Direction courante du regard du Player
                  m_Grounded = true,             //Flag indiquant si le Player est au sol ou non
                  m_DoubleJumped = false;        //Flag indiquant si le Player a fait un double saut
@@ -47,6 +48,7 @@ public class PlayerControllerScript : MonoBehaviour
         m_PlayerAnimator = GetComponent<Animator>();
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
+        m_AttackScript = GetComponent<PlayerAttackScript>();
         
         // lie le gameobject au joueur
         foreach (var player in PhotonNetwork.playerList)
@@ -95,7 +97,7 @@ public class PlayerControllerScript : MonoBehaviour
         {
             m_Body.gravityScale = originalGravityScale;
             m_Body.drag = 0;
-            _ChangeState(STATE_IDLE);
+            ChangeState(STATE_IDLE);
         }
 
         //Déplacement
@@ -119,6 +121,12 @@ public class PlayerControllerScript : MonoBehaviour
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
             {
+                if (m_AttackScript.IsAiming())
+                {
+                    m_AttackScript.ExitAiming();
+                    ChangeState(STATE_IDLE);
+                    m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                }
                 m_DoubleJumped = !m_Grounded;
                 _Jump();
                 m_PhotonView.RPC("PhJump", PhotonTargets.Others);
@@ -129,48 +137,64 @@ public class PlayerControllerScript : MonoBehaviour
         float dash = Input.GetAxisRaw("Dash");
         if (dash < 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
         {
+            // dash gauche
+            if (m_AttackScript.IsAiming())
+            {
+                m_AttackScript.ExitAiming();
+                ChangeState(STATE_IDLE);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+            }
             if (m_CurrentFacing)
             {
-                _ChangeDirection(false);
+                ChangeDirection(false);
                 m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, false);
             }
-            _ChangeState(STATE_DASH);
+            ChangeState(STATE_DASH);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
         }
         else if (dash > 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
         {
+            // dash droit
+            if (m_AttackScript.IsAiming())
+            {
+                m_AttackScript.ExitAiming();
+                ChangeState(STATE_IDLE);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+            }
             if (!m_CurrentFacing)
             {
-                _ChangeDirection(true);
+                ChangeDirection(true);
                 m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, true);
             }
-            _ChangeState(STATE_DASH);
+            ChangeState(STATE_DASH);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
         }
 
         //Gestion du déplacement horizontal
-        else if (horizontal != 0 && m_CurrentState != STATE_DASH)
+        else if (horizontal != 0 && m_CurrentState != STATE_DASH && m_CurrentState != STATE_AIMING)
         {
             //Vérifier que le regard est dans la bonne direction
             if ((horizontal > 0) != m_CurrentFacing)
             {
-                _ChangeDirection(horizontal > 0);
+                ChangeDirection(horizontal > 0);
                 m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, horizontal > 0);
             }
 
             //passer en animation de course
             if (m_CurrentState != STATE_RUN)
             {
-                _ChangeState(STATE_RUN);
+                ChangeState(STATE_RUN);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_RUN);
             }
         }
         else
         {
             //passe en animation d'attente
-            if (m_CurrentState != STATE_IDLE && m_CurrentState != STATE_DASH)
+            if (m_CurrentState != STATE_IDLE
+                && m_CurrentState != STATE_DASH
+                && m_CurrentState != STATE_AIMING)
             {
-                _ChangeState(STATE_IDLE);
+                ChangeState(STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
             }
         }
@@ -191,7 +215,7 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     //Changer la direction de regard du Player
-    private void _ChangeDirection(bool Direction)
+    public void ChangeDirection(bool Direction)
     {
         if (m_CurrentFacing != Direction)
         {
@@ -202,7 +226,7 @@ public class PlayerControllerScript : MonoBehaviour
     }
 
     //Changer l'état d'animation
-    private void _ChangeState(int State)
+    public void ChangeState(int State)
     {
         if (m_CurrentState != State)
         {
@@ -223,7 +247,7 @@ public class PlayerControllerScript : MonoBehaviour
         m_Body.velocity = Vector2.zero;
         m_Body.AddForce(new Vector2(0, JumpStrength));
         m_Grounded = false;
-        _ChangeState(STATE_JUMP);
+        ChangeState(STATE_JUMP);
         _SendGroundInfos();
         m_PlayerAnimator.SetTrigger("Jump");
     }
@@ -255,17 +279,27 @@ public class PlayerControllerScript : MonoBehaviour
         if (!m_Grounded && m_CurrentState != STATE_JUMP)
             m_PlayerAnimator.SetTrigger("Fall");
     }
+    
+    public bool CanAttack()
+    {
+        return m_Grounded && m_CurrentState != STATE_DASH;
+    }
+    
+    public bool GetCurrentFacing()
+    {
+        return m_CurrentFacing;
+    }
 
     [PunRPC]
     void PhChangeDirection(bool Direction)
     {
-        _ChangeDirection(Direction);
+        ChangeDirection(Direction);
     }
 
     [PunRPC]
     void PhChangeState(int State)
     {
-        _ChangeState(State);
+        ChangeState(State);
     }
     [PunRPC]
     void PhJump()
