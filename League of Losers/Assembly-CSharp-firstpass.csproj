@@ -58,6 +58,14 @@
      <Compile Include="Assets\Plugins\Spriter2UnityDX\Runtime\EntityRenderer.cs" />
      <Compile Include="Assets\Plugins\Spriter2UnityDX\Runtime\SortingOrderUpdater.cs" />
      <Compile Include="Assets\Plugins\Spriter2UnityDX\Runtime\TextureController.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\Examples\DynamicCellHeight\DynamicHeightCell.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\Examples\DynamicCellHeight\DynamicHeightTableViewController.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\Examples\Simple\ScrollingEventsHandler.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\Examples\Simple\SimpleTableViewController.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\Examples\Simple\VisibleCounterCell.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\ITableViewDataSource.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\TableView.cs" />
+     <Compile Include="Assets\Plugins\TSTableView\TableViewCell.cs" />
      <Compile Include="Assets\Plugins\WebSocket\WebSocket.cs" />
      <None Include="Assets\Plugins\Photon3Unity3D.xml" />
      <None Include="Assets\Plugins\release_history.txt" />
@@ -70,10 +78,10 @@
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
  <Reference Include="Photon3Unity3D">
- <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/League of Losers/Assets/Plugins/Photon3Unity3D.dll</HintPath>
+ <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/STMN_Projet/League of Losers/Assets/Plugins/Photon3Unity3D.dll</HintPath>
  </Reference>
  <Reference Include="websocket-sharp">
- <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/League of Losers/Assets/Plugins/WebSocket/websocket-sharp.dll</HintPath>
+ <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/STMN_Projet/League of Losers/Assets/Plugins/WebSocket/websocket-sharp.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

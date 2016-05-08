@@ -104,10 +104,14 @@
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\SmoothSyncMovement.cs" />
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\SupportLogger.cs" />
      <Compile Include="Assets\Photon Unity Networking\UtilityScripts\TimeKeeper.cs" />
+     <Compile Include="Assets\Scripts\Arrow.cs" />
      <Compile Include="Assets\Scripts\BackgroundRandomiser.cs" />
-     <Compile Include="Assets\Scripts\GUIMainMenu.cs" />
+     <Compile Include="Assets\Scripts\GUI\MainMenuManager.cs" />
+     <Compile Include="Assets\Scripts\GUI\Obsolete\GUIMainMenu.cs" />
      <Compile Include="Assets\Scripts\PlayerAttackScript.cs" />
+     <Compile Include="Assets\Scripts\PlayerColor.cs" />
      <Compile Include="Assets\Scripts\PlayerControllerScript.cs" />
+     <Compile Include="Assets\Scripts\PlayerGUI.cs" />
      <Compile Include="Assets\Scripts\PlayerNetwork.cs" />
      <Compile Include="Assets\Scripts\RechercheLobby.cs" />
      <None Include="Assets\Plugins\Photon3Unity3D.xml" />
@@ -121,10 +125,10 @@
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
  <Reference Include="Photon3Unity3D">
- <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/League of Losers/Assets/Plugins/Photon3Unity3D.dll</HintPath>
+ <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/STMN_Projet/League of Losers/Assets/Plugins/Photon3Unity3D.dll</HintPath>
  </Reference>
  <Reference Include="websocket-sharp">
- <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/League of Losers/Assets/Plugins/WebSocket/websocket-sharp.dll</HintPath>
+ <HintPath>C:/Users/Remondo/Documents/ENJMIN/Projet STMN/STMN_Projet/STMN_Projet/League of Losers/Assets/Plugins/WebSocket/websocket-sharp.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
