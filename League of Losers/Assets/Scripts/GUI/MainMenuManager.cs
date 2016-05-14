@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour {
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+    {
+        
+                    
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 	
 	}
 
@@ -18,4 +22,11 @@ public class MainMenuManager : MonoBehaviour {
     {
         SceneManager.LoadScene(1);
     }
+
+    public void Button_Quit()
+    {
+        Application.Quit();
+    }
+
+
 }
