@@ -25,6 +25,7 @@ public class RechercheLobby : MonoBehaviour
     {
         PhotonNetwork.player.name = PlayerPrefs.GetString("Username", "My Player name");
         chatMessages = new List<string>();
+        Connect();
     }
 
     void OnDestroy()

@@ -16,7 +16,7 @@ namespace Tacticsoft.Examples
         //Register as the TableView's delegate (required) and data source (optional)
         //to receive the calls
         void Start() {
-            m_tableView.dataSource = this;
+            //m_tableView.dataSource = this;
         }
 
         public void SendBeer() {
