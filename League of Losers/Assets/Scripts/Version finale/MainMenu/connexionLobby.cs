@@ -82,6 +82,7 @@ public class connexionLobby : MonoBehaviour {
     void OnJoinedRoom()
     {
         Debug.Log("Rejoins une salle");
-        SceneManager.LoadScene(1);
+        PhotonNetwork.LoadLevel(1);
     }
+
 }
