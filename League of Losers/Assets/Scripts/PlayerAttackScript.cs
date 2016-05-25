@@ -8,6 +8,7 @@ public class PlayerAttackScript : MonoBehaviour {
     public BoxCollider2D detectArea;                //Zone de détection d'ennemis (corps à corps)
     public Rigidbody2D m_Projectile;                //Projectile lancé par le personnage lors de l'attaque
     public bool rangedAttack = true;                //Indique que le joueur utilise une attaque à distance. Autrement, indique une attaque corps à corps.
+    public int rangedAttackReleaseTimeMs = 300;     //Nombre de ms avant qu'un projectile puisse être lancé (correspondant à l'animation toAim)
     
     private Rigidbody2D m_Body;                     //Rigidbody2D de l'objet, utile pour le saut
     private PhotonView m_PhotonView;    		    //Objet lié au Network
@@ -17,12 +18,14 @@ public class PlayerAttackScript : MonoBehaviour {
     
     private bool attacking = false;                 // vrai si on est en train d'attaquer / de viser
     private bool wantAttack = false;                // vrai si le joueur est dans l'incapacité de viser (chute) mais veut viser
+    private bool wantRelease = false;               // vrai si le joueur veut envoyer son projectile, mais l'animation n'est pas encore finie
     private bool isSpecialAttack = false;           // vrai pour une compétence spéciale (ex: flèche explosive)
     private float aimingAngle = 0;                  // angle visé lors de l'attaque
     private float MsBeforeNextAngleUpdate = 150;    // temps avant la prochaine synchronisation d'angle de visée
     private float AngleUpdateTimer = -1;            // timer de synchronisation d'angle de visée
-    private Vector2 mouseStartPosition;
+    private Vector2 mouseStartPosition;             // position de départ de la souris lors d'un tir de flèche
     private GameObject projectileInstance;          // instance du projectile envoyé
+    private float m_AttackInitializationTime;       // moment de commencement de l'animation d'attaque à distance
     
     private List<GameObject> playersInAttackRange = new List<GameObject>();
     
@@ -90,6 +93,7 @@ public class PlayerAttackScript : MonoBehaviour {
             if (m_ControlScript.CanAttack() && wantAttack)
             {
                 wantAttack = false;
+                wantRelease = false;
                 attacking = true;
                 if (m_ControlScript.GetCurrentFacing())
                     mouseStartPosition = new Vector2(Input.mousePosition.x-40, Input.mousePosition.y);
@@ -111,9 +115,13 @@ public class PlayerAttackScript : MonoBehaviour {
                 
                 projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
                 projectileInstance.transform.SetParent(m_HandBone, true);
+                m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
             }
-            if ((Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill")) && attacking)
+            if (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill"))
+                wantRelease = true;
+            if (wantRelease && attacking && (Time.realtimeSinceStartup * 1000 - m_AttackInitializationTime) >= rangedAttackReleaseTimeMs)
             {
+                wantRelease = false;
                 Vector2 direction = (Vector2)(Input.mousePosition) - mouseStartPosition;
                 if (direction.magnitude < 40)
                     // pas de direction de tir

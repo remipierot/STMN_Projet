@@ -269,7 +269,8 @@ public class PlayerControllerScript : MonoBehaviour
     //Déplace le Player horizontalement
     private void _Move(Vector2 Translation)
     {
-        transform.Translate(Translation * RunningSpeed * Time.deltaTime * transform.right.x);
+        m_Body.velocity = new Vector2((Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed)) ? m_Body.velocity.x : translation.x*RunningSpeed, m_Body.velocity.y);
+        //transform.Translate(Translation * RunningSpeed * Time.deltaTime * transform.right.x);
     }
 
     //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
