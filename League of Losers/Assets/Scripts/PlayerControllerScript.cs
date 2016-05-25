@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/**
+ * Script gérant le déplacement d'un joueur : course, saut, dash, etc.
+ */
 public class PlayerControllerScript : MonoBehaviour
 {
     public const int STATE_IDLE = 0,       //Animation d'attente (immobile)
@@ -202,6 +205,7 @@ public class PlayerControllerScript : MonoBehaviour
     
     void OnCollisionEnter2D(Collision2D collision)
     {
+        // analyse la collision afin de savoir si le joueur touche actuellement le sol
         foreach (ContactPoint2D contact in collision.contacts) {
             Vector2 norm = contact.normal;
             norm.Normalize();
@@ -252,6 +256,7 @@ public class PlayerControllerScript : MonoBehaviour
         m_PlayerAnimator.SetTrigger("Jump");
     }
     
+    // Effectue un dash dans la direction visée par le joueur
     private void _Dash()
     {
         m_Body.velocity = Vector2.zero;
@@ -281,11 +286,13 @@ public class PlayerControllerScript : MonoBehaviour
             m_PlayerAnimator.SetTrigger("Fall");
     }
     
+    // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
     public bool CanAttack()
     {
         return m_Grounded && m_CurrentState != STATE_DASH;
     }
     
+    // Retourne la direction du joueur
     public bool GetCurrentFacing()
     {
         return m_CurrentFacing;
@@ -308,6 +315,7 @@ public class PlayerControllerScript : MonoBehaviour
         _Jump();
     }
     
+    // Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts
     public bool canTakeDamage()
     {
         return ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
@@ -315,7 +323,7 @@ public class PlayerControllerScript : MonoBehaviour
     [PunRPC]
     void PhTakeDamage(bool direction, PhotonPlayer attacker)
     {
-        // fonction potentiellement à améliorer dans le futur
+        // TODO : fonction potentiellement à améliorer dans le futur
         
         if ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs)
             // pas de spam

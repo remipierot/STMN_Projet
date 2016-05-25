@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/**
+ * Script gérant le comportement d'un projectile tel qu'une flèche.
+ */
 public class Arrow : MonoBehaviour {
     
     public bool isExplosive = false; // vrai pour une flèche explosive
@@ -39,6 +42,7 @@ public class Arrow : MonoBehaviour {
     
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
+        // gère la synchronisation des attributs de la flèche pour les différents joueurs
         if (stream.isWriting)
         {
             stream.SendNext(m_Owner.ID);
@@ -62,7 +66,6 @@ public class Arrow : MonoBehaviour {
         Debug.Log("SERIALIZE, mode=" + (stream.isWriting ? "write": "read"));
     }
 
-	// Use this for initialization
 	void Start () {
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
@@ -79,6 +82,7 @@ public class Arrow : MonoBehaviour {
 	void Update () {
         if (!m_Launched || m_Body.velocity.magnitude < 1)
             return;
+        // oriente le projectile dans la direction de déplacement
         Vector2 direction = m_Body.velocity;
         float angle = Vector2.Angle(new Vector2(1,0), direction);
         if (direction.y < 0)

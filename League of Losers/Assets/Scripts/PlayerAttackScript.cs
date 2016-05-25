@@ -57,11 +57,13 @@ public class PlayerAttackScript : MonoBehaviour {
 	}
 	
 	void Update () {
+        // update exécuté uniquement par le possesseur du perso
         if (!m_PhotonView.isMine)
             return;
         
         if (!rangedAttack)
         {
+            // gère l'attaque au corps à corps
             if (Input.GetButtonDown("Attack"))
             {
                 if (!attacking)
@@ -82,18 +84,20 @@ public class PlayerAttackScript : MonoBehaviour {
         {
             if (Input.GetButtonDown("Attack") && !attacking)
             {
+                // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
                 wantAttack = true;
                 isSpecialAttack = false;
             }
             if (Input.GetButtonDown("Skill") && !attacking)
             {
+                // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
                 wantAttack = true;
                 isSpecialAttack = true;
             }
             if (m_ControlScript.CanAttack() && wantAttack)
             {
+                // initialisation de l'attaque à distance
                 wantAttack = false;
-                wantRelease = false;
                 attacking = true;
                 if (m_ControlScript.GetCurrentFacing())
                     mouseStartPosition = new Vector2(Input.mousePosition.x-40, Input.mousePosition.y);
@@ -111,16 +115,21 @@ public class PlayerAttackScript : MonoBehaviour {
                     projectileInstance = PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
                 }
                 else
+                    // projectile normal
                     projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
                 
+                // définit le parent du projectile, et positionne l'objet
                 projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
                 projectileInstance.transform.SetParent(m_HandBone, true);
                 m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
             }
             if (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill"))
+                // le joueur veut lancer son attaque
                 wantRelease = true;
+            
             if (wantRelease && attacking && (Time.realtimeSinceStartup * 1000 - m_AttackInitializationTime) >= rangedAttackReleaseTimeMs)
             {
+                // lancement de l'attaque, après s'être assuré que l'animation initiale est terminée
                 wantRelease = false;
                 Vector2 direction = (Vector2)(Input.mousePosition) - mouseStartPosition;
                 if (direction.magnitude < 40)
@@ -134,13 +143,16 @@ public class PlayerAttackScript : MonoBehaviour {
                 Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, angle));
                 projectileInstance.GetComponent<Arrow>().Launch();
                 Rigidbody2D rb2d = projectileInstance.GetComponent<Rigidbody2D>();
+                // met en mouvement l'objet
                 if (isSpecialAttack)
                     rb2d.velocity = direction * 7; // moins de vélocité, afin d'admirer ce superbe poulet
                 else
                     rb2d.velocity = direction * 15;
+                // détache le projectile du parent
                 projectileInstance.transform.parent = null;
                 attacking = false;
                 AngleUpdateTimer = Time.realtimeSinceStartup * 1000;
+                // retour à une stance normale
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_IDLE);
                 m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
@@ -149,13 +161,16 @@ public class PlayerAttackScript : MonoBehaviour {
 	}
     
 	void LateUpdate () {
+        // appelé après le rendu du système d'animation, mais avant le rendu de la scène
         if (!m_PhotonView.isMine)
         {
+            // les autres joueurs se contentent de mettre à jour la direction de tir
             SetAimDir();
             return;
         }
         else if (attacking)
         {
+            // change la direction du perso en fonction de la direction indiquée par la souris
             Vector2 direction = (Vector2)(Input.mousePosition) - mouseStartPosition;
             direction.Normalize();
             float angle = Vector2.Angle(new Vector2(1,0), direction);

@@ -2,13 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/**
+ * Script gérant les explosions et les dégât qu'elles infligent aux joueurs.
+ */
 public class ExplosionDamage : MonoBehaviour {
     
-    public float MsBeforeExplosionDamage = 100;
-    public PhotonPlayer m_Owner;
+    public float MsBeforeExplosionDamage = 100; // temporisation avant d'appliquer les dégât
+    public PhotonPlayer m_Owner;                // propriétaire de l'explosion
     private float m_ExplosionTimer = 0;
     private List<GameObject> playersInAttackRange = new List<GameObject>();
-    private bool exploded = false;
+    private bool exploded = false;              // définit que l'explosion est terminée
 
 	void Start () {
         m_ExplosionTimer = Time.realtimeSinceStartup * 1000;
@@ -25,6 +28,7 @@ public class ExplosionDamage : MonoBehaviour {
             return;
         foreach (var player in playersInAttackRange)
         {
+            // fait des dégât aux joueurs dans l'explosion
             Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
             ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, transform.position.x < otherBody.transform.position.x, m_Owner);
         }

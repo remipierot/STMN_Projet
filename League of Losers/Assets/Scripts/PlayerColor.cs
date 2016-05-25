@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/**
+ * Script démontrant comment recolorer des éléments d'un personnage et l'échange d'un des éléments le composant.
+ */
 public class PlayerColor : MonoBehaviour {
     private Color color;
     private static System.Random rnd;
     private static int i=0;
     
-	// Use this for initialization
 	void Start () {
         if (rnd == null)
             rnd = new System.Random();
@@ -21,7 +23,7 @@ public class PlayerColor : MonoBehaviour {
         SpriteRenderer spriteRndr = leg.GetComponent<SpriteRenderer>();
         spriteRndr.color = color;
         
-        // --- JUST FOR THE LOLZ ---
+        // --- just for the lolz : met l'image de chevelure à la place d'une partie du vêtement de l'archer ---
         
         i++;
         switch (i)
@@ -42,6 +44,7 @@ public class PlayerColor : MonoBehaviour {
     
     Transform getChildByName(Transform obj, string name)
     {
+        // permet de récupérer un des descendants d'un objet
         if (obj.name == name)
             return obj;
         
