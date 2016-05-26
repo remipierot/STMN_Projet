@@ -12,18 +12,17 @@ public class Arrow : MonoBehaviour {
     
     private PhotonPlayer m_Owner;
     private Rigidbody2D m_Body;
-    private bool m_Broken = false; // flèche cassée et en train de tomber, ne peut faire de dégât
-    private bool m_Fixed = false; // flèche plantée dans le sol
+    private bool m_Broken = true; // flèche cassée et en train de tomber, ne peut faire de dégât
+    private bool m_Fixed = true; // flèche plantée dans le sol
     private bool m_Launched = false; // flèche lancée par le joueur
     private PhotonView m_PhotonView; // synchronisation de la flèche
     
     public bool isBroken() { return m_Broken || m_Fixed; }
+    public bool isLaunched() { return m_Launched; }
     public void _break() {
         m_Broken = true;
         if (isExplosive)
         {
-            // désactivation de la synchronisation
-            m_PhotonView.synchronization = ViewSynchronization.Off;
             // effet de particule épique
             GameObject partSystem = (GameObject)Instantiate(explosionParticleSystem, transform.position, Quaternion.identity);
             if (m_PhotonView.isMine)
@@ -52,18 +51,33 @@ public class Arrow : MonoBehaviour {
         }
         else
         {
+            // synchronisation avec l'owner
             int id = (int) stream.ReceiveNext();
             m_Broken = (bool) stream.ReceiveNext();
             m_Fixed = (bool) stream.ReceiveNext();
             bool oldLaunched = m_Launched;
             m_Launched = (bool) stream.ReceiveNext();
-            if (oldLaunched != m_Launched)
-                Launch();
+            
+            // gestion des informations lues
             foreach (var player in PhotonNetwork.playerList)
                 if (player.ID == m_PhotonView.ownerId)
                     m_Owner = player;
+            
+            if (m_Body == null)
+                m_Body = GetComponent<Rigidbody2D>();
+            
+            if (m_Broken)
+            {
+                if (isExplosive)
+                    Destroy(this.gameObject);
+            }
+            if (m_Fixed)
+            {
+                GetComponent<Rigidbody2D>().isKinematic = true;
+            }
+            if (oldLaunched != m_Launched && !m_Fixed && !m_Broken)
+                Launch();
         }
-        Debug.Log("SERIALIZE, mode=" + (stream.isWriting ? "write": "read"));
     }
 
 	void Start () {
@@ -75,6 +89,8 @@ public class Arrow : MonoBehaviour {
     public void Launch()
     {
         m_Launched = true;
+        m_Broken = false;
+        m_Fixed = false;
         m_Body.isKinematic = false;
     }
 	
@@ -92,7 +108,7 @@ public class Arrow : MonoBehaviour {
     
     void OnTriggerEnter2D(Collider2D coll)
     {
-        if (m_Fixed)
+        if (m_Fixed || !m_Launched)
             return;
         
         if (coll.gameObject.tag == "ArenaEdge")
@@ -115,7 +131,7 @@ public class Arrow : MonoBehaviour {
         else if (coll.gameObject.tag == "Projectile")
         {
             Arrow arrow = coll.gameObject.GetComponent<Arrow>();
-            if (!arrow.isBroken())
+            if (!arrow.isBroken() && arrow.isLaunched())
             {
                 // collision avec une autre flèche
                 arrow._break();
@@ -130,9 +146,10 @@ public class Arrow : MonoBehaviour {
             GetComponent<Rigidbody2D>().isKinematic = true;
             m_Broken = true;
             m_Fixed = true;
-            m_PhotonView.synchronization = ViewSynchronization.Off;
             if (isExplosive)
                 _break();
+            else
+                m_PhotonView.synchronization = ViewSynchronization.Off;
         }
     }
     

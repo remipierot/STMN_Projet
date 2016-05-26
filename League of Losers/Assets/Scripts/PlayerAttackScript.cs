@@ -24,6 +24,7 @@ public class PlayerAttackScript : MonoBehaviour {
     private float MsBeforeNextAngleUpdate = 150;    // temps avant la prochaine synchronisation d'angle de visée
     private float AngleUpdateTimer = -1;            // timer de synchronisation d'angle de visée
     private Vector2 mouseStartPosition;             // position de départ de la souris lors d'un tir de flèche
+    private Vector2 mouseEndPosition;             // position de départ de la souris lors d'un tir de flèche
     private GameObject projectileInstance;          // instance du projectile envoyé
     private float m_AttackInitializationTime;       // moment de commencement de l'animation d'attaque à distance
     
@@ -82,19 +83,19 @@ public class PlayerAttackScript : MonoBehaviour {
         }
         else
         {
-            if (Input.GetButtonDown("Attack") && !attacking)
+            if (Input.GetButtonDown("Attack") && !attacking && !wantAttack)
             {
                 // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
                 wantAttack = true;
                 isSpecialAttack = false;
             }
-            if (Input.GetButtonDown("Skill") && !attacking)
+            if (Input.GetButtonDown("Skill") && !attacking && !wantAttack)
             {
                 // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
                 wantAttack = true;
                 isSpecialAttack = true;
             }
-            if (m_ControlScript.CanAttack() && wantAttack)
+            if (m_ControlScript.CanAttack() && wantAttack && !attacking)
             {
                 // initialisation de l'attaque à distance
                 wantAttack = false;
@@ -124,14 +125,19 @@ public class PlayerAttackScript : MonoBehaviour {
                 m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
             }
             if (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill"))
+            {
                 // le joueur veut lancer son attaque
                 wantRelease = true;
+                wantAttack = false;
+                mouseEndPosition = (Vector2)(Input.mousePosition);
+            }
             
-            if (wantRelease && attacking && (Time.realtimeSinceStartup * 1000 - m_AttackInitializationTime) >= rangedAttackReleaseTimeMs)
+            if (attacking && wantRelease && (Time.realtimeSinceStartup * 1000 - m_AttackInitializationTime) >= rangedAttackReleaseTimeMs)
             {
                 // lancement de l'attaque, après s'être assuré que l'animation initiale est terminée
                 wantRelease = false;
-                Vector2 direction = (Vector2)(Input.mousePosition) - mouseStartPosition;
+                attacking = false;
+                Vector2 direction = mouseEndPosition - mouseStartPosition;
                 if (direction.magnitude < 40)
                     // pas de direction de tir
                     direction = new Vector2(1,0);
@@ -150,7 +156,6 @@ public class PlayerAttackScript : MonoBehaviour {
                     rb2d.velocity = direction * 15;
                 // détache le projectile du parent
                 projectileInstance.transform.parent = null;
-                attacking = false;
                 AngleUpdateTimer = Time.realtimeSinceStartup * 1000;
                 // retour à une stance normale
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
@@ -162,7 +167,7 @@ public class PlayerAttackScript : MonoBehaviour {
     
 	void LateUpdate () {
         // appelé après le rendu du système d'animation, mais avant le rendu de la scène
-        if (!m_PhotonView.isMine)
+        if (!m_PhotonView.isMine && attacking)
         {
             // les autres joueurs se contentent de mettre à jour la direction de tir
             SetAimDir();
@@ -209,16 +214,22 @@ public class PlayerAttackScript : MonoBehaviour {
         attacking = attck;
         if (attacking)
         {
+            /*
             if (isSpecialAttack)
                 projectileInstance = PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position, m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
             else
                 projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position, m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
-            projectileInstance.transform.SetParent(m_HandBone, true);
+            //*/
             projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
+            projectileInstance.transform.SetParent(m_HandBone, true);
+            wantRelease = false;
+            wantAttack = false;
         }
         else
         {
             projectileInstance.transform.parent = null;
+            wantRelease = false;
+            wantAttack = false;
         }
     }
     
@@ -241,10 +252,12 @@ public class PlayerAttackScript : MonoBehaviour {
     
     public void ExitAiming()
     {
-        wantAttack = attacking;
         attacking = false;
+        wantRelease = false;
+        wantAttack = false;
         m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
-        Destroy(projectileInstance);
+        if (projectileInstance != null)
+            Destroy(projectileInstance);
     }
     
     void OnTriggerEnter2D(Collider2D coll) {
