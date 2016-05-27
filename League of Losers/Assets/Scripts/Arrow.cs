@@ -26,16 +26,19 @@ public class Arrow : MonoBehaviour {
             // effet de particule épique
             GameObject partSystem = (GameObject)Instantiate(explosionParticleSystem, transform.position, Quaternion.identity);
             if (m_PhotonView.isMine)
+            {
                 partSystem.GetComponent<ExplosionDamage>().setOwner(m_Owner);
-            // destruction de la flèche
-            Destroy(this.gameObject);
+                
+                // destruction de la flèche
+                PhotonNetwork.Destroy(this.gameObject);
+            }
         }
         else
         {
             m_Body.velocity = new Vector2((m_Body.velocity.x>0)?1:-1, 0);
             m_Body.angularVelocity = 650;
             // pas besoin de synchroniser la flèche pendant qu'elle retombe au sol...
-            m_PhotonView.synchronization = ViewSynchronization.Off;
+            //m_PhotonView.synchronization = ViewSynchronization.Off;
         }
     }
     
@@ -113,12 +116,13 @@ public class Arrow : MonoBehaviour {
         
         if (coll.gameObject.tag == "ArenaEdge")
         {
-            // bord du terrain - on supprime la flèche
-            Destroy(this.gameObject);
+            if (m_PhotonView.isMine)
+                // bord du terrain - on supprime la flèche
+                PhotonNetwork.Destroy(this.gameObject);
         }
         else if (coll.gameObject.tag == "Player")
         {
-            if (!m_Broken)
+            if (!m_Broken && !m_Fixed)
             {
                 if (((PlayerControllerScript)(coll.gameObject.GetComponent<PlayerControllerScript>())).owner != m_Owner)
                 {
@@ -143,13 +147,14 @@ public class Arrow : MonoBehaviour {
         else if (!coll.isTrigger)
         {
             // collision du terrain - on bloque la flèche
-            GetComponent<Rigidbody2D>().isKinematic = true;
+            m_Body.velocity = Vector2.zero;
+            m_Body.isKinematic = true;
             m_Broken = true;
             m_Fixed = true;
             if (isExplosive)
                 _break();
             else
-                m_PhotonView.synchronization = ViewSynchronization.Off;
+                ;//m_PhotonView.synchronization = ViewSynchronization.Off;
         }
     }
     

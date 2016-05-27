@@ -248,8 +248,11 @@ public class PlayerControllerScript : MonoBehaviour
     //Donne la force au Rigidbody2D de sauter
     private void _Jump()
     {
-        m_Body.velocity = Vector2.zero;
-        m_Body.AddForce(new Vector2(0, JumpStrength));
+        if (m_PhotonView.isMine)
+        {
+            m_Body.velocity = Vector2.zero;
+            m_Body.AddForce(new Vector2(0, JumpStrength));
+        }
         m_Grounded = false;
         ChangeState(STATE_JUMP);
         _SendGroundInfos();
@@ -259,11 +262,14 @@ public class PlayerControllerScript : MonoBehaviour
     // Effectue un dash dans la direction visée par le joueur
     private void _Dash()
     {
-        m_Body.velocity = Vector2.zero;
-        if (m_CurrentFacing)
-            m_Body.AddForce(new Vector2(DashStrength, 0));
-        else
-            m_Body.AddForce(new Vector2(-DashStrength, 0));
+        if (m_PhotonView.isMine)
+        {
+            m_Body.velocity = Vector2.zero;
+            if (m_CurrentFacing)
+                m_Body.AddForce(new Vector2(DashStrength, 0));
+            else
+                m_Body.AddForce(new Vector2(-DashStrength, 0));
+        }
         originalGravityScale = m_Body.gravityScale;
         m_Body.gravityScale = 0;
         m_Body.drag = 10;
