@@ -192,7 +192,8 @@ public class RechercheLobby : MonoBehaviour
     {
         //Instancie le joueur quand il arrive dans la pièce
         
-        PhotonNetwork.Instantiate("Bowman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
+        GameObject playerObj = PhotonNetwork.Instantiate("Bowman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
+        playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
     }
 
 

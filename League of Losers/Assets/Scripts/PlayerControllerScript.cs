@@ -12,7 +12,9 @@ public class PlayerControllerScript : MonoBehaviour
               STATE_DASH = 2,       //Dash
               STATE_AIMING = 3,     //Visée lors d'une attaque rangée
               STATE_GRAPPLE = 4,    //Utilisation du grappin
-              STATE_JUMP = 5;       //Saut
+              STATE_JUMP = 5,       //Saut
+              STATE_HIT = 6,        //Prise de dégâts
+              STATE_DEAD = 7;       //Mort
     const bool FACE_RIGHT = true,   //Regard du Player vers la droite
                FACE_LEFT = false;   //Regard du Player vers la gauche
 
@@ -21,11 +23,13 @@ public class PlayerControllerScript : MonoBehaviour
                  DashStrength = 1300,       //Force du dash
                  MsBetweenDashes = 2000,    //Temps minimum entre 2 dash (en millisecondes)
                  MsBeforeDashGravityRestored = 200, // Temps avant que la gravité soit restaurée lors d'un dash
-                 HitInvincibilityMs = 2000; // Temps durant lequel le joueur est invincible après s'être pris des dégâts
+                 HitAnimationMs = 1000,     // Temps durant lequel le joueur joue l'animation de prise de dégâts
+                 HitInvincibilityMs = 3000, // Temps durant lequel le joueur est invincible après s'être pris des dégâts
+                 MsBeforeDeathRespawn = 5000; // Temps avant le respawn du joueur après sa mort
     
     public int m_Lives = 3; // nombre de vies restantes
     
-    public BoxCollider2D m_Box;
+    public GameObject m_RespawnPoint;
     
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
@@ -38,6 +42,7 @@ public class PlayerControllerScript : MonoBehaviour
     private float m_LastDashTime = 0;           //Dernière fois que le dash a été activé (en millisecondes)
     private float m_LastHitTime = 0;            //Dernière fois que le joueur a été touché (pour l'invincibilité)
     private float m_GroundTimer = 0;            //Dernière fois que le joueur est entré en collision avec le sol (pour la détection de m_Grounded)
+    private float m_DieRespawnTimer = 0;        //Début de l'animation de mort
     private Vector2 translation;
     
     private float originalGravityScale;
@@ -115,11 +120,26 @@ public class PlayerControllerScript : MonoBehaviour
         
         if (m_PhotonView.isMine == false)
             return;
+        
+        // gestion du respawn après mort
+        if (m_CurrentState == STATE_DEAD && (Time.realtimeSinceStartup * 1000 - m_DieRespawnTimer) >= MsBeforeDeathRespawn)
+        {
+            ChangeState(STATE_IDLE);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+            m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
+        }
+        
+        // restaure les contrôles après avoir été touché
+        if (m_CurrentState == STATE_HIT && (Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitAnimationMs)
+        {
+            ChangeState(STATE_IDLE);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+        }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
 
         //Gestion du saut
-        if (Input.GetButtonDown("Jump") && m_CurrentState != STATE_DASH)
+        if (Input.GetButtonDown("Jump") && m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
         {
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
@@ -138,7 +158,7 @@ public class PlayerControllerScript : MonoBehaviour
         
         // Gestion du dash
         float dash = Input.GetAxisRaw("Dash");
-        if (dash < 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+        if (dash < 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
         {
             // dash gauche
             if (m_AttackScript.IsAiming())
@@ -155,7 +175,7 @@ public class PlayerControllerScript : MonoBehaviour
             ChangeState(STATE_DASH);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
         }
-        else if (dash > 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
+        else if (dash > 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
         {
             // dash droit
             if (m_AttackScript.IsAiming())
@@ -174,7 +194,7 @@ public class PlayerControllerScript : MonoBehaviour
         }
 
         //Gestion du déplacement horizontal
-        else if (horizontal != 0 && m_CurrentState != STATE_DASH && m_CurrentState != STATE_AIMING)
+        else if (horizontal != 0 && m_CurrentState != STATE_DASH && m_CurrentState != STATE_AIMING && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
         {
             //Vérifier que le regard est dans la bonne direction
             if ((horizontal > 0) != m_CurrentFacing)
@@ -195,6 +215,8 @@ public class PlayerControllerScript : MonoBehaviour
             //passe en animation d'attente
             if (m_CurrentState != STATE_IDLE
                 && m_CurrentState != STATE_DASH
+                && m_CurrentState != STATE_DEAD
+                && m_CurrentState != STATE_HIT
                 && m_CurrentState != STATE_AIMING)
             {
                 ChangeState(STATE_IDLE);
@@ -295,7 +317,7 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
     public bool CanAttack()
     {
-        return m_Grounded && m_CurrentState != STATE_DASH;
+        return m_Grounded && m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT;
     }
     
     // Retourne la direction du joueur
@@ -324,7 +346,7 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts
     public bool canTakeDamage()
     {
-        return ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
+        return m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs);
     }
     [PunRPC]
     void PhTakeDamage(bool direction, PhotonPlayer attacker)
@@ -335,6 +357,9 @@ public class PlayerControllerScript : MonoBehaviour
             // pas de spam
             return;
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
+            
+        attacker.AddScore(1);
+        m_Body.velocity = Vector2.zero;
         
         m_Lives--;
         if (m_Lives == 0)
@@ -342,19 +367,27 @@ public class PlayerControllerScript : MonoBehaviour
             // game over
             //PhSendDestruction();
             //m_PhotonView.RPC("PhSendDestruction", PhotonTargets.Others, STATE_IDLE);
+            if (m_PhotonView.isMine)
+            {
+                ChangeState(STATE_DEAD);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DEAD);
+            }
             m_PlayerAnimator.SetTrigger("Die");
             m_Lives = 3;
+            m_DieRespawnTimer = Time.realtimeSinceStartup * 1000;
         }
         
-        m_Body.velocity = Vector2.zero;
-        if (direction)
-            m_Body.AddForce(new Vector2(200, 500));
         else
-            m_Body.AddForce(new Vector2(-200, 500));
-        
-        attacker.AddScore(1);
-        
-        m_PlayerAnimator.SetTrigger("TakeDamage");
+        {
+            if (direction)
+                m_Body.AddForce(new Vector2(200, 500));
+            else
+                m_Body.AddForce(new Vector2(-200, 500));
+            
+            ChangeState(STATE_HIT);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_HIT);
+            m_PlayerAnimator.SetTrigger("TakeDamage");
+        }
     }
 
     [PunRPC]
