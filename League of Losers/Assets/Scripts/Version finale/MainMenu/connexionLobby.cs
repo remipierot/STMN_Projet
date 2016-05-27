@@ -15,7 +15,10 @@ public class connexionLobby : MonoBehaviour {
 
     private string username = "";
     private string gameName = "";
-    private bool gamePrivate = false;
+    private bool gamePrivate = true;
+    private string gameMode = "Match à mort";
+
+    private Hashtable propertiesGame;
 
 
 	// Use this for initialization
@@ -49,7 +52,14 @@ public class connexionLobby : MonoBehaviour {
 
     public void gamePrivateChanged(bool enabled)
     {
-        gamePrivate = enabled;
+        gamePrivate = !enabled;
+    }
+
+    public void gameModeChanged(int index)
+    {
+        Text mode = GameObject.Find("gameMode").GetComponent<Dropdown>().captionText;
+        string nom = mode.text;
+        Debug.Log(nom);
     }
 
     public void joinRoom()
@@ -62,6 +72,16 @@ public class connexionLobby : MonoBehaviour {
     {
         //Créer la partie
         RoomOptions roomOptions = new RoomOptions() { isVisible = gamePrivate, maxPlayers = 4 }; //Déclaration de la piece
+        roomOptions.customRoomProperties = new ExitGames.Client.Photon.Hashtable();
+        roomOptions.customRoomProperties.Add("Mode", gameMode);
+        roomOptions.customRoomProperties.Add("Map", "");
+
+        roomOptions.customRoomPropertiesForLobby = new string[]
+        {
+            "Mode",
+            "Map",
+        };
+
         PhotonNetwork.CreateRoom(gameName, roomOptions, TypedLobby.Default);
     }
 
@@ -74,7 +94,8 @@ public class connexionLobby : MonoBehaviour {
         {
             foreach (RoomInfo game in PhotonNetwork.GetRoomList())
             {
-                Debug.Log(game.name + " " + game.playerCount + "/" + game.maxPlayers + " " + game.visible);
+                Debug.Log(game.name + " " + game.playerCount + "/" + game.maxPlayers + " " + game.customProperties["Mode"] + " " + game.customProperties["Map"]);
+                
             }
         }
 	}
@@ -86,3 +107,5 @@ public class connexionLobby : MonoBehaviour {
     }
 
 }
+
+
