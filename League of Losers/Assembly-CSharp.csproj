@@ -119,6 +119,7 @@
      <Compile Include="Assets\Scripts\PlayerGUI.cs" />
      <Compile Include="Assets\Scripts\PlayerNetwork.cs" />
      <Compile Include="Assets\Scripts\RechercheLobby.cs" />
+     <Compile Include="Assets\Scripts\Version finale\Arene\connexionArene.cs" />
      <Compile Include="Assets\Scripts\Version finale\MainMenu\connexionLobby.cs" />
      <Compile Include="Assets\Scripts\Version finale\gameConfig\roomConfig.cs" />
      <None Include="Assets\Plugins\Photon3Unity3D.xml" />

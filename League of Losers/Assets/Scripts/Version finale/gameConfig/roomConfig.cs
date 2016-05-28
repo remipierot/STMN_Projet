@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class roomConfig : Photon.MonoBehaviour {
 
@@ -15,6 +17,7 @@ public class roomConfig : Photon.MonoBehaviour {
     private GameObject arene1;
     private GameObject arene2;
     private GameObject arene3;
+    private GameObject randomArene;
 
     private GameObject vote1;
     private GameObject vote2;
@@ -48,10 +51,14 @@ public class roomConfig : Photon.MonoBehaviour {
     private float timer = 30;
     private int timerInt = 0;
 
+    //Timer pour la selection de l'arene
+    private float timerArene =  0;
+
     //Vote pour les arenes
-    int voteArene1 = 0;
-    int voteArene2 = 0;
-    int voteArene3 = 0;
+    private int voteArene1 = 0;
+    private int voteArene2 = 0;
+    private int voteArene3 = 0;
+    private string nomArene = "";
 
     //Photon View
     private PhotonView m_PhotonView;
@@ -61,6 +68,7 @@ public class roomConfig : Photon.MonoBehaviour {
 
     private bool enJeu = false;
     private bool stopTimer = false;
+    private bool areneSelection = false;
 
 	// Use this for initialization
 	void Start () {
@@ -77,6 +85,7 @@ public class roomConfig : Photon.MonoBehaviour {
         arene1 = GameObject.Find("Arene1");
         arene2 = GameObject.Find("Arene2");
         arene3 = GameObject.Find("Arene3");
+        randomArene = GameObject.Find("RandomArene");
 
         vote1 = GameObject.Find("Vote1");
         vote2 = GameObject.Find("Vote2");
@@ -99,6 +108,7 @@ public class roomConfig : Photon.MonoBehaviour {
         tempsAfficherArene = GameObject.Find("Timer").GetComponent<Text>();
 
         timerInt = (int)timer;
+        timerArene = (int)timer;
         arenaSelection.SetActive(false); // Desactivation de la selection de l'arene
 	}
 
@@ -156,9 +166,10 @@ public class roomConfig : Photon.MonoBehaviour {
                     if (!stopTimer)
                     {
                         timer -= Time.deltaTime;
-                        Debug.Log("timer" + timer + " " + timerInt);
+                        
                         if (timerInt != (int)timer)
                         {
+                            Debug.Log("Mise à jour timer");
                             m_PhotonView.RPC("updateTimer_RPC", PhotonTargets.AllBuffered, timer);
                         }
                     }
@@ -169,26 +180,125 @@ public class roomConfig : Photon.MonoBehaviour {
         //Lorsque le timer est à 0 on passe à la selection de l'arène
         else
         {
-            PhotonNetwork.player.customProperties = new ExitGames.Client.Photon.Hashtable();
-            PhotonNetwork.player.customProperties.Add("Classe", idClasseJoueur);
-            PhotonNetwork.player.customProperties.Add("Couleur", affecterColorClasse());
-
-
-            //Si la partie n'a pas débuté
-            if(!enJeu)
+            //Si ils ne sont pas dans la selection d'arene
+            if(!areneSelection)
             {
-                stopTimer = true;
-                arenaSelection.SetActive(true);
-                characterSelection.SetActive(false);
-                enJeu = true;
+                PhotonNetwork.player.customProperties = new ExitGames.Client.Photon.Hashtable();
+                PhotonNetwork.player.customProperties.Add("Classe", idClasseJoueur);
+                PhotonNetwork.player.customProperties.Add("Couleur", affecterColorClasse());
+
+                //Si la partie n'a pas débuté on passe à la selection de l'arene
+                if(!enJeu)
+                {
+                    if (PhotonNetwork.isMasterClient)
+                    {
+                        m_PhotonView.RPC("initialisationArene_RPC", PhotonTargets.All);
+                    }
+                }
+                    //Si la partie a débuté
+                else
+                {
+                    //On passe directement au mode de jeu selectionné ainsi qu'à la partie
+                }
             }
-                //Si la partie a débuté
+                //Partie gestion de l'arene
             else
             {
-                //On passe directement au mode de jeu selectionné ainsi qu'à la partie
+                if (PhotonNetwork.isMasterClient)
+                {
+                        timer -= Time.deltaTime;
+
+                        if (timerArene != (int)timer)
+                        {
+                            Debug.Log("Mise à jour timer");
+                            m_PhotonView.RPC("updateTimer_RPC", PhotonTargets.All, timer);
+                        }
+                }
+
+                if(timerArene.Equals(0))
+                {
+                    //On instancie la scène selectionné
+                    //PhotonNetwork.LoadLevel(areneVote());
+                    nomArene = areneVote();
+                    if(nomArene == "Arene1")
+                    {
+                        SceneManager.LoadScene(3);
+                    }
+                    else if( nomArene == "Arene2")
+                    {
+                        SceneManager.LoadScene(4);
+                    }
+                    else if (nomArene == "Arene3")
+                    {
+                        SceneManager.LoadScene(5);
+                    }
+                    
+                }
             }
         }
 	}
+
+    //Initialisation des variables pour tout le monde
+    [PunRPC]
+    void initialisationArene_RPC()
+    {
+        stopTimer = true;
+        arenaSelection.SetActive(true);
+        characterSelection.SetActive(false);
+        enJeu = true;
+        areneSelection = true;
+        timer = 30;
+        timerInt = 0;
+    }
+
+    /**
+     * Fonction qui retourne la carte avec le plus de vote
+     * */
+    string areneVote()
+    {
+        int voteGagnant = returnNombre(returnNombre(voteArene1, voteArene2,"Arene1","Arene2"), voteArene3,nomArene,"Arene3");
+        return nomArene;     
+    }
+    //Algo de tri pour le vote
+    int returnNombre(int a, int b,string nA, string nB)
+    {
+        if (a > b)
+        {
+            nomArene = nA;
+            return a;
+        }
+        else if (a == b)
+        {
+            System.Random random = new System.Random();
+            int nb = random.Next(0, 2);
+            switch (nb)
+            {
+                case 0:
+                    {
+                        nomArene = nA;
+                    }
+                    return a;
+
+                case 1:
+                    {
+                        nomArene = nB;
+                    }
+                    return b;
+                default:
+                    {
+                        nomArene = nA;
+                    }
+                    return a;
+            }
+        }
+        else
+        {
+            nomArene = nB;
+            return b;
+        }
+    }
+
+
     /**
      * lors du clic sur l'image de l'archer
      * */
@@ -238,6 +348,7 @@ public class roomConfig : Photon.MonoBehaviour {
     [PunRPC]
     void addImageArcher_RPC(int joueur)
     {
+        Debug.Log("Affichage de l'image");
         afficherImageClasse(joueur,idArcher);
     }
 
@@ -294,7 +405,6 @@ public class roomConfig : Photon.MonoBehaviour {
             case 4:
                 player4Image.color = affecterColorClasse();
                 break;
-
         }
     }
 
@@ -336,8 +446,16 @@ public class roomConfig : Photon.MonoBehaviour {
      * */
     void updateTimer(float timer)
     {
-        timerInt = (int)timer;
-        tempsAfficherCharacter.text = timerInt.ToString();
+        if(areneSelection)
+        {
+            timerArene = (int)timer;
+            tempsAfficherArene.text = timerArene.ToString();
+        }
+        else
+        {
+            timerInt = (int)timer;
+            tempsAfficherCharacter.text = timerInt.ToString();
+        }
     }
 
 
@@ -352,19 +470,75 @@ public class roomConfig : Photon.MonoBehaviour {
      *  VOTE DE L'ARENE
      * 
      * */
-    void clickArene1()
+    public void clickArene1()
     {
-        
+        arene1.GetComponent<Button>().interactable = false;
+        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, numeroJoueur,1);
     }
 
-    void clickArene2()
+    public void clickArene2()
     {
-
+        arene2.GetComponent<Button>().interactable = false;
+        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, numeroJoueur,2);
     }
 
-    void clickArene3()
+    public void clickArene3()
     {
+        arene3.GetComponent<Button>().interactable = false;
+        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, numeroJoueur,3);
+    }
 
+    public void clickAleatoire()
+    {
+        randomArene.GetComponent<Button>().interactable = false;
+        System.Random random = new System.Random();
+        int nombre = random.Next(1, 4);
+
+        switch(nombre)
+        {
+            case 1:
+                clickArene1();
+                break;
+            case 2 :
+                clickArene2();
+                break;
+            case 3:
+                clickArene3();
+                break;
+            default:
+                break;
+        }
+    }
+
+    [PunRPC]
+    void addArene_RPC(int idJoueur, int arene)
+    {
+        switch(arene)
+        {
+            case 1:
+                {
+                    voteArene1 += 1;
+                    vote1.GetComponent<Text>().text = voteArene1.ToString();
+                    break;
+                }
+               
+            case 2:
+                {
+                    voteArene2 += 1;
+                    vote2.GetComponent<Text>().text = voteArene2.ToString();
+                    break;
+                }
+                
+            case 3:
+                {
+                    voteArene3 += 1;
+                    vote3.GetComponent<Text>().text = voteArene3.ToString();
+                    break;
+                }
+                
+            default:
+                break;
+        }
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
