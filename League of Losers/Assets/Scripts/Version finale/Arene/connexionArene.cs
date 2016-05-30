@@ -10,11 +10,13 @@ public class connexionArene : MonoBehaviour {
     public GameObject spawnPoint4; // Le point d'apparition des joueurs
 
     public GameObject SpawnSpot; //spawn du joueur
+    
+    int hackCounter = 0;
 
     
 
 	// Use this for initialization
-	void Start () {
+	void DoInstanciation () {
 
         Debug.Log(PhotonNetwork.player.ID);
 
@@ -25,26 +27,26 @@ public class connexionArene : MonoBehaviour {
                 {
                     Debug.Log("INSTANCIATION 1");
                    GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint1.transform.position, spawnPoint1.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                   //playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
+                   playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint1;
                 }
                 break;
             case 2:
                 {
                     Debug.Log("INSTANCIATION 2");
                     GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint2.transform.position, spawnPoint2.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                   // playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
+                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint2;
                 }
                 break;
             case 3:
                 {
                     GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint3.transform.position, spawnPoint3.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
+                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint3;
                 }
                 break;
             case 4:
                 {
                     GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint4.transform.position, spawnPoint4.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
+                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint4;
                 }
                 break;
         }
@@ -56,6 +58,10 @@ public class connexionArene : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    
+	    hackCounter++;
+        if (hackCounter == 1500)
+        {
+            DoInstanciation();
+        }
 	}
 }
