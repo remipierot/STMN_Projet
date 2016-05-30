@@ -357,7 +357,7 @@ public class PlayerControllerScript : MonoBehaviour
             // pas de spam
             return;
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
-            
+        
         attacker.AddScore(1);
         m_Body.velocity = Vector2.zero;
         
@@ -387,6 +387,16 @@ public class PlayerControllerScript : MonoBehaviour
             ChangeState(STATE_HIT);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_HIT);
             m_PlayerAnimator.SetTrigger("TakeDamage");
+        }
+    }
+
+    public void dieFall()
+    {
+        m_Lives--;
+        if (m_PhotonView.isMine)
+        {
+            m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
+            m_Body.velocity = Vector2.zero;
         }
     }
 
