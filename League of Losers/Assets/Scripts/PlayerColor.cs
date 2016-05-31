@@ -5,25 +5,64 @@ using System.Collections;
  * Script démontrant comment recolorer des éléments d'un personnage et l'échange d'un des éléments le composant.
  */
 public class PlayerColor : MonoBehaviour {
-    private Color color;
-    private static System.Random rnd;
-    private static int i=0;
-    
-	void Start () {
-        if (rnd == null)
-            rnd = new System.Random();
+	void Awake () {
+        PhotonPlayer owner = null;
+        PhotonView m_PhotonView;
         
-        float r = rnd.Next(1000)/(float)1000;
-        float g = rnd.Next(1000)/(float)1000;
-        float b = rnd.Next(1000)/(float)1000;
-        color = new Color(r, g, b, 1);
+        // récupère l'ID du joueur
+        m_PhotonView = GetComponent<PhotonView>();
         
-        // recolore le joueur
-	    Transform leg = getChildByName(transform, "ClassicLegF1");
-        SpriteRenderer spriteRndr = leg.GetComponent<SpriteRenderer>();
-        spriteRndr.color = color;
+        foreach (var player in PhotonNetwork.playerList)
+            if (player.ID == m_PhotonView.ownerId)
+                owner = player;
+        if (owner == null)
+        {
+            Debug.Log("Couldn't find PhotonPlayer !");
+            return;
+        }
         
-        // --- just for the lolz : met l'image de chevelure à la place d'une partie du vêtement de l'archer ---
+        Color col;
+        if (owner.customProperties.ContainsKey("Couleur"))
+        //if (true)
+        {
+            col = (Color) owner.customProperties["Couleur"];
+            //col = Color.yellow;
+            Color colClothes = Color.white;
+            Color colHair = Color.white;
+            Color colSkin = Color.white;
+            
+            if (col == Color.green)
+            {
+                // couleur normale
+                colClothes = new Color(110/255f, 220/255f, 110/255f, 1);
+            }
+            else if (col == Color.red)
+            {
+                colHair = new Color(100/255f, 80/255f, 40/255f, 1);
+                colClothes = new Color(1, 30/255f, 20/255f, 1);
+            }
+            else if (col == Color.blue)
+            {
+                colHair = new Color(1, 200/255f, 90/255f, 1);
+                colClothes = new Color(130/255f, 160/255f, 1, 1);
+            }
+            else if (col == Color.yellow)
+            {
+                colHair = new Color(140/255f, 80/255f, 0, 1);
+                colClothes = new Color(200/255f, 200/255f, 0, 1);
+            }
+            
+            // recolore le joueur
+            transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
+            getChildByName(transform, "ClassicLegF1").GetComponent<SpriteRenderer>().color = colClothes;
+            getChildByName(transform, "ClassicLegB1").GetComponent<SpriteRenderer>().color = colClothes;
+            getChildByName(transform, "ClassicPelvis").GetComponent<SpriteRenderer>().color = colClothes;
+            getChildByName(transform, "ClassicHead").GetComponent<SpriteRenderer>().color = colHair;
+            getChildByName(transform, "ClassicHair").GetComponent<SpriteRenderer>().color = colHair;
+        }
+        
+        /*
+        // exemple de changement de sprite
         
         i++;
         switch (i)
@@ -35,11 +74,7 @@ public class PlayerColor : MonoBehaviour {
                 spriteRndr.sprite = (Sprite) (Resources.Load("Bowman/Art/Bowman CharMaps/Classic/ClassicArrows", typeof(Sprite)) as Sprite);
                 break;
         }
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+        */
 	}
     
     Transform getChildByName(Transform obj, string name)

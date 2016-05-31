@@ -194,6 +194,7 @@ public class RechercheLobby : MonoBehaviour
         
         GameObject playerObj = PhotonNetwork.Instantiate("Bowman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
         playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
+        CameraFollowGameobject.target = playerObj;
     }
 
 

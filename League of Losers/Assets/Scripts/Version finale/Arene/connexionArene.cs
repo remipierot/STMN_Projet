@@ -25,14 +25,12 @@ public class connexionArene : MonoBehaviour {
                 
             case 1:
                 {
-                    Debug.Log("INSTANCIATION 1");
                    GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint1.transform.position, spawnPoint1.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint1;
                 }
                 break;
             case 2:
                 {
-                    Debug.Log("INSTANCIATION 2");
                     GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint2.transform.position, spawnPoint2.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
                     playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint2;
                 }
@@ -59,7 +57,7 @@ public class connexionArene : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	    hackCounter++;
-        if (hackCounter == 1500)
+        if (hackCounter == 60)
         {
             DoInstanciation();
         }

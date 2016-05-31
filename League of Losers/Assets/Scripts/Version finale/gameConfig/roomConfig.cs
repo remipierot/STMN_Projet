@@ -38,10 +38,10 @@ public class roomConfig : Photon.MonoBehaviour {
     private int idClasseJoueur = 1;
 
     //Id des couleurs pour les joueurs
-    private const int couleurVert = 1;
-    private const int couleurRouge = 2;
-    private const int couleurBleu = 3;
-    private const int couleurJaune = 4;
+    public const int couleurVert = 1;
+    public const int couleurRouge = 2;
+    public const int couleurBleu = 3;
+    public const int couleurJaune = 4;
     int couleurActuelle =0;
 
     private int numeroJoueur = 0;
