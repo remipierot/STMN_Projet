@@ -185,7 +185,7 @@ public class roomConfig : Photon.MonoBehaviour {
             {
                 PhotonNetwork.player.customProperties = new ExitGames.Client.Photon.Hashtable();
                 PhotonNetwork.player.customProperties.Add("Classe", idClasseJoueur);
-                PhotonNetwork.player.customProperties.Add("Couleur", affecterColorClasse());
+                PhotonNetwork.player.customProperties.Add("Couleur", couleurJoueurCourant());
 
                 //Si la partie n'a pas débuté on passe à la selection de l'arene
                 if(!enJeu)
@@ -362,29 +362,50 @@ public class roomConfig : Photon.MonoBehaviour {
     public void clickCouleurVert()
     {
         Debug.Log("Vert");
-        //couleurActuelle = couleurVert;
+
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered,  numeroJoueur, couleurVert);
     }
 
     public void clickCouleuRouge()
     {
         Debug.Log("Rouge");
-        //couleurActuelle = couleurRouge;
+
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurRouge);
     }
     
     public void clickCouleurBleu()
     {
         Debug.Log("Bleu");
-        //couleurActuelle = couleurBleu;
+
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurBleu);
     }
         
     public void clickCouleurJaune()
     {
         Debug.Log("Jaune");
-        //couleurActuelle = couleurJaune;
+
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurJaune);
+    }
+
+    Color couleurJoueurCourant()
+    {
+        switch(PhotonNetwork.player.ID)
+        {
+            case 1:
+                return player1Image.color;
+
+            case 2:
+                return player2Image.color;
+
+            case 3 :
+                return player3Image.color;
+
+            case 4:
+                return player4Image.color;
+
+            default :
+                return Color.black;
+        }
     }
 
  
