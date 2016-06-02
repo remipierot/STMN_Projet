@@ -55,6 +55,8 @@ public class connexionLobby : MonoBehaviour {
 
         PhotonNetwork.player.name = PlayerPrefs.GetString("Username", "My Player name");
         GameObject.Find("Username").GetComponent<InputField>().text = PhotonNetwork.player.name;
+
+        if(!PhotonNetwork.connected)
         Connect();
 	}
 	

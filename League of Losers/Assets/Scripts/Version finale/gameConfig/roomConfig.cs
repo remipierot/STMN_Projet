@@ -26,11 +26,15 @@ public class roomConfig : Photon.MonoBehaviour {
     private GameObject arenaSelection;
     private GameObject characterSelection;
 
+    private GameObject startTimerButton;
+    private GameObject menuButton;
 
     private RawImage player1Image;
     private RawImage player2Image;
     private RawImage player3Image;
     private RawImage player4Image;
+
+
 
     //Id des classes joueurs
     private const int idArcher = 1;
@@ -42,6 +46,8 @@ public class roomConfig : Photon.MonoBehaviour {
     public const int couleurRouge = 2;
     public const int couleurBleu = 3;
     public const int couleurJaune = 4;
+    public const int couleurNoir = 5;
+    public const int couleurRose = 6;
     int couleurActuelle =0;
 
     private int numeroJoueur = 0;
@@ -92,7 +98,15 @@ public class roomConfig : Photon.MonoBehaviour {
         vote3 = GameObject.Find("Vote3");
 
         arenaSelection = GameObject.Find("ArenaSelection");
-        
+
+        startTimerButton = GameObject.Find("StartTimer");
+        menuButton = GameObject.Find("Menu");
+
+        //Si ce n'est pas l'admin on masque le bouton
+        if(!PhotonNetwork.isMasterClient)
+        {
+            startTimerButton.SetActive(false);
+        }
 
         player1Image = player1.GetComponentInChildren<RawImage>();
         player2Image = player2.GetComponentInChildren<RawImage>();
@@ -387,6 +401,20 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurJaune);
     }
 
+    public void clickCouleurNoir()
+    {
+        Debug.Log("Noir");
+
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurNoir);
+    }
+
+    public void clickCouleurRose()
+    {
+        Debug.Log("Rose");
+
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurRose);
+    }
+
     Color couleurJoueurCourant()
     {
         switch(PhotonNetwork.player.ID)
@@ -415,16 +443,16 @@ public class roomConfig : Photon.MonoBehaviour {
         {
             case 1:
                 //Colorier le fond
-                player1Image.color = affecterColorClasse();
+                player1.GetComponent<Image>().color = affecterColorClasse();
                 break;
             case 2:
-                player2Image.color = affecterColorClasse();
+                player2.GetComponent<Image>().color = affecterColorClasse();
                 break;
             case 3:
-                player3Image.color = affecterColorClasse();
+                player3.GetComponent<Image>().color = affecterColorClasse();
                 break;
             case 4:
-                player4Image.color = affecterColorClasse();
+                player4.GetComponent<Image>().color = affecterColorClasse();
                 break;
         }
     }
@@ -445,6 +473,11 @@ public class roomConfig : Photon.MonoBehaviour {
 
             case 4:
                 return Color.yellow;
+            case 5:
+                return Color.black;
+
+            case 6:
+                return Color.magenta;
 
             default:
                 return Color.green;
@@ -560,6 +593,24 @@ public class roomConfig : Photon.MonoBehaviour {
             default:
                 break;
         }
+    }
+
+    public void clickRetourMenu()
+    {
+        PhotonNetwork.Disconnect();
+        SceneManager.LoadScene(0);
+    }
+
+    public void clickStartTimer()
+    {
+        m_PhotonView.RPC("startTimer_RPC", PhotonTargets.All);
+    }
+
+    [PunRPC]
+    private void startTimer_RPC()
+    {
+        menuButton.SetActive(false);
+        startTimerButton.SetActive(false);
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
