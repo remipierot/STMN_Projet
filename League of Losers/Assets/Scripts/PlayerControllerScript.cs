@@ -50,6 +50,8 @@ public class PlayerControllerScript : MonoBehaviour
     private static List<GameObject> playerList = new List<GameObject>();
     
     public PhotonPlayer owner;
+    private PhotonPlayer m_LastAttacker;
+    private BoxCollider2D m_Collider;
 
     void Awake()
     {
@@ -57,6 +59,7 @@ public class PlayerControllerScript : MonoBehaviour
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
         m_AttackScript = GetComponent<PlayerAttackScript>();
+        m_Collider = GetComponent<BoxCollider2D>();
         
         // lie le gameobject au joueur
         foreach (var player in PhotonNetwork.playerList)
@@ -358,7 +361,10 @@ public class PlayerControllerScript : MonoBehaviour
             return;
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
         
-        attacker.AddScore(1);
+        //attacker.AddScore(1);
+        if (attacker != owner)
+            m_LastAttacker = attacker;
+        
         m_Body.velocity = Vector2.zero;
         
         m_Lives--;
@@ -371,6 +377,11 @@ public class PlayerControllerScript : MonoBehaviour
             {
                 ChangeState(STATE_DEAD);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DEAD);
+                if (m_LastAttacker != null)
+                {
+                    m_LastAttacker.AddScore(1);
+                    m_LastAttacker = null;
+                }
             }
             m_PlayerAnimator.SetTrigger("Die");
             m_Lives = 3;
@@ -397,6 +408,11 @@ public class PlayerControllerScript : MonoBehaviour
         {
             m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
             m_Body.velocity = Vector2.zero;
+            if (m_LastAttacker != null)
+            {
+                m_LastAttacker.AddScore(1);
+                m_LastAttacker = null;
+            }
         }
     }
 
