@@ -18,38 +18,29 @@ public class connexionLobby : MonoBehaviour {
     private bool gamePrivate = true;
     private string gameMode = "Match à mort";
     private int tempsPartie;
-    private int killsMax;
 
     private Hashtable propertiesGame;
 
     //GameObject du matchmaking à masquer
     private GameObject matchmaking;
     private GameObject sliderTemps;
-    private GameObject sliderKills;
 
-    private GameObject textKills;
     private GameObject textTemps;
 
     //Parametre de création de partie à afficher
     private string tempsString;
-    private string killsString;
 
 
 	// Use this for initialization
 	void Start () {
         matchmaking = GameObject.Find("Matchmaking");
         sliderTemps = GameObject.Find("sliderTempsMax"); //récupération slider temps
-        sliderKills = GameObject.Find("sliderKillsMax"); //récupération slider kills
 
         textTemps = GameObject.Find("textTemps");
-        textKills = GameObject.Find("textKills");
-
 
         tempsPartie = (int)sliderTemps.GetComponent<Slider>().value;
-        killsMax = (int)sliderTemps.GetComponent<Slider>().value;
 
         textTemps.GetComponent<Text>().text = tempsPartie.ToString();
-        textKills.GetComponent<Text>().text = killsMax.ToString();
 
         matchmaking.SetActive(false); //Masquage du matchmaking
 
@@ -108,14 +99,12 @@ public class connexionLobby : MonoBehaviour {
         roomOptions.customRoomProperties.Add("Mode", gameMode); //Option pour le mode de jeu
         roomOptions.customRoomProperties.Add("Map", ""); //Option pour la map
         roomOptions.customRoomProperties.Add("Temps", tempsPartie); //Option pour le temps Maximum de la partie
-        roomOptions.customRoomProperties.Add("Kill", killsMax); // Option pour le nombre de kills limite à atteindre
 
         roomOptions.customRoomPropertiesForLobby = new string[]
         {
             "Mode",
             "Map",
-            "Temps",
-            "Kill"
+            "Temps"
         };
 
         PhotonNetwork.CreateRoom(gameName, roomOptions, TypedLobby.Default);
@@ -129,14 +118,6 @@ public class connexionLobby : MonoBehaviour {
         textTemps.GetComponent<Text>().text = tempsPartie.ToString();
 
     }
-
-    public void killsPartieChanged(int kill)
-    {
-        killsMax = (int)sliderKills.GetComponent<Slider>().value;
-        textKills.GetComponent<Text>().text = killsMax.ToString();
-    }
-
-
 
      
 	// Update is called once per frame

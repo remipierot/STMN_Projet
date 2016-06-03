@@ -50,12 +50,16 @@ public class roomConfig : Photon.MonoBehaviour {
     public const int couleurRose = 6;
     int couleurActuelle =0;
 
-    private int numeroJoueur = 0;
+    private int idJoueur = 0;
     private int nombreJoueur = 0;
+
+    //Place du joueur dans les affichages
+    private int placeCanvas;
 
     //Timer pour la selection du personnage
     private float timer = 30;
     private int timerInt = 0;
+
 
     //Timer pour la selection de l'arene
     private float timerArene =  0;
@@ -113,9 +117,10 @@ public class roomConfig : Photon.MonoBehaviour {
         player3Image = player3.GetComponentInChildren<RawImage>();
         player4Image = player4.GetComponentInChildren<RawImage>();
 
-        numeroJoueur = PhotonNetwork.player.ID;
+        idJoueur = PhotonNetwork.player.ID;
         nombreJoueur = PhotonNetwork.playerList.Length;
 
+        placeDansEcran();
         activationCanvasPlayer();
 
         tempsAfficherCharacter = GameObject.Find("Temps").GetComponent<Text>();
@@ -125,6 +130,20 @@ public class roomConfig : Photon.MonoBehaviour {
         timerArene = (int)timer;
         arenaSelection.SetActive(false); // Desactivation de la selection de l'arene
 	}
+    
+    //Affichage du canvas en fonction du nombre de joueurs
+    void placeDansEcran()
+    {
+        int place = 1; //On commence à 1
+        foreach(var player in PhotonNetwork.playerList)
+        {
+            if(player.ID == idJoueur)
+            {
+                placeCanvas = place;
+            }
+            place++;
+        }
+    }
 
     void activationCanvasPlayer()
     {
@@ -169,6 +188,7 @@ public class roomConfig : Photon.MonoBehaviour {
             {
                 nombreJoueur = PhotonNetwork.playerList.Length;
                 timer = 30;
+                placeDansEcran();
                 activationCanvasPlayer();
             }
 
@@ -320,7 +340,7 @@ public class roomConfig : Photon.MonoBehaviour {
     {
         classeTexture = archer;
         idClasseJoueur = idArcher;
-        m_PhotonView.RPC("addImageArcher_RPC", PhotonTargets.AllBuffered, numeroJoueur);
+        m_PhotonView.RPC("addImageArcher_RPC", PhotonTargets.AllBuffered, placeCanvas);
     }
 
     /**
@@ -377,47 +397,47 @@ public class roomConfig : Photon.MonoBehaviour {
     {
         Debug.Log("Vert");
 
-        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered,  numeroJoueur, couleurVert);
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, placeCanvas, couleurVert);
     }
 
     public void clickCouleuRouge()
     {
         Debug.Log("Rouge");
 
-        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurRouge);
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, placeCanvas, couleurRouge);
     }
     
     public void clickCouleurBleu()
     {
         Debug.Log("Bleu");
 
-        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurBleu);
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, placeCanvas, couleurBleu);
     }
         
     public void clickCouleurJaune()
     {
         Debug.Log("Jaune");
 
-        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurJaune);
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, placeCanvas, couleurJaune);
     }
 
     public void clickCouleurNoir()
     {
         Debug.Log("Noir");
 
-        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurNoir);
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, placeCanvas, couleurNoir);
     }
 
     public void clickCouleurRose()
     {
         Debug.Log("Rose");
 
-        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, numeroJoueur, couleurRose);
+        m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.AllBuffered, placeCanvas, couleurRose);
     }
 
     Color couleurJoueurCourant()
     {
-        switch(PhotonNetwork.player.ID)
+        switch(placeCanvas)
         {
             case 1:
                 return player1Image.color;
@@ -527,19 +547,19 @@ public class roomConfig : Photon.MonoBehaviour {
     public void clickArene1()
     {
         arene1.GetComponent<Button>().interactable = false;
-        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, numeroJoueur,1);
+        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,1);
     }
 
     public void clickArene2()
     {
         arene2.GetComponent<Button>().interactable = false;
-        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, numeroJoueur,2);
+        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,2);
     }
 
     public void clickArene3()
     {
         arene3.GetComponent<Button>().interactable = false;
-        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, numeroJoueur,3);
+        m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,3);
     }
 
     public void clickAleatoire()
