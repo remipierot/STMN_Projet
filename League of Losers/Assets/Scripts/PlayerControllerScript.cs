@@ -134,6 +134,7 @@ public class PlayerControllerScript : MonoBehaviour
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
             m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "respawn");
             m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
+            m_Body.velocity = Vector2.zero;
         }
         
         // restaure les contrôles après avoir été touché
@@ -426,18 +427,31 @@ public class PlayerControllerScript : MonoBehaviour
 
     public void dieFall()
     {
+        if (m_CurrentState == STATE_DEAD)
+            return;
+        
         m_Lives--;
+        if (m_Lives <= 0)
+        {
+            m_Lives = 3;
+            
+            // doublement mort ? On met DEUX FOIS le temps de respawn normal.
+            m_DieRespawnTimer = Time.realtimeSinceStartup * 1000 + MsBeforeDeathRespawn;
+        }
+        else
+            m_DieRespawnTimer = Time.realtimeSinceStartup * 1000;
+        
         if (m_PhotonView.isMine)
         {
-            m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
-            m_Body.velocity = Vector2.zero;
             if (m_LastAttacker != null)
             {
                 m_LastAttacker.AddScore(1);
                 m_LastAttacker = null;
             }
-            m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "falldie");
+            ChangeState(STATE_DEAD);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DEAD);
         }
+        m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "falldie");
     }
 
     [PunRPC]

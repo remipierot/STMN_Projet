@@ -15,7 +15,6 @@ public class FallDieRgn : MonoBehaviour {
     
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Collision");
         if (collision.gameObject.tag == "Player")
         {
             Debug.Log("Mort d'un joueur");
