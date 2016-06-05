@@ -74,7 +74,7 @@ public class PlayerAttackScript : MonoBehaviour {
                     {
                         // nécessite d'être amélioré
                         Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
-                        ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x);
+                        m_PhotonView.RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x);
                     }
                 }
             }
@@ -123,6 +123,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
                 projectileInstance.transform.SetParent(m_HandBone, true);
                 m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
+                m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "aim");
             }
             if (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill"))
             {
@@ -161,6 +162,11 @@ public class PlayerAttackScript : MonoBehaviour {
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_IDLE);
                 m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
+                // fait parler le personnage
+                if (isSpecialAttack)
+                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "firespecial");
+                else
+                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "fire");
             }
         }
 	}

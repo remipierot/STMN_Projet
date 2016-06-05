@@ -32,6 +32,15 @@ public class ExplosionDamage : MonoBehaviour {
             Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
             ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, transform.position.x < otherBody.transform.position.x, m_Owner);
         }
+        
+        PlayExplosionSound();
+    }
+    
+    private void PlayExplosionSound()
+    {
+        // joue le son d'explosion
+        // TODO
+        Debug.Log("Son explosion");
     }
     
     void OnTriggerEnter2D(Collider2D coll) {

@@ -129,6 +129,8 @@ public class Arrow : MonoBehaviour {
                     // collision avec le joueur, on lui enlève une vie
                     ((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.velocity.x > 0, m_Owner);
                     _break();
+                    if (m_PhotonView.isMine)
+                        m_PhotonView.RPC("PhArrowSound", PhotonTargets.All, "hitplayer");
                 }
             }
         }
@@ -153,13 +155,38 @@ public class Arrow : MonoBehaviour {
             m_Fixed = true;
             if (isExplosive)
                 _break();
-            else
-                ;//m_PhotonView.synchronization = ViewSynchronization.Off;
+            
+            if (m_PhotonView.isMine)
+                m_PhotonView.RPC("PhArrowSound", PhotonTargets.All, "stickground");
         }
     }
     
     public void setOwner(PhotonPlayer player)
     {
         m_Owner = player;
+    }
+    
+    [PunRPC]
+    void PhArrowSound(string sound)
+    {
+        Debug.Log("Son flèche : " + sound);
+        switch (sound)
+        {
+            case "stickground":
+                // flèche rentre en contact avec le bord du terrain
+                // "plop"
+                break;
+            case "launch":
+                // flèche est lancée dans l'air
+                // "fiiioooouuu"
+                break;
+            case "hitplayer":
+                // flèche touche joueur
+                // "paf"
+                break;
+            default:
+                Debug.Log("ERREUR : son flèche inconnue : " + sound);
+                break;
+        }
     }
 }

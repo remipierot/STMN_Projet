@@ -91,6 +91,9 @@ public class PlayerControllerScript : MonoBehaviour
                 }
             }
         }
+        
+        if (m_PhotonView.isMine)
+            CameraFollowGameobject.target = gameObject;
     }
 
     void Update()
@@ -129,6 +132,7 @@ public class PlayerControllerScript : MonoBehaviour
         {
             ChangeState(STATE_IDLE);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+            m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "respawn");
             m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
         }
         
@@ -154,6 +158,10 @@ public class PlayerControllerScript : MonoBehaviour
                     m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
                 }
                 m_DoubleJumped = !m_Grounded;
+                if (!m_DoubleJumped)
+                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jump");
+                else
+                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jumpdouble");
                 _Jump();
                 m_PhotonView.RPC("PhJump", PhotonTargets.Others);
             }
@@ -161,39 +169,51 @@ public class PlayerControllerScript : MonoBehaviour
         
         // Gestion du dash
         float dash = Input.GetAxisRaw("Dash");
-        if (dash < 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
+        if (dash < 0 && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_DASH)
         {
-            // dash gauche
-            if (m_AttackScript.IsAiming())
+            if ((Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
             {
-                m_AttackScript.ExitAiming();
-                ChangeState(STATE_IDLE);
-                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                // dash gauche
+                if (m_AttackScript.IsAiming())
+                {
+                    m_AttackScript.ExitAiming();
+                    ChangeState(STATE_IDLE);
+                    m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                }
+                if (m_CurrentFacing)
+                {
+                    ChangeDirection(false);
+                    m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, false);
+                }
+                ChangeState(STATE_DASH);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
+                m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "dash");
             }
-            if (m_CurrentFacing)
-            {
-                ChangeDirection(false);
-                m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, false);
-            }
-            ChangeState(STATE_DASH);
-            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
+            //else
+            //    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "dashrecharge");
         }
-        else if (dash > 0 && (Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
+        else if (dash > 0 && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_DASH)
         {
-            // dash droit
-            if (m_AttackScript.IsAiming())
+            if ((Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
             {
-                m_AttackScript.ExitAiming();
-                ChangeState(STATE_IDLE);
-                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                // dash droit
+                if (m_AttackScript.IsAiming())
+                {
+                    m_AttackScript.ExitAiming();
+                    ChangeState(STATE_IDLE);
+                    m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                }
+                if (!m_CurrentFacing)
+                {
+                    ChangeDirection(true);
+                    m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, true);
+                }
+                ChangeState(STATE_DASH);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
+                m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "dash");
             }
-            if (!m_CurrentFacing)
-            {
-                ChangeDirection(true);
-                m_PhotonView.RPC("PhChangeDirection", PhotonTargets.Others, true);
-            }
-            ChangeState(STATE_DASH);
-            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DASH);
+            //else
+            //    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "dashrecharge");
         }
 
         //Gestion du déplacement horizontal
@@ -239,6 +259,8 @@ public class PlayerControllerScript : MonoBehaviour
                 m_Grounded = true;
                 m_GroundTimer = Time.realtimeSinceStartup * 1000;
                 _SendGroundInfos();
+                if (m_PhotonView.isMine && (Time.realtimeSinceStartup * 1000 - m_GroundTimer) <= 100)
+                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "hitground");
             }
         }
     }
@@ -349,13 +371,11 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts
     public bool canTakeDamage()
     {
-        return m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs);
+        return m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs);
     }
     [PunRPC]
     void PhTakeDamage(bool direction, PhotonPlayer attacker)
     {
-        // TODO : fonction potentiellement à améliorer dans le futur
-        
         if ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs)
             // pas de spam
             return;
@@ -382,6 +402,7 @@ public class PlayerControllerScript : MonoBehaviour
                     m_LastAttacker.AddScore(1);
                     m_LastAttacker = null;
                 }
+                m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "die");
             }
             m_PlayerAnimator.SetTrigger("Die");
             m_Lives = 3;
@@ -398,6 +419,8 @@ public class PlayerControllerScript : MonoBehaviour
             ChangeState(STATE_HIT);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_HIT);
             m_PlayerAnimator.SetTrigger("TakeDamage");
+            if (m_PhotonView.isMine)
+                m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "takedamage");
         }
     }
 
@@ -413,6 +436,7 @@ public class PlayerControllerScript : MonoBehaviour
                 m_LastAttacker.AddScore(1);
                 m_LastAttacker = null;
             }
+            m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "falldie");
         }
     }
 
@@ -422,5 +446,76 @@ public class PlayerControllerScript : MonoBehaviour
         Destroy(gameObject);
         RechercheLobby recherche = GetComponent<RechercheLobby>();
         recherche.instantiate();
+    }
+    
+    [PunRPC]
+    void PhPlayerSpeaks(string emotion)
+    {
+        // appelé lorsque le joueur doit émettre un son.
+        // à remplir. Les différents sons sont déjà spécifiés ci dessous.
+        Debug.Log("Joue l'émotion : " + emotion);
+        switch (emotion)
+        {
+            case "respawn":
+                // respawn après être mort
+                // "Hohoho !"
+                break;
+            case "fire":
+                // tir d'une flèche
+                // "Yah !"
+                break;
+            case "firespecial":
+                // tir d'un poulet
+                // "Muhaha !"
+                break;
+            case "die":
+                // meurt (explosion/flèche)
+                // "Nooooo !"
+                break;
+            case "falldie":
+                // meurt (chute hors terrain)
+                // "NOOooooo..."
+                break;
+            case "dash":
+                // effectue un dash
+                // "Yeeha !"
+                break;
+            case "jump":
+                // saute
+                // "Huh !"
+                break;
+            case "jumpdouble":
+                // double saut
+                // "Yaah !"
+                break;
+            case "aim":
+                // vise avec l'arc
+                // "Hmmm !"
+                break;
+            case "hitground":
+                // tombe à terre
+                // "ow"
+                break;
+            case "dashrecharge":
+                // attente de la recharge du dash
+                // pas utilisé pour le moment
+                // "Naargh !"
+                break;
+            case "specialrecharge":
+                // attente de la recharge de l'attaque spéciale
+                // "Naargh !"
+                break;
+            case "killother":
+                // a tué un adversaire
+                // "Huhuhu" ou "Muhahaha !"
+                break;
+            case "takedamage":
+                // se prend un coup
+                // "Owww !"
+                break;
+            default:
+                Debug.Log("ERREUR : émotion inconnue : " + emotion);
+                break;
+        }
     }
 }
