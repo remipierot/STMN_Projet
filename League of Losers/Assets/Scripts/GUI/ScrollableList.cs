@@ -10,9 +10,7 @@ public class ScrollableList : MonoBehaviour
 
     void Start()
     {
-        
-        Refresh();
-
+        this.Refresh();
     }
 
     public void Refresh()
@@ -23,7 +21,7 @@ public class ScrollableList : MonoBehaviour
             GameObject.Destroy(child.gameObject);
         };
 
-        //itemCount = PhotonNetwork.GetRoomList().Length;
+        itemCount = PhotonNetwork.GetRoomList().Length;
 
         RectTransform rowRectTransform = itemPrefab.GetComponent<RectTransform>();
         RectTransform containerRectTransform = gameObject.GetComponent<RectTransform>();
@@ -31,7 +29,7 @@ public class ScrollableList : MonoBehaviour
         //calculate the width and height of each child item.
         float width = containerRectTransform.rect.width / columnCount;
         float ratio = width / rowRectTransform.rect.width;
-        float height = rowRectTransform.rect.height * ratio;
+        float height = rowRectTransform.rect.height;
         int rowCount = itemCount / columnCount;
         if (itemCount % rowCount > 0)
             rowCount++;
@@ -41,8 +39,8 @@ public class ScrollableList : MonoBehaviour
         containerRectTransform.offsetMin = new Vector2(containerRectTransform.offsetMin.x, -scrollHeight / 2);
         containerRectTransform.offsetMax = new Vector2(containerRectTransform.offsetMax.x, scrollHeight / 2);
 
-        int j = 0;
-        for (int i = 0; i < itemCount; i++)
+        int i = 0, j = 0;
+        foreach (RoomInfo game in PhotonNetwork.GetRoomList())
         {
             //this is used instead of a double for loop because itemCount may not fit perfectly into the rows/columns
             if (i % columnCount == 0)
@@ -52,6 +50,18 @@ public class ScrollableList : MonoBehaviour
             GameObject newItem = Instantiate(itemPrefab) as GameObject;
             newItem.name = gameObject.name + " item at (" + i + "," + j + ")";
             newItem.transform.parent = gameObject.transform;
+            newItem.transform.localScale = new Vector3(1,1);
+
+            //informations de la partie
+            Text gameName = newItem.transform.GetChild(0).gameObject.GetComponent<Text>();
+            gameName.text = game.name;
+            Text gameMode = newItem.transform.GetChild(1).gameObject.GetComponent<Text>();
+            gameMode.text = game.customProperties["Mode"].ToString();
+            Text gamePlayerCount = newItem.transform.GetChild(2).gameObject.GetComponent<Text>();
+            gamePlayerCount.text = game.playerCount.ToString();
+            Button gameJoinButton =  newItem.GetComponent<Button>();
+            gameJoinButton.onClick.AddListener(delegate { ConnectGame(game); });
+                
 
             //move and size the new item
             RectTransform rectTransform = newItem.GetComponent<RectTransform>();
@@ -63,6 +73,15 @@ public class ScrollableList : MonoBehaviour
             x = rectTransform.offsetMin.x + width;
             y = rectTransform.offsetMin.y + height;
             rectTransform.offsetMax = new Vector2(x, y);
+            i++;
         }
+    }
+
+
+    void ConnectGame(RoomInfo game)
+    {
+        //Connexion à la partie
+        if (game.open)
+            PhotonNetwork.JoinRoom(game.name);
     }
 }
