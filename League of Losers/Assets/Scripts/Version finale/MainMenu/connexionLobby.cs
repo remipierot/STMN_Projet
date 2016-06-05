@@ -23,6 +23,7 @@ public class connexionLobby : MonoBehaviour {
 
     //GameObject du matchmaking à masquer
     private GameObject matchmaking;
+    private GameObject createPanel;
     private GameObject sliderTemps;
 
     private GameObject textTemps;
@@ -34,6 +35,7 @@ public class connexionLobby : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         matchmaking = GameObject.Find("Matchmaking");
+        createPanel = GameObject.Find("CreatePanel");
         sliderTemps = GameObject.Find("sliderTempsMax"); //récupération slider temps
 
         textTemps = GameObject.Find("textTemps");
@@ -42,6 +44,7 @@ public class connexionLobby : MonoBehaviour {
 
         textTemps.GetComponent<Text>().text = tempsPartie.ToString();
 
+        createPanel.SetActive(false); //Masquage du panel de creation du serveur
         matchmaking.SetActive(false); //Masquage du matchmaking
 
         PhotonNetwork.player.name = PlayerPrefs.GetString("Username", "My Player name");
