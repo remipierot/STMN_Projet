@@ -449,7 +449,7 @@ public class PlayerControllerScript : MonoBehaviour
     }
     
     [PunRPC]
-    void PhPlayerSpeaks(string emotion)
+    public void PhPlayerSpeaks(string emotion)
     {
         // appelé lorsque le joueur doit émettre un son.
         // à remplir. Les différents sons sont déjà spécifiés ci dessous.

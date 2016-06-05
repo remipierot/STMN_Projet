@@ -9,6 +9,7 @@ public class PlayerAttackScript : MonoBehaviour {
     public Rigidbody2D m_Projectile;                //Projectile lancé par le personnage lors de l'attaque
     public bool rangedAttack = true;                //Indique que le joueur utilise une attaque à distance. Autrement, indique une attaque corps à corps.
     public int rangedAttackReleaseTimeMs = 300;     //Nombre de ms avant qu'un projectile puisse être lancé (correspondant à l'animation toAim)
+    public int specialAttackCooldownMs = 15000;     //Nombre de ms de cooldown entre deux attaques spéciales
     
     private Rigidbody2D m_Body;                     //Rigidbody2D de l'objet, utile pour le saut
     private PhotonView m_PhotonView;    		    //Objet lié au Network
@@ -23,8 +24,9 @@ public class PlayerAttackScript : MonoBehaviour {
     private float aimingAngle = 0;                  // angle visé lors de l'attaque
     private float MsBeforeNextAngleUpdate = 150;    // temps avant la prochaine synchronisation d'angle de visée
     private float AngleUpdateTimer = -1;            // timer de synchronisation d'angle de visée
+    private float AttackCooldownTimer = -20000;     // timer de cooldown d'attaque spéciale
     private Vector2 mouseStartPosition;             // position de départ de la souris lors d'un tir de flèche
-    private Vector2 mouseEndPosition;             // position de départ de la souris lors d'un tir de flèche
+    private Vector2 mouseEndPosition;               // position de départ de la souris lors d'un tir de flèche
     private GameObject projectileInstance;          // instance du projectile envoyé
     private float m_AttackInitializationTime;       // moment de commencement de l'animation d'attaque à distance
     
@@ -91,9 +93,17 @@ public class PlayerAttackScript : MonoBehaviour {
             }
             if (Input.GetButtonDown("Skill") && !attacking && !wantAttack)
             {
-                // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
-                wantAttack = true;
-                isSpecialAttack = true;
+                if ((Time.realtimeSinceStartup * 1000 - AttackCooldownTimer) >= specialAttackCooldownMs)
+                {
+                    // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
+                    wantAttack = true;
+                    isSpecialAttack = true;
+                }
+                else
+                {
+                    //m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "specialrecharge");
+                    m_ControlScript.PhPlayerSpeaks("specialrecharge");
+                }
             }
             if (m_ControlScript.CanAttack() && wantAttack && !attacking)
             {
@@ -114,13 +124,14 @@ public class PlayerAttackScript : MonoBehaviour {
                     // ...
                     // POULEEEEEEEEEEEEET !
                     projectileInstance = PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
+                    AttackCooldownTimer = Time.realtimeSinceStartup * 1000;
                 }
                 else
                     // projectile normal
                     projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
                 
                 // définit le parent du projectile, et positionne l'objet
-                projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
+                projectileInstance.GetComponent<Arrow>().setOwner(m_ControlScript.owner);
                 projectileInstance.transform.SetParent(m_HandBone, true);
                 m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
                 m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "aim");
@@ -226,7 +237,7 @@ public class PlayerAttackScript : MonoBehaviour {
             else
                 projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position, m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
             //*/
-            projectileInstance.GetComponent<Arrow>().setOwner(this.gameObject.GetComponent<PlayerControllerScript>().owner);
+            projectileInstance.GetComponent<Arrow>().setOwner(m_ControlScript.owner);
             projectileInstance.transform.SetParent(m_HandBone, true);
             wantRelease = false;
             wantAttack = false;
