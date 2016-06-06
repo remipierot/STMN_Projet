@@ -52,6 +52,11 @@ public class PlayerControllerScript : MonoBehaviour
     public PhotonPlayer owner;
     private PhotonPlayer m_LastAttacker;
     private BoxCollider2D m_Collider;
+    
+    // particules
+    public GameObject m_DashParticles;
+    public GameObject m_JumpParticles;
+    public GameObject m_HurtParticles;
 
     void Awake()
     {
@@ -305,6 +310,7 @@ public class PlayerControllerScript : MonoBehaviour
         ChangeState(STATE_JUMP);
         _SendGroundInfos();
         m_PlayerAnimator.SetTrigger("Jump");
+        Instantiate(m_JumpParticles, transform.position, transform.rotation);
     }
     
     // Effectue un dash dans la direction visée par le joueur
@@ -323,6 +329,9 @@ public class PlayerControllerScript : MonoBehaviour
         m_Body.drag = 10;
         m_LastDashTime = Time.realtimeSinceStartup * 1000;
         m_PlayerAnimator.SetTrigger("Dash");
+        // TODO - trouver pourquoi les particules de dash ne fonctionnent pas.
+        //Instantiate(m_DashParticles, transform.position, transform.rotation);
+        Instantiate(m_JumpParticles, transform.position, transform.rotation);
     }
 
     //Déplace le Player horizontalement
@@ -387,6 +396,8 @@ public class PlayerControllerScript : MonoBehaviour
             m_LastAttacker = attacker;
         
         m_Body.velocity = Vector2.zero;
+        
+        Instantiate(m_HurtParticles, transform.position, transform.rotation);
         
         m_Lives--;
         if (m_Lives == 0)

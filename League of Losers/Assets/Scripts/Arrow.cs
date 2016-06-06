@@ -17,6 +17,8 @@ public class Arrow : MonoBehaviour {
     private bool m_Launched = false; // flèche lancée par le joueur
     private PhotonView m_PhotonView; // synchronisation de la flèche
     
+    public GameObject m_HitParticles;
+    
     public bool isBroken() { return m_Broken || m_Fixed; }
     public bool isLaunched() { return m_Launched; }
     public void _break() {
@@ -158,6 +160,9 @@ public class Arrow : MonoBehaviour {
             
             if (m_PhotonView.isMine)
                 m_PhotonView.RPC("PhArrowSound", PhotonTargets.All, "stickground");
+            
+            if (m_HitParticles != null)
+                Instantiate(m_HitParticles, transform.position, transform.rotation);
         }
     }
     

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 public class ParticleSystemAutodestroy : MonoBehaviour {
     
     private List<ParticleSystem> systems = new List<ParticleSystem>();
+    public float AdditionalWaitTimeMs = 0; // nombre de secondes à attendre après la fin du système de particule avant de le détruire
 
 	void Start () {
         foreach (Transform child in transform)
@@ -25,6 +26,12 @@ public class ParticleSystemAutodestroy : MonoBehaviour {
             if(system.IsAlive())
                 return;
         // supprime le système
-        Destroy(gameObject);
+        StartCoroutine(DestroySelf());
 	}
+    
+    IEnumerator DestroySelf()
+    {
+        yield return new WaitForSeconds(AdditionalWaitTimeMs/1000);
+        Destroy(gameObject);
+    }
 }
