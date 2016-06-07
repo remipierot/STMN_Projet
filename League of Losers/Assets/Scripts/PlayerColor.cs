@@ -26,6 +26,7 @@ public class PlayerColor : MonoBehaviour {
         //if (true)
         {
             col = (Color) owner.customProperties["Couleur"];
+            Debug.Log("Couleur : " + col);
             //col = Color.yellow;
             Color colClothes = Color.white;
             Color colHair = Color.white;
@@ -51,7 +52,16 @@ public class PlayerColor : MonoBehaviour {
                 colHair = new Color(140/255f, 80/255f, 0, 1);
                 colClothes = new Color(200/255f, 200/255f, 0, 1);
             }
-            
+            else if(col == Color.magenta)
+            {
+                colHair = new Color(204 / 255f, 0f, 153/255f, 1);
+                colClothes = new Color(204 / 255f, 0f, 153 / 255f, 1);
+            }
+            else if(col == Color.black)
+            {
+                colHair = new Color(0f, 0f, 0, 1);
+                colClothes = new Color(0f, 0f, 0, 1);
+            }
             // recolore le joueur
             transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
             getChildByName(transform, "ClassicLegF1").GetComponent<SpriteRenderer>().color = colClothes;
