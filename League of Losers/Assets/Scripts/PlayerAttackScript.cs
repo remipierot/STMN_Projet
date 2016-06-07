@@ -41,6 +41,7 @@ public class PlayerAttackScript : MonoBehaviour {
         m_ControlScript = GetComponent<PlayerControllerScript>();
         m_BodyBone = getChildByName(transform, "boneBODY");
         m_HandBone = getChildByName(transform, "boneHANDF");
+        Cursor.lockState = CursorLockMode.Confined;
     }
     
     Transform getChildByName(Transform obj, string name)
@@ -183,7 +184,7 @@ public class PlayerAttackScript : MonoBehaviour {
     
     Vector2 GetDirection()
     {
-        Vector2 direction = mouseEndPosition - mouseStartPosition;
+        Vector2 direction = ((Vector2) Input.mousePosition) - mouseStartPosition;
         float vert = Input.GetAxis("Vertical");
         float horiz = Input.GetAxis("Horizontal");
         if (direction.magnitude < 40)
