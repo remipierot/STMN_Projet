@@ -63,6 +63,8 @@ public class Arrow : MonoBehaviour {
             bool oldLaunched = m_Launched;
             m_Launched = (bool) stream.ReceiveNext();
             
+            if (m_PhotonView == null)
+                m_PhotonView = GetComponent<PhotonView>();
             // gestion des informations lues
             foreach (var player in PhotonNetwork.playerList)
                 if (player.ID == m_PhotonView.ownerId)

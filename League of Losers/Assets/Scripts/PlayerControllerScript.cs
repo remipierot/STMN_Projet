@@ -57,6 +57,8 @@ public class PlayerControllerScript : MonoBehaviour
     public GameObject m_DashParticles;
     public GameObject m_JumpParticles;
     public GameObject m_HurtParticles;
+    
+    public bool m_WasRunning = false;   // utilisé pour tomber à la verticale
 
     void Awake()
     {
@@ -121,10 +123,21 @@ public class PlayerControllerScript : MonoBehaviour
 
         //Déplacement
         if (m_CurrentState == STATE_RUN)
+        {
             translation = m_CurrentFacing ? Vector2.right : Vector2.left;
+            m_WasRunning = true;
+        }
         else
             translation = Vector2.zero;
         _Move(translation);
+        
+        if (m_WasRunning && m_CurrentState == STATE_IDLE)
+        {
+            // permet de tomber verticalement
+            m_WasRunning = false;
+            float direction = m_CurrentFacing ? 1 : -1;
+            m_Body.velocity = new Vector2(m_Body.velocity.x - direction*RunningSpeed, m_Body.velocity.y);
+        }
         
         
         // -------- tout ce qui vient après n'est exécuté que si le personnage est contrôlé par le joueur --------

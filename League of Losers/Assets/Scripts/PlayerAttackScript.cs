@@ -11,6 +11,9 @@ public class PlayerAttackScript : MonoBehaviour {
     public int rangedAttackReleaseTimeMs = 300;     //Nombre de ms avant qu'un projectile puisse être lancé (correspondant à l'animation toAim)
     public int specialAttackCooldownMs = 15000;     //Nombre de ms de cooldown entre deux attaques spéciales
     
+    public GameObject dummyProjectile;              //Prefab de projectile à afficher durant l'aim si le joueur contrôlé n'est pas celui-ci
+    public GameObject dummySpecialProjectile;            //Pareil.
+    
     private Rigidbody2D m_Body;                     //Rigidbody2D de l'objet, utile pour le saut
     private PhotonView m_PhotonView;    		    //Objet lié au Network
     private PlayerControllerScript m_ControlScript; //Script de contrôle du joueur
@@ -117,7 +120,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 // change la position du perso
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_AIMING);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_AIMING);
-                m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, true);
+                m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, true, isSpecialAttack);
                 
                 if (isSpecialAttack)
                 {
@@ -148,13 +151,9 @@ public class PlayerAttackScript : MonoBehaviour {
             {
                 // lancement de l'attaque, après s'être assuré que l'animation initiale est terminée
                 wantRelease = false;
+                wantAttack = false;
                 attacking = false;
-                Vector2 direction = mouseEndPosition - mouseStartPosition;
-                if (direction.magnitude < 40)
-                    // pas de direction de tir
-                    direction = new Vector2(1,0);
-                else
-                    direction.Normalize();
+                Vector2 direction = GetDirection();
                 float angle = Vector2.Angle(new Vector2(1,0), direction);
                 if (direction.y < 0)
                     angle *= -1;
@@ -172,7 +171,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 // retour à une stance normale
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_IDLE);
-                m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
+                m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false, false);
                 // fait parler le personnage
                 if (isSpecialAttack)
                     m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "firespecial");
@@ -181,6 +180,20 @@ public class PlayerAttackScript : MonoBehaviour {
             }
         }
 	}
+    
+    Vector2 GetDirection()
+    {
+        Vector2 direction = mouseEndPosition - mouseStartPosition;
+        float vert = Input.GetAxis("Vertical");
+        float horiz = Input.GetAxis("Horizontal");
+        if (direction.magnitude < 40)
+            // pas de direction de tir
+            direction = new Vector2(1,0);
+        if (vert!=0 || horiz!=0)
+            direction = new Vector2(horiz, vert);
+        direction.Normalize();
+        return direction;
+    }
     
 	void LateUpdate () {
         // appelé après le rendu du système d'animation, mais avant le rendu de la scène
@@ -193,8 +206,7 @@ public class PlayerAttackScript : MonoBehaviour {
         else if (attacking)
         {
             // change la direction du perso en fonction de la direction indiquée par la souris
-            Vector2 direction = (Vector2)(Input.mousePosition) - mouseStartPosition;
-            direction.Normalize();
+            Vector2 direction = GetDirection();
             float angle = Vector2.Angle(new Vector2(1,0), direction);
             if (m_ControlScript.GetCurrentFacing() && direction.x < 0)
             {
@@ -226,7 +238,7 @@ public class PlayerAttackScript : MonoBehaviour {
     }
     
     [PunRPC]
-    void PhSetAttacking(bool attck)
+    void PhSetAttacking(bool attck, bool special)
     {
         attacking = attck;
         if (attacking)
@@ -237,8 +249,20 @@ public class PlayerAttackScript : MonoBehaviour {
             else
                 projectileInstance = PhotonNetwork.Instantiate("ArcherArrow", m_HandBone.position, m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
             //*/
-            projectileInstance.GetComponent<Arrow>().setOwner(m_ControlScript.owner);
-            projectileInstance.transform.SetParent(m_HandBone, true);
+            if (m_PhotonView.isMine)
+            {
+                projectileInstance.GetComponent<Arrow>().setOwner(m_ControlScript.owner);
+                projectileInstance.transform.SetParent(m_HandBone, true);
+            }
+            else if (projectileInstance == null)
+            {
+                if (special)
+                    projectileInstance = (GameObject)Instantiate(dummySpecialProjectile, m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)));
+                else
+                    projectileInstance = (GameObject)Instantiate(dummyProjectile, m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)));
+                
+                projectileInstance.transform.SetParent(m_HandBone, true);
+            }
             wantRelease = false;
             wantAttack = false;
         }
