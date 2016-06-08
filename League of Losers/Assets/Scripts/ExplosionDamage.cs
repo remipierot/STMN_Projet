@@ -30,7 +30,8 @@ public class ExplosionDamage : MonoBehaviour {
         {
             // fait des dégât aux joueurs dans l'explosion
             Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
-            ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, transform.position.x < otherBody.transform.position.x, m_Owner);
+            if (player.GetComponent<PlayerControllerScript>().canTakeDamage())
+                ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, transform.position.x < otherBody.transform.position.x, m_Owner);
         }
         
         PlayExplosionSound();

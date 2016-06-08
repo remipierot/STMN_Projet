@@ -93,6 +93,7 @@ public class PlayerAttackScript : MonoBehaviour {
             {
                 // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
                 wantAttack = true;
+                wantRelease = false;
                 isSpecialAttack = false;
             }
             if (Input.GetButtonDown("Skill") && !attacking && !wantAttack)
@@ -102,6 +103,7 @@ public class PlayerAttackScript : MonoBehaviour {
                     // le joueur veut attaquer, on délaie l'animation en attendant d'être sûr d'être au sol
                     wantAttack = true;
                     isSpecialAttack = true;
+                    wantRelease = false;
                 }
                 else
                 {
@@ -128,7 +130,6 @@ public class PlayerAttackScript : MonoBehaviour {
                     // ...
                     // POULEEEEEEEEEEEEET !
                     projectileInstance = (GameObject) (PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0) as GameObject);
-                    AttackCooldownTimer = Time.realtimeSinceStartup * 1000;
                 }
                 else
                     // projectile normal
@@ -140,7 +141,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
                 m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "aim");
             }
-            if (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill"))
+            if (attacking && (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill")))
             {
                 // le joueur veut lancer son attaque
                 wantRelease = true;
@@ -170,6 +171,8 @@ public class PlayerAttackScript : MonoBehaviour {
                 else
                     rb2d.velocity = direction * 15;
                 AngleUpdateTimer = Time.realtimeSinceStartup * 1000;
+                if (isSpecialAttack)
+                    AttackCooldownTimer = Time.realtimeSinceStartup * 1000;
                 // retour à une stance normale
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_IDLE);

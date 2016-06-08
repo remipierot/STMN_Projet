@@ -136,7 +136,10 @@ public class PlayerControllerScript : MonoBehaviour
             // permet de tomber verticalement
             m_WasRunning = false;
             float direction = m_CurrentFacing ? 1 : -1;
-            m_Body.velocity = new Vector2(m_Body.velocity.x - direction*RunningSpeed, m_Body.velocity.y);
+            float newVelocX = m_Body.velocity.x - direction*RunningSpeed;
+            if (newVelocX * m_Body.velocity.x < 0);
+                newVelocX = 0;
+            m_Body.velocity = new Vector2(newVelocX, m_Body.velocity.y);
         }
         
         
@@ -350,8 +353,8 @@ public class PlayerControllerScript : MonoBehaviour
     //Déplace le Player horizontalement
     private void _Move(Vector2 Translation)
     {
-        m_Body.velocity = new Vector2((Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed)) ? m_Body.velocity.x : translation.x*RunningSpeed, m_Body.velocity.y);
-        //transform.Translate(Translation * RunningSpeed * Time.deltaTime * transform.right.x);
+        float newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed)) ? m_Body.velocity.x : translation.x*RunningSpeed;
+        m_Body.velocity = new Vector2(newVelocX, m_Body.velocity.y);
     }
 
     //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
@@ -404,7 +407,6 @@ public class PlayerControllerScript : MonoBehaviour
             return;
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
         
-        //attacker.AddScore(1);
         if (attacker != owner)
             m_LastAttacker = attacker;
         
@@ -412,12 +414,16 @@ public class PlayerControllerScript : MonoBehaviour
         
         Instantiate(m_HurtParticles, transform.position, transform.rotation);
         
+        if (m_CurrentState == STATE_DASH)
+        {
+            m_Body.gravityScale = originalGravityScale;
+            m_Body.drag = 0;
+        }
+        
         m_Lives--;
         if (m_Lives == 0)
         {
             // game over
-            //PhSendDestruction();
-            //m_PhotonView.RPC("PhSendDestruction", PhotonTargets.Others, STATE_IDLE);
             if (m_PhotonView.isMine)
             {
                 ChangeState(STATE_DEAD);
