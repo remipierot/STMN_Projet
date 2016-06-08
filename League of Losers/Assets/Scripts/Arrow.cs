@@ -12,36 +12,44 @@ public class Arrow : MonoBehaviour {
     
     private PhotonPlayer m_Owner;
     private Rigidbody2D m_Body;
-    private bool m_Broken = true; // flèche cassée et en train de tomber, ne peut faire de dégât
+    private bool m_Broken = false; // flèche cassée et en train de tomber, ne peut faire de dégât
     private bool m_Fixed = true; // flèche plantée dans le sol
     private bool m_Launched = false; // flèche lancée par le joueur
     private PhotonView m_PhotonView; // synchronisation de la flèche
     private BoxCollider2D m_Coll;
     
     public GameObject m_HitParticles;
+    private SpriteRenderer renderer;
+    private ParticleSystem particles;
+    public int m_BrokenLifetimeSeconds=60;
     
     public bool isBroken() { return m_Broken || m_Fixed; }
     public bool isLaunched() { return m_Launched; }
     public void _break() {
-        Debug.Log("BREAK");
         m_Broken = true;
         if (isExplosive)
         {
-            // effet de particule épique
-            GameObject partSystem = (GameObject)Instantiate(explosionParticleSystem, transform.position, Quaternion.identity);
             if (m_PhotonView.isMine)
             {
+                // effet de particule épique
+                GameObject partSystem = (GameObject)Instantiate(explosionParticleSystem, transform.position, Quaternion.identity);
                 partSystem.GetComponent<ExplosionDamage>().setOwner(m_Owner);
-                
-                // destruction de la flèche
-                PhotonNetwork.Destroy(this.gameObject);
+                m_PhotonView.RPC("PhSpawnExplosion", PhotonTargets.Others);
             }
+            
+            if (renderer != null)
+                renderer.enabled = false;
+            if (particles != null)
+                particles.Stop();
         }
         else
         {
             m_Body.velocity = new Vector2((m_Body.velocity.x>0)?1:-1, 0);
             m_Body.angularVelocity = 650;
         }
+        
+        // destruction de la flèche
+        StartCoroutine(DisposeOfArrow());
     }
     
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -58,6 +66,7 @@ public class Arrow : MonoBehaviour {
         {
             // synchronisation avec l'owner
             int id = (int) stream.ReceiveNext();
+            bool oldBroken = m_Broken;
             m_Broken = (bool) stream.ReceiveNext();
             m_Fixed = (bool) stream.ReceiveNext();
             bool oldLaunched = m_Launched;
@@ -74,11 +83,6 @@ public class Arrow : MonoBehaviour {
                 if (player.ID == m_PhotonView.ownerId)
                     m_Owner = player;
             
-            if (m_Broken)
-            {
-                if (isExplosive)
-                    Destroy(this.gameObject);
-            }
             if (m_Fixed)
             {
                 m_Body.isKinematic = true;
@@ -87,6 +91,13 @@ public class Arrow : MonoBehaviour {
             }
             if (oldLaunched != m_Launched && !m_Fixed && !m_Broken)
                 Launch();
+            if (oldBroken != m_Broken && isExplosive)
+            {
+                if (renderer != null)
+                    renderer.enabled = false;
+                if (particles != null)
+                    particles.Stop();
+            }
         }
     }
 
@@ -95,6 +106,25 @@ public class Arrow : MonoBehaviour {
         m_PhotonView = GetComponent<PhotonView>();
         m_Coll = GetComponent<BoxCollider2D>();
         m_Body.isKinematic = true;
+        
+        SpriteRenderer rndr = GetComponent<SpriteRenderer>();
+        if (rndr != null)
+            renderer = rndr;
+        foreach (Transform obj in transform)
+        {
+            rndr = obj.GetComponent<SpriteRenderer>();
+            if (rndr != null)
+                renderer = rndr;
+            ParticleSystem part = obj.GetComponent<ParticleSystem>();
+            if (part != null)
+                particles = part;
+        }
+        
+        if (!m_PhotonView.isMine)
+            // la flèche est instanciée mais pas correctement attachée à son lanceur pour les autres joueurs.
+            // On compense en masquant la flèche...
+            if (renderer != null)
+                renderer.enabled = false;
 	}
     
     public void Launch()
@@ -102,8 +132,9 @@ public class Arrow : MonoBehaviour {
         m_Launched = true;
         m_Broken = false;
         m_Fixed = false;
-        Debug.Log("LAUNCH");
         m_Body.isKinematic = false;
+        if (renderer != null)
+            renderer.enabled = true;
     }
 	
 	// Update is called once per frame
@@ -115,14 +146,13 @@ public class Arrow : MonoBehaviour {
         float angle = Vector2.Angle(new Vector2(1,0), direction);
         if (direction.y < 0)
             angle *= -1;
-        m_Body.rotation = angle;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 	}
     
     void OnTriggerEnter2D(Collider2D coll)
     {
         if (m_Fixed || !m_Launched)
             return;
-        Debug.Log("TRIGGERENTER");
         
         if (coll.gameObject.tag == "ArenaEdge")
         {
@@ -168,6 +198,7 @@ public class Arrow : MonoBehaviour {
             m_Body.freezeRotation = true;
             m_Coll.enabled = false;
             m_Broken = true;
+            StartCoroutine(DisposeOfArrow());
             m_Fixed = true;
             if (isExplosive)
                 _break();
@@ -176,7 +207,10 @@ public class Arrow : MonoBehaviour {
                 m_PhotonView.RPC("PhArrowSound", PhotonTargets.All, "stickground");
             
             if (m_HitParticles != null)
+            {
                 Instantiate(m_HitParticles, transform.position, transform.rotation);
+                m_PhotonView.RPC("PhSpawnHit", PhotonTargets.Others);
+            }
         }
     }
     
@@ -207,5 +241,23 @@ public class Arrow : MonoBehaviour {
                 Debug.Log("ERREUR : son flèche inconnue : " + sound);
                 break;
         }
+    }
+    
+    IEnumerator DisposeOfArrow()
+    {
+        yield return new WaitForSeconds(m_BrokenLifetimeSeconds);
+        PhotonNetwork.Destroy(this.gameObject);
+    }
+    
+    [PunRPC]
+    void PhSpawnExplosion()
+    {
+        GameObject partSystem = (GameObject)Instantiate(explosionParticleSystem, transform.position, Quaternion.identity);
+    }
+    
+    [PunRPC]
+    void PhSpawnHit()
+    {
+        Instantiate(m_HitParticles, transform.position, transform.rotation);
     }
 }

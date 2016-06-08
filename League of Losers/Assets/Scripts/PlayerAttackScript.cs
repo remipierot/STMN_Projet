@@ -41,7 +41,7 @@ public class PlayerAttackScript : MonoBehaviour {
         m_ControlScript = GetComponent<PlayerControllerScript>();
         m_BodyBone = getChildByName(transform, "boneBODY");
         m_HandBone = getChildByName(transform, "boneHANDF");
-        Cursor.lockState = CursorLockMode.Confined;
+        //Cursor.lockState = CursorLockMode.Confined;
     }
     
     Transform getChildByName(Transform obj, string name)
@@ -127,7 +127,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 {
                     // ...
                     // POULEEEEEEEEEEEEET !
-                    projectileInstance = PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0);
+                    projectileInstance = (GameObject) (PhotonNetwork.Instantiate("ArcherArrowSpecial", m_HandBone.position+new Vector3(0,0,-1), m_HandBone.rotation * Quaternion.Euler(new Vector3(0, 0, -20)), 0) as GameObject);
                     AttackCooldownTimer = Time.realtimeSinceStartup * 1000;
                 }
                 else
@@ -159,6 +159,9 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (direction.y < 0)
                     angle *= -1;
                 Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, angle));
+                // détache le projectile du parent
+                projectileInstance.transform.parent = null;
+                projectileInstance.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
                 projectileInstance.GetComponent<Arrow>().Launch();
                 Rigidbody2D rb2d = projectileInstance.GetComponent<Rigidbody2D>();
                 // met en mouvement l'objet
@@ -166,8 +169,6 @@ public class PlayerAttackScript : MonoBehaviour {
                     rb2d.velocity = direction * 7; // moins de vélocité, afin d'admirer ce superbe poulet
                 else
                     rb2d.velocity = direction * 15;
-                // détache le projectile du parent
-                projectileInstance.transform.parent = null;
                 AngleUpdateTimer = Time.realtimeSinceStartup * 1000;
                 // retour à une stance normale
                 m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
@@ -269,7 +270,10 @@ public class PlayerAttackScript : MonoBehaviour {
         }
         else
         {
-            projectileInstance.transform.parent = null;
+            if (m_PhotonView.isMine)
+                projectileInstance.transform.parent = null;
+            else
+                Destroy(projectileInstance);
             wantRelease = false;
             wantAttack = false;
         }
