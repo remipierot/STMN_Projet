@@ -16,12 +16,14 @@ public class Arrow : MonoBehaviour {
     private bool m_Fixed = true; // flèche plantée dans le sol
     private bool m_Launched = false; // flèche lancée par le joueur
     private PhotonView m_PhotonView; // synchronisation de la flèche
+    private BoxCollider2D m_Coll;
     
     public GameObject m_HitParticles;
     
     public bool isBroken() { return m_Broken || m_Fixed; }
     public bool isLaunched() { return m_Launched; }
     public void _break() {
+        Debug.Log("BREAK");
         m_Broken = true;
         if (isExplosive)
         {
@@ -39,8 +41,6 @@ public class Arrow : MonoBehaviour {
         {
             m_Body.velocity = new Vector2((m_Body.velocity.x>0)?1:-1, 0);
             m_Body.angularVelocity = 650;
-            // pas besoin de synchroniser la flèche pendant qu'elle retombe au sol...
-            //m_PhotonView.synchronization = ViewSynchronization.Off;
         }
     }
     
@@ -63,15 +63,16 @@ public class Arrow : MonoBehaviour {
             bool oldLaunched = m_Launched;
             m_Launched = (bool) stream.ReceiveNext();
             
+            if (m_Body == null)
+                m_Body = GetComponent<Rigidbody2D>();
             if (m_PhotonView == null)
                 m_PhotonView = GetComponent<PhotonView>();
+            if (m_Coll == null)
+                m_Coll = GetComponent<BoxCollider2D>();
             // gestion des informations lues
             foreach (var player in PhotonNetwork.playerList)
                 if (player.ID == m_PhotonView.ownerId)
                     m_Owner = player;
-            
-            if (m_Body == null)
-                m_Body = GetComponent<Rigidbody2D>();
             
             if (m_Broken)
             {
@@ -80,7 +81,9 @@ public class Arrow : MonoBehaviour {
             }
             if (m_Fixed)
             {
-                GetComponent<Rigidbody2D>().isKinematic = true;
+                m_Body.isKinematic = true;
+                m_Body.freezeRotation = true;
+                m_Coll.enabled = false;
             }
             if (oldLaunched != m_Launched && !m_Fixed && !m_Broken)
                 Launch();
@@ -90,6 +93,7 @@ public class Arrow : MonoBehaviour {
 	void Start () {
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
+        m_Coll = GetComponent<BoxCollider2D>();
         m_Body.isKinematic = true;
 	}
     
@@ -98,12 +102,13 @@ public class Arrow : MonoBehaviour {
         m_Launched = true;
         m_Broken = false;
         m_Fixed = false;
+        Debug.Log("LAUNCH");
         m_Body.isKinematic = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if (!m_Launched || m_Body.velocity.magnitude < 1)
+        if (!m_Launched || m_Body.velocity.magnitude < 1 || m_Fixed)
             return;
         // oriente le projectile dans la direction de déplacement
         Vector2 direction = m_Body.velocity;
@@ -117,6 +122,7 @@ public class Arrow : MonoBehaviour {
     {
         if (m_Fixed || !m_Launched)
             return;
+        Debug.Log("TRIGGERENTER");
         
         if (coll.gameObject.tag == "ArenaEdge")
         {
@@ -126,7 +132,7 @@ public class Arrow : MonoBehaviour {
         }
         else if (coll.gameObject.tag == "Player")
         {
-            if (!m_Broken && !m_Fixed)
+            if (!m_Broken)
             {
                 if (((PlayerControllerScript)(coll.gameObject.GetComponent<PlayerControllerScript>())).owner != m_Owner)
                 {
@@ -140,21 +146,27 @@ public class Arrow : MonoBehaviour {
         }
         else if (coll.gameObject.tag == "Projectile")
         {
-            Arrow arrow = coll.gameObject.GetComponent<Arrow>();
-            if (!arrow.isBroken() && arrow.isLaunched())
+            if (!m_Broken)
             {
-                // collision avec une autre flèche
-                arrow._break();
-                _break();
+                Arrow arrow = coll.gameObject.GetComponent<Arrow>();
+                if (!arrow.isBroken() && arrow.isLaunched())
+                {
+                    // collision avec une autre flèche
+                    arrow._break();
+                    _break();
+                }
+                
+                // aucune collision avec les autres projectiles
             }
-            
-            // aucune collision avec les autres projectiles
         }
         else if (!coll.isTrigger)
         {
             // collision du terrain - on bloque la flèche
             m_Body.velocity = Vector2.zero;
+            m_Body.angularVelocity = 0;
             m_Body.isKinematic = true;
+            m_Body.freezeRotation = true;
+            m_Coll.enabled = false;
             m_Broken = true;
             m_Fixed = true;
             if (isExplosive)
