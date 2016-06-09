@@ -30,7 +30,8 @@ public class PlayerControllerScript : MonoBehaviour
     public int m_Lives = 3; // nombre de vies restantes
     
     public GameObject m_RespawnPoint;
-    
+    public PlayerGrapple GrapplingHook;
+
     private Animator m_PlayerAnimator;          //Animator de l'objet, utile pour changer les états d'animation
     private Rigidbody2D m_Body;                 //Rigidbody2D de l'objet, utile pour le saut
     private PlayerAttackScript m_AttackScript;  //Script gérant l'attaque
@@ -166,6 +167,21 @@ public class PlayerControllerScript : MonoBehaviour
         }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
+
+        if (GrapplingHook.IsGrappling)
+        {
+            ChangeState(STATE_GRAPPLE);
+            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_GRAPPLE);
+        }
+
+        if (GrapplingHook.IsHooked)
+        {
+            m_Body.AddForce(
+                (transform.right.x > 0)
+                ? GrapplingHook.RightProjection * GrapplingHook.GrappleProjectionStrength
+                : GrapplingHook.LeftProjection * GrapplingHook.GrappleProjectionStrength
+            );
+        }
 
         //Gestion du saut
         if (Input.GetButtonDown("Jump") && m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
