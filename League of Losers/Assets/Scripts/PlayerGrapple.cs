@@ -29,7 +29,7 @@ public class PlayerGrapple : MonoBehaviour {
         {
             return !Body.isKinematic;
         }
-        private set
+        set
         {
             if (!value)
             {
@@ -80,9 +80,16 @@ public class PlayerGrapple : MonoBehaviour {
     {
         if (IsGrappling && CollidedObject.rigidbody != ParentBody)
         {
-            m_StartTime = 0;
-            IsGrappling = false;
-            IsHooked = true;
+            if (CollidedObject.gameObject.tag == "Player")
+            {
+                // TODO
+            }
+            else if (CollidedObject.gameObject.tag != "ArenaEdge" && CollidedObject.gameObject.tag != "Projectile")
+            {
+                m_StartTime = 0;
+                IsGrappling = false;
+                IsHooked = true;
+            }
         }
     }
 

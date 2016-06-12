@@ -170,8 +170,13 @@ public class PlayerControllerScript : MonoBehaviour
 
         if (GrapplingHook.IsGrappling)
         {
-            ChangeState(STATE_GRAPPLE);
-            m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_GRAPPLE);
+            if (m_CurrentState != STATE_DEAD)
+            {
+                ChangeState(STATE_GRAPPLE);
+                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_GRAPPLE);
+            }
+            else
+                GrapplingHook.IsGrappling = false;
         }
 
         if (GrapplingHook.IsHooked)
@@ -475,7 +480,7 @@ public class PlayerControllerScript : MonoBehaviour
     {
         if (m_CurrentState == STATE_DEAD)
             return;
-        
+        Debug.Log("Mort par chute");
         m_Lives--;
         if (m_Lives <= 0)
         {
