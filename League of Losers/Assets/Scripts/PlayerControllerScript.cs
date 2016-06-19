@@ -60,6 +60,7 @@ public class PlayerControllerScript : MonoBehaviour
     public GameObject m_HurtParticles;
     
     public bool m_WasRunning = false;   // utilisé pour tomber à la verticale
+    public bool finalDeath = false;     // fin du personnage, qui ne doit plus être contrôlé par le joueur
 
     void Awake()
     {
@@ -150,7 +151,7 @@ public class PlayerControllerScript : MonoBehaviour
             return;
         
         // gestion du respawn après mort
-        if (m_CurrentState == STATE_DEAD && (Time.realtimeSinceStartup * 1000 - m_DieRespawnTimer) >= MsBeforeDeathRespawn)
+        if (m_CurrentState == STATE_DEAD && (Time.realtimeSinceStartup * 1000 - m_DieRespawnTimer) >= MsBeforeDeathRespawn && !finalDeath)
         {
             ChangeState(STATE_IDLE);
             m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
@@ -582,5 +583,14 @@ public class PlayerControllerScript : MonoBehaviour
                 Debug.Log("ERREUR : émotion inconnue : " + emotion);
                 break;
         }
+    }
+    
+    // tue de manière permanente le joueur en fin de jeu
+    public void DieFinal()
+    {
+        ChangeState(STATE_DEAD);
+        m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DEAD);
+        m_PlayerAnimator.SetTrigger("Die");
+        finalDeath = true;
     }
 }

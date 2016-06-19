@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class GUI_ScorePanel : MonoBehaviour {
 
-    GameObject scoresPanel;
+    public GameObject scoresPanel;
     GameObject SPJ1;
     GameObject SPJ2;
     GameObject SPJ3;
@@ -21,7 +21,6 @@ public class GUI_ScorePanel : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        scoresPanel = GameObject.Find("ScoresPanel");
         SPJ1 = GameObject.Find("SPJoueur1");
         SPJ2 = GameObject.Find("SPJoueur2");
         SPJ3 = GameObject.Find("SPJoueur3");
