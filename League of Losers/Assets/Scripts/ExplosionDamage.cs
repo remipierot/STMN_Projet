@@ -26,12 +26,16 @@ public class ExplosionDamage : MonoBehaviour {
         exploded = true;
         if (m_Owner == null)
             return;
-        foreach (var player in playersInAttackRange)
+        foreach (GameObject player in playersInAttackRange)
         {
+            Debug.Log("Player " + player);
             // fait des dégât aux joueurs dans l'explosion
             Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
             if (player.GetComponent<PlayerControllerScript>().canTakeDamage())
+            {
+                Debug.Log("Can take damage = true");
                 ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, transform.position.x < otherBody.transform.position.x, m_Owner);
+            }
         }
         
         PlayExplosionSound();

@@ -35,6 +35,8 @@ public class PlayerAttackScript : MonoBehaviour {
     
     private List<GameObject> playersInAttackRange = new List<GameObject>();
     
+    public PlayerGUI m_GUI;
+    
     void Awake() {
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
@@ -182,6 +184,8 @@ public class PlayerAttackScript : MonoBehaviour {
                     m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "firespecial");
                 else
                     m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "fire");
+                if (isSpecialAttack)
+                    m_GUI.AnimateSpecial(specialAttackCooldownMs/1000f);
             }
         }
 	}

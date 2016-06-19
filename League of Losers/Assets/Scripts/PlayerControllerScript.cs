@@ -61,6 +61,8 @@ public class PlayerControllerScript : MonoBehaviour
     
     public bool m_WasRunning = false;   // utilisé pour tomber à la verticale
     public bool finalDeath = false;     // fin du personnage, qui ne doit plus être contrôlé par le joueur
+    
+    public PlayerGUI m_GUI;
 
     void Awake()
     {
@@ -158,6 +160,10 @@ public class PlayerControllerScript : MonoBehaviour
             m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "respawn");
             m_Body.transform.position = new Vector3(m_RespawnPoint.transform.position.x, m_RespawnPoint.transform.position.y, m_RespawnPoint.transform.position.z);
             m_Body.velocity = Vector2.zero;
+            
+            m_PhotonView.RPC("PhSetAlpha", PhotonTargets.Others, .3f);
+            SetAlpha(.3f);
+            StartCoroutine(RestoreAlpha(HitInvincibilityMs/1000f));
         }
         
         // restaure les contrôles après avoir été touché
@@ -361,6 +367,7 @@ public class PlayerControllerScript : MonoBehaviour
                 m_Body.AddForce(new Vector2(DashStrength, 0));
             else
                 m_Body.AddForce(new Vector2(-DashStrength, 0));
+            m_GUI.AnimateDash(MsBetweenDashes/1000f);
         }
         originalGravityScale = m_Body.gravityScale;
         m_Body.gravityScale = 0;
@@ -419,7 +426,7 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts
     public bool canTakeDamage()
     {
-        return m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs);
+        return m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
     }
     [PunRPC]
     void PhTakeDamage(bool direction, PhotonPlayer attacker)
@@ -427,6 +434,7 @@ public class PlayerControllerScript : MonoBehaviour
         if ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs)
             // pas de spam
             return;
+        Debug.Log("Take damage");
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
         
         if (attacker != owner)
@@ -474,6 +482,8 @@ public class PlayerControllerScript : MonoBehaviour
             m_PlayerAnimator.SetTrigger("TakeDamage");
             if (m_PhotonView.isMine)
                 m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "takedamage");
+            SetAlpha(.3f);
+            StartCoroutine(RestoreAlpha(HitInvincibilityMs/1000f));
         }
     }
 
@@ -592,5 +602,25 @@ public class PlayerControllerScript : MonoBehaviour
         m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DEAD);
         m_PlayerAnimator.SetTrigger("Die");
         finalDeath = true;
+    }
+    
+    [PunRPC]
+    void PhSetAlpha(float alpha)
+    {
+        SetAlpha(.3f);
+        StartCoroutine(RestoreAlpha(HitInvincibilityMs/1000f));
+    }
+    
+    void SetAlpha(float alpha)
+    {
+        SpriteRenderer[] ChildrenRenderer = GetComponentsInChildren<SpriteRenderer>() as SpriteRenderer[];
+        foreach (SpriteRenderer spRender in ChildrenRenderer)
+            spRender.color = new Color(spRender.color.r, spRender.color.g, spRender.color.b, alpha);
+    }
+    
+    IEnumerator RestoreAlpha(float time)
+    {
+        yield return new WaitForSeconds(time);
+        SetAlpha(1f);
     }
 }
