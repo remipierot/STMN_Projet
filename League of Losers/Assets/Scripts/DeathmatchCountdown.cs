@@ -5,11 +5,13 @@ public class DeathmatchCountdown : MonoBehaviour {
     public WinPanel panel;
     
 	void Start () {
+        Debug.LogError("CD START");
         StartCoroutine(PrepareCountdown());
 	}
     
     IEnumerator PrepareCountdown()
     {
+        Debug.LogError("CD COROUT");
         Room r = PhotonNetwork.room;
         while (r == null)
         {
@@ -18,10 +20,12 @@ public class DeathmatchCountdown : MonoBehaviour {
             r = PhotonNetwork.room;
         }
         
+        Debug.LogError("CD HASROOM");
         if (r.customProperties.ContainsKey("Temps"))
         {
+            Debug.LogError("CD HASPROP");
             Debug.Log("Match de " + r.customProperties["Temps"] + " minutes");
-            //StartCoroutine(Countdown((float)r.customProperties["Temps"]));
+            StartCoroutine(Countdown(float.Parse((string)r.customProperties["Temps"])));
         }
         //else
         //    StartCoroutine(Countdown(.1f));
