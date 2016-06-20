@@ -68,12 +68,26 @@ public class roomConfig : Photon.MonoBehaviour {
     private int nbVote = 0;
     private string nomArene = "";
 
+    //Bouton pret on/off
+    public GameObject buttonPlayer1On;
+    public GameObject buttonPlayer2On;
+    public GameObject buttonPlayer3On;
+    public GameObject buttonPlayer4On;
+
+    public GameObject buttonPlayer1Off;
+    public GameObject buttonPlayer2Off;
+    public GameObject buttonPlayer3Off;
+    public GameObject buttonPlayer4Off;
+
+    bool allPlayerReady;
+
     //Photon View
     private PhotonView m_PhotonView;
 
     Text tempsAfficherCharacter;
     Text tempsAfficherArene;
 
+    //Boolean
     private bool enJeu = false;
     private bool stopTimer = true;
     private bool areneSelection = false;
@@ -118,8 +132,12 @@ public class roomConfig : Photon.MonoBehaviour {
         idJoueur = PhotonNetwork.player.ID;
         nombreJoueur = PhotonNetwork.playerList.Length;
 
+        //Liste des joueurs pret
+        allPlayerReady = false;
+
         //placeDansEcran();
         activationCanvasPlayer();
+        onlyReadyInteractable();
 
         tempsAfficherCharacter = GameObject.Find("Temps").GetComponent<Text>();
         tempsAfficherArene = GameObject.Find("Timer").GetComponent<Text>();
@@ -127,7 +145,7 @@ public class roomConfig : Photon.MonoBehaviour {
         timerInt = (int)timer;
         timerArene = (int)timer;
         arenaSelection.SetActive(false); // Desactivation de la selection de l'arene
-	}
+    }
 
     void remiseAZeroCanvas()
     {
@@ -142,14 +160,25 @@ public class roomConfig : Photon.MonoBehaviour {
             remiseAZeroCouleur(idJoueur,Color.white);
             place++;
         }*/
-        player1Image.color = Color.white;
+        player1Image.texture = null;
         player1.GetComponent<Image>().color = Color.white;
-        player2Image.color = Color.white;
+        player2Image.texture = null;
         player2.GetComponent<Image>().color = Color.white;
-        player3Image.color = Color.white;
+        player3Image.texture = null;
         player3.GetComponent<Image>().color = Color.white;
-        player4Image.color = Color.white;
+        player4Image.texture = null;
         player4.GetComponent<Image>().color = Color.white;
+
+        //Remise à zéro des boutons 
+        buttonPlayer1Off.SetActive(true);
+        buttonPlayer1On.SetActive(false);
+        buttonPlayer2Off.SetActive(true);
+        buttonPlayer2On.SetActive(false);
+        buttonPlayer3Off.SetActive(true);
+        buttonPlayer3On.SetActive(false);
+        buttonPlayer4Off.SetActive(true);
+        buttonPlayer4On.SetActive(false);
+        allPlayerReady = false;
     }
     
     //Affichage du canvas en fonction du nombre de joueurs
@@ -203,11 +232,107 @@ public class roomConfig : Photon.MonoBehaviour {
                 break;
         }
     }
+
+    void detectButtonReady()
+    {
+        switch(PhotonNetwork.playerList.Length)
+        {
+            case 1:
+                {
+                    if (buttonPlayer1On.activeSelf)
+                    {
+                        allPlayerReady = true;
+                    }
+                }
+                break;
+
+            case 2:
+                {
+                    if (buttonPlayer1On.activeSelf && buttonPlayer2On.activeSelf)
+                    {
+                        allPlayerReady = true;
+                    }
+                }
+                break;
+
+            case 3:
+
+                if (buttonPlayer1On.activeSelf && buttonPlayer2On.activeSelf && buttonPlayer3On.activeSelf)
+                {
+                    allPlayerReady = true;
+                }
+                break;
+
+            case 4:
+
+                if (buttonPlayer1On.activeSelf && buttonPlayer2On.activeSelf && buttonPlayer3On.activeSelf && buttonPlayer4On.activeSelf)
+                {
+                    allPlayerReady = true;
+                }
+                break;
+        }
+    }
+
+    void onlyReadyInteractable()
+    {
+        switch(placeDansEcran(idJoueur))
+        {
+            case 1:
+                {
+                    buttonPlayer2Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer2On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer3Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer3On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer4Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer4On.GetComponent<Button>().interactable = false;
+
+                }
+                break;
+            case 2:
+                {
+                    buttonPlayer1Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer1On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer3Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer3On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer4Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer4On.GetComponent<Button>().interactable = false;
+                }
+                break;
+            case 3:
+                {
+                    buttonPlayer1Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer1On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer2Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer2On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer4Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer4On.GetComponent<Button>().interactable = false;
+                }
+                break;
+            case 4:
+                {
+                    buttonPlayer1Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer1On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer2Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer2On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer3Off.GetComponent<Button>().interactable = false;
+                    buttonPlayer3On.GetComponent<Button>().interactable = false;
+                }
+                break;
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
 
-        if(!timerInt.Equals(0))
+        if(!timerInt.Equals(0) && !allPlayerReady)
         {
             //Si un joueur rejoint la partie on affiche son canvas
             if (nombreJoueur != PhotonNetwork.playerList.Length)
@@ -216,6 +341,7 @@ public class roomConfig : Photon.MonoBehaviour {
                 timer = 30;
                 remiseAZeroCanvas();
                 activationCanvasPlayer();
+                onlyReadyInteractable();
                 stopTimer = true; //Si le nombre de joueurs changent on arrete le timer.
                 menuButton.SetActive(true);
             }
@@ -223,6 +349,7 @@ public class roomConfig : Photon.MonoBehaviour {
             //Si le nombre de joueur est supérieur à 1, on active le timer
             if (PhotonNetwork.isMasterClient)
             {
+                detectButtonReady();
                 if (!stopTimer)
                 {
                     timer -= Time.deltaTime;
@@ -230,10 +357,15 @@ public class roomConfig : Photon.MonoBehaviour {
                     if (timerInt != (int)timer)
                     {
                         Debug.Log("Mise à jour timer");
+                        PhotonNetwork.room.open = false;
                         m_PhotonView.RPC("updateTimer_RPC", PhotonTargets.AllBuffered, timer);
                     }
                 }
-                else startTimerButton.SetActive(true);
+                else
+                {
+                    PhotonNetwork.room.open = true;
+                    startTimerButton.SetActive(true);
+                }
              }
         }
 
@@ -248,7 +380,7 @@ public class roomConfig : Photon.MonoBehaviour {
                 {
                     if (PhotonNetwork.isMasterClient)
                     {
-                        m_PhotonView.RPC("initialisationArene_RPC", PhotonTargets.All);
+                        m_PhotonView.RPC("initialisationVoteArene_RPC", PhotonTargets.All);
                     }
                 }
                     //Si la partie a débuté
@@ -275,28 +407,39 @@ public class roomConfig : Photon.MonoBehaviour {
                 {
                     //On instancie la scène selectionné
                     //PhotonNetwork.LoadLevel(areneVote());
-                    nomArene = areneVote();
-                    if(nomArene == "Arene1")
+                    Debug.Log("Nombre de joueurs : " + nbVote);
+
+                    if (PhotonNetwork.isMasterClient)
                     {
-                        SceneManager.LoadScene(3);
-                    }
-                    else if( nomArene == "Arene2")
-                    {
-                        SceneManager.LoadScene(4);
-                    }
-                    else if (nomArene == "Arene3")
-                    {
-                        SceneManager.LoadScene(5);
-                    }
-                    
+                        nomArene = areneVote();
+                        m_PhotonView.RPC("loadArene_RPC", PhotonTargets.All, nomArene);
+                    } 
                 }
             }
         }
-	}
+    }
+
+    [PunRPC]
+    public void loadArene_RPC(string nomArene)
+    {
+        if (nomArene == "Arene1")
+        {
+            SceneManager.LoadScene(3);
+        }
+        else if (nomArene == "Arene2")
+        {
+            SceneManager.LoadScene(4);
+        }
+        else if (nomArene == "Arene3")
+        {
+            SceneManager.LoadScene(5);
+        }
+    }
+                
 
     //Initialisation des variables pour tout le monde
     [PunRPC]
-    void initialisationArene_RPC()
+    void initialisationVoteArene_RPC()
     {
         PhotonNetwork.player.customProperties = new ExitGames.Client.Photon.Hashtable();
         PhotonNetwork.player.customProperties.Add("Classe", idClasseJoueur);
@@ -318,6 +461,7 @@ public class roomConfig : Photon.MonoBehaviour {
         int voteGagnant = returnNombre(returnNombre(voteArene1, voteArene2,"Arene1","Arene2"), voteArene3,nomArene,"Arene3");
         return nomArene;     
     }
+
     //Algo de tri pour le vote
     int returnNombre(int a, int b,string nA, string nB)
     {
@@ -586,27 +730,82 @@ public class roomConfig : Photon.MonoBehaviour {
         updateTimer(timer);
     }
 
-    /**
+    /// <summary>
+    /// Bouton "PRET"
+    /// </summary>
+    public void clickPretPlayer()
+    {
+        m_PhotonView.RPC("buttonReady_RPC", PhotonTargets.Others, idJoueur);
+    }
+
+
+
+    [PunRPC]
+    void buttonReady_RPC( int idJoueur)
+    {
+        int num = placeDansEcran(idJoueur);
+
+            switch (num)
+            {
+                case 1:
+                    {
+                        buttonPlayer1Off.SetActive(buttonPlayer1On.activeSelf);
+                        buttonPlayer1On.SetActive(!buttonPlayer1Off.activeSelf);
+                    }
+                    break;
+                case 2:
+                    {
+                        buttonPlayer2Off.SetActive(buttonPlayer2On.activeSelf);
+                        buttonPlayer2On.SetActive(!buttonPlayer2Off.activeSelf);
+                    }
+                    break;
+                case 3:
+                    {
+                        buttonPlayer3Off.SetActive(buttonPlayer3On.activeSelf);
+                        buttonPlayer3On.SetActive(!buttonPlayer3Off.activeSelf);
+                    }
+                    break;
+                case 4:
+                    {
+                        buttonPlayer4Off.SetActive(buttonPlayer4On.activeSelf);
+                        buttonPlayer4On.SetActive(!buttonPlayer4Off.activeSelf);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+    }
+
+    /*******************************************************************************************************
      * 
      *  VOTE DE L'ARENE
      * 
      * */
     public void clickArene1()
     {
-        arene1.GetComponent<Button>().interactable = false;
+        buttonInteractable();
         m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,1);
     }
 
     public void clickArene2()
     {
-        arene2.GetComponent<Button>().interactable = false;
+        buttonInteractable();
         m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,2);
     }
 
     public void clickArene3()
     {
-        arene3.GetComponent<Button>().interactable = false;
+        buttonInteractable();
         m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,3);
+    }
+
+    public void buttonInteractable()
+    {
+        arene1.GetComponent<Button>().interactable = false;
+        arene2.GetComponent<Button>().interactable = false;
+        arene3.GetComponent<Button>().interactable = false;
+        randomArene.GetComponent<Button>().interactable = false;
     }
 
     public void clickAleatoire()
