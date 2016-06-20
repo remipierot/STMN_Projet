@@ -23,11 +23,9 @@ public class PlayerColor : MonoBehaviour {
         
         Color col;
         if (owner.customProperties.ContainsKey("Couleur"))
-        //if (true)
         {
             col = (Color) owner.customProperties["Couleur"];
-            Debug.Log("Couleur : " + col);
-            //col = Color.yellow;
+
             Color colClothes = Color.white;
             Color colHair = Color.white;
             Color colSkin = Color.white;
