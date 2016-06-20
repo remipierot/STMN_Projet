@@ -9,7 +9,6 @@ public class BackgroundRandomiser : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        DontDestroyOnLoad(this);
         switch (Random.Range(0, 2))
         {
             case 0: this.GetComponent<SpriteRenderer>().sprite = background1;break;
