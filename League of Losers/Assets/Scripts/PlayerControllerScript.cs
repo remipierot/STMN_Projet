@@ -10,11 +10,12 @@ public class PlayerControllerScript : MonoBehaviour
     public const int STATE_IDLE = 0,       //Animation d'attente (immobile)
               STATE_RUN = 1,        //Animation de course
               STATE_DASH = 2,       //Dash
-              STATE_AIMING = 3,     //Visée lors d'une attaque rangée
+              STATE_AIMING = 3,     //Visée lors d'une attaque rangée, ou coup d'épée lors d'une attaque corps à corps
               STATE_GRAPPLE = 4,    //Utilisation du grappin
               STATE_JUMP = 5,       //Saut
               STATE_HIT = 6,        //Prise de dégâts
-              STATE_DEAD = 7;       //Mort
+              STATE_DEAD = 7,       //Mort
+              STATE_CHARGE = 8;     //Charge (CaC uniquement)
     const bool FACE_RIGHT = true,   //Regard du Player vers la droite
                FACE_LEFT = false;   //Regard du Player vers la gauche
 
@@ -131,7 +132,7 @@ public class PlayerControllerScript : MonoBehaviour
         }
 
         //Déplacement
-        if (m_CurrentState == STATE_RUN)
+        if (m_CurrentState == STATE_RUN || m_CurrentState == STATE_CHARGE)
         {
             translation = m_CurrentFacing ? Vector2.right : Vector2.left;
             m_WasRunning = true;
@@ -238,7 +239,7 @@ public class PlayerControllerScript : MonoBehaviour
         
         // Gestion du dash
         float dash = Input.GetAxisRaw("Dash");
-        if (dash < 0 && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_DASH)
+        if (dash < 0 && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_DASH && m_CurrentState != STATE_CHARGE)
         {
             if ((Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
             {
@@ -261,7 +262,7 @@ public class PlayerControllerScript : MonoBehaviour
             //else
             //    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "dashrecharge");
         }
-        else if (dash > 0 && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_DASH)
+        else if (dash > 0 && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_DASH && m_CurrentState != STATE_CHARGE)
         {
             if ((Time.realtimeSinceStartup * 1000 - m_LastDashTime) >= MsBetweenDashes)
             {
@@ -286,7 +287,7 @@ public class PlayerControllerScript : MonoBehaviour
         }
 
         //Gestion du déplacement horizontal
-        else if (horizontal != 0 && m_CurrentState != STATE_DASH && m_CurrentState != STATE_AIMING && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT)
+        else if (horizontal != 0 && m_CurrentState != STATE_DASH && m_CurrentState != STATE_AIMING && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE)
         {
             //Vérifier que le regard est dans la bonne direction
             if ((horizontal > 0) != m_CurrentFacing)
@@ -309,7 +310,8 @@ public class PlayerControllerScript : MonoBehaviour
                 && m_CurrentState != STATE_DASH
                 && m_CurrentState != STATE_DEAD
                 && m_CurrentState != STATE_HIT
-                && m_CurrentState != STATE_AIMING)
+                && m_CurrentState != STATE_AIMING
+                && m_CurrentState != STATE_CHARGE)
             {
                 ChangeState(STATE_IDLE);
                 m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
@@ -358,6 +360,10 @@ public class PlayerControllerScript : MonoBehaviour
             case STATE_DASH:
                 _Dash();
                 break;
+            case STATE_AIMING:
+                // passage en animation d'attaque pour le chevalier
+                m_PlayerAnimator.SetTrigger("Attack");
+                break;
         }
     }
 
@@ -370,7 +376,7 @@ public class PlayerControllerScript : MonoBehaviour
             m_Body.AddForce(new Vector2(0, JumpStrength));
         }
         m_Grounded = false;
-        if (!m_AttackScript.IsAiming())
+        if (!m_AttackScript.IsAiming() && m_CurrentState != STATE_CHARGE)
         {
             ChangeState(STATE_JUMP);
             m_PlayerAnimator.SetTrigger("Jump");
@@ -404,7 +410,11 @@ public class PlayerControllerScript : MonoBehaviour
     //Déplace le Player horizontalement
     private void _Move(Vector2 Translation)
     {
-        float newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed)) ? m_Body.velocity.x : translation.x*RunningSpeed;
+        float newVelocX;
+        if (m_CurrentState == STATE_CHARGE)
+            newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed*1.2f)) ? m_Body.velocity.x : translation.x*RunningSpeed*1.2f;
+        else
+            newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed)) ? m_Body.velocity.x : translation.x*RunningSpeed;
         m_Body.velocity = new Vector2(newVelocX, m_Body.velocity.y);
     }
 
@@ -413,20 +423,25 @@ public class PlayerControllerScript : MonoBehaviour
     {
         m_PlayerAnimator.SetBool("Grounded", m_Grounded);
         if (!m_Grounded && m_CurrentState != STATE_JUMP)
-            if (!m_AttackScript.IsAiming())
+            if (!m_AttackScript.IsAiming() && m_CurrentState != STATE_CHARGE)
                 m_PlayerAnimator.SetTrigger("Fall");
     }
     
     // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
     public bool CanAttack()
     {
-        return m_Grounded && m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT;
+        return m_Grounded && m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE;
     }
     
     // Retourne la direction du joueur
     public bool GetCurrentFacing()
     {
         return m_CurrentFacing;
+    }
+    
+    public int GetCurrentState()
+    {
+        return m_CurrentState;
     }
 
     [PunRPC]
@@ -452,15 +467,17 @@ public class PlayerControllerScript : MonoBehaviour
         return m_CurrentState != STATE_DASH &&
             m_CurrentState != STATE_DEAD &&
             m_CurrentState != STATE_HIT &&
-            ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
+            ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs) &&
+            m_CurrentState != STATE_CHARGE;
     }
     
     // Retourne vrai si le joueur peut bloquer des dégât venant d'un côté
     public bool canBlockAttackFromSide(bool rightSide)
     {
-        return hasShield &&
+        return (hasShield &&
             m_CurrentState == STATE_IDLE &&
-            rightSide == m_CurrentFacing;
+            rightSide == m_CurrentFacing)
+            || m_CurrentState == STATE_CHARGE;
     }
     
     
@@ -475,6 +492,9 @@ public class PlayerControllerScript : MonoBehaviour
             Instantiate(m_BlockParticles, transform.position, transform.rotation);
             return;
         }
+        
+        if (m_AttackScript.IsAiming())
+            m_AttackScript.ExitAiming();
         
         Debug.Log("Take damage");
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
@@ -641,8 +661,15 @@ public class PlayerControllerScript : MonoBehaviour
     public void DieFinal()
     {
         ChangeState(STATE_DEAD);
-        m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_DEAD);
         m_PlayerAnimator.SetTrigger("Die");
+        finalDeath = true;
+    }
+    
+    // animation de victoire finale. Note: en réalité, ça reste une mort avec juste une animation différente
+    public void VictoryFinal()
+    {
+        ChangeState(STATE_DEAD);
+        m_PlayerAnimator.SetTrigger("Victory");
         finalDeath = true;
     }
     
@@ -664,17 +691,5 @@ public class PlayerControllerScript : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         SetAlpha(1f);
-    }
-    
-    // animation d'attaque corps à corps du guerrier
-    [PunRPC]
-    public void PhPlayAttackAnimation()
-    {
-        PlayAttackAnimation();
-    }
-    
-    public void PlayAttackAnimation()
-    {
-        m_PlayerAnimator.SetTrigger("Attack");
     }
 }

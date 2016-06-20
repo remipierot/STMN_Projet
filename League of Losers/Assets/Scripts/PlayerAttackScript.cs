@@ -14,7 +14,9 @@ public class PlayerAttackScript : MonoBehaviour {
     public float meleeAttackCooldownSec = .3f;      //Nombre de sec (en plus de meleeAttackDelaySec) avant de pouvoir enchaîner une attaque
     
     public GameObject dummyProjectile;              //Prefab de projectile à afficher durant l'aim si le joueur contrôlé n'est pas celui-ci
-    public GameObject dummySpecialProjectile;            //Pareil.
+    public GameObject dummySpecialProjectile;       //Pareil.
+    public GameObject meleeAttackEffect;            //Effet visuel à faire pop lors d'une attaque corps à corps
+    private GameObject meleeAttackEffectInstance;   //Instance de l'effet visuel précédent
     
     private Rigidbody2D m_Body;                     //Rigidbody2D de l'objet, utile pour le saut
     private PhotonView m_PhotonView;    		    //Objet lié au Network
@@ -75,16 +77,37 @@ public class PlayerAttackScript : MonoBehaviour {
         if (!rangedAttack)
         {
             // gère l'attaque au corps à corps
-            if (Input.GetButtonDown("Attack"))
+            if (Input.GetButtonDown("Attack") && m_ControlScript.CanAttack())
             {
                 if (!attacking)
                 {
                     attacking = true;
                     m_PhotonView.RPC("PlayAttackAnimation", PhotonTargets.Others);
-                    m_ControlScript.PlayAttackAnimation();
+                    PlayAttackAnimation();
                     m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "fire");
                     StartCoroutine(DelayAttack());
                 }
+            }
+            if (Input.GetButtonDown("Skill") && m_ControlScript.CanAttack())
+            {
+                if ((Time.realtimeSinceStartup * 1000 - AttackCooldownTimer) < specialAttackCooldownMs)
+                    return;
+                attacking = true;
+                isSpecialAttack = true;
+                m_ControlScript.ChangeState(PlayerControllerScript.STATE_CHARGE);
+                foreach (GameObject player in playersInAttackRange)
+                {
+                    Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
+                    ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_ControlScript.GetCurrentFacing(), m_ControlScript.owner);
+                }
+            }
+            if (attacking && isSpecialAttack && (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill")))
+            {
+                AttackCooldownTimer = Time.realtimeSinceStartup * 1000;
+                m_GUI.AnimateSpecial(specialAttackCooldownMs/1000f);
+                isSpecialAttack = false;
+                m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
+                StartCoroutine(DelayAttack());
             }
         }
         else
@@ -306,12 +329,15 @@ public class PlayerAttackScript : MonoBehaviour {
     
     public void ExitAiming()
     {
-        attacking = false;
-        wantRelease = false;
-        wantAttack = false;
-        m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
-        if (projectileInstance != null)
-            Destroy(projectileInstance);
+        if (rangedAttack)
+        {
+            attacking = false;
+            wantRelease = false;
+            wantAttack = false;
+            m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
+            if (projectileInstance != null)
+                Destroy(projectileInstance);
+        }
     }
     
     void OnTriggerEnter2D(Collider2D coll) {
@@ -327,6 +353,9 @@ public class PlayerAttackScript : MonoBehaviour {
     void OnTriggerExit2D(Collider2D coll) {
         if (coll.gameObject.tag == "Player")
             playersInAttackRange.Remove(coll.gameObject);
+        
+        if (attacking && isSpecialAttack)
+            ((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_ControlScript.GetCurrentFacing(), m_ControlScript.owner);
     }
     
     IEnumerator DelayAttack()
@@ -337,7 +366,29 @@ public class PlayerAttackScript : MonoBehaviour {
             Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
             ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x, m_ControlScript.owner);
         }
+        Destroy(meleeAttackEffectInstance);
         yield return new WaitForSeconds(meleeAttackCooldownSec);
         attacking = false;
+        if (m_ControlScript.GetCurrentState() == PlayerControllerScript.STATE_AIMING)
+            m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
+    }
+    
+    // animation d'attaque corps à corps du guerrier
+    [PunRPC]
+    public void PhPlayAttackAnimation()
+    {
+        PlayAttackAnimation();
+    }
+    
+    public void PlayAttackAnimation()
+    {
+        m_ControlScript.ChangeState(PlayerControllerScript.STATE_AIMING);
+        meleeAttackEffectInstance = (GameObject) Instantiate(meleeAttackEffect, new Vector3(
+            transform.position.x+0.272f * (m_ControlScript.GetCurrentFacing() ? 1:-1),
+            transform.position.y+0.332f,
+            transform.position.z),
+            m_ControlScript.GetCurrentFacing() ?
+                Quaternion.identity :
+                Quaternion.Euler(new Vector3(0, 180, 0)));
     }
 }

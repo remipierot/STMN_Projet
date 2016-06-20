@@ -86,6 +86,8 @@ public class DeathmatchCountdown : MonoBehaviour {
         foreach (GameObject playerChar in GameObject.FindGameObjectsWithTag("Player")) {
             if (playerChar.GetComponent<PlayerControllerScript>().owner != pl1)
                 playerChar.GetComponent<PlayerControllerScript>().DieFinal();
+            else
+                playerChar.GetComponent<PlayerControllerScript>().VictoryFinal();
         }
     }
 }
