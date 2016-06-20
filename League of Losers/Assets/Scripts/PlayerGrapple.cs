@@ -58,28 +58,36 @@ public class PlayerGrapple : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetButtonDown("Grapple"))
+        if (Input.GetButtonDown("Grapple") && m_PhotonView.isMine)
+        {
             IsGrappling = true;
+            m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
+        }
 
         if (IsGrappling)
         {
             Body.velocity = (transform.parent.right.x > 0) ? RightShoot * ShootingStrength : LeftShoot * ShootingStrength;
 
             if (1000 * (Time.realtimeSinceStartup - m_StartTime) > GrappleDurationInMilliseconds)
+            {
                 IsGrappling = false;
+                m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
+            }
         }
 
         if (IsHooked)
             IsHooked = false;
 
         DrawRope();
-        m_PhotonView.RPC("PhDrawRope", PhotonTargets.Others);
     }
 
-    void OnCollisionEnter2D(Collision2D CollidedObject)
+    void OnTriggerEnter2D(Collider2D CollidedObject)
     {
-        if (IsGrappling && CollidedObject.rigidbody != ParentBody)
+        if (IsGrappling)
         {
+            if (CollidedObject.gameObject.tag == "MainCamera")
+                // on ignore
+                return;
             if (CollidedObject.gameObject.tag == "Player")
             {
                 // TODO
@@ -88,6 +96,7 @@ public class PlayerGrapple : MonoBehaviour {
             {
                 m_StartTime = 0;
                 IsGrappling = false;
+                m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
                 IsHooked = true;
             }
         }
@@ -107,10 +116,10 @@ public class PlayerGrapple : MonoBehaviour {
 
         Rope.SetPositions(new Vector3[] { start, end });
     }
-
+    
     [PunRPC]
-    void PhDrawRope()
+    void PhSetGrappling(bool grapple)
     {
-        DrawRope();
+        IsGrappling = grapple;
     }
 }

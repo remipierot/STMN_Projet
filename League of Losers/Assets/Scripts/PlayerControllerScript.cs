@@ -28,6 +28,7 @@ public class PlayerControllerScript : MonoBehaviour
                  MsBeforeDeathRespawn = 5000; // Temps avant le respawn du joueur après sa mort
     
     public int m_Lives = 3; // nombre de vies restantes
+    public bool hasShield = false; // vrai si le perso utilise un bouclier
     
     public GameObject m_RespawnPoint;
     public PlayerGrapple GrapplingHook;
@@ -58,9 +59,10 @@ public class PlayerControllerScript : MonoBehaviour
     public GameObject m_DashParticles;
     public GameObject m_JumpParticles;
     public GameObject m_HurtParticles;
+    public GameObject m_BlockParticles;
     
-    public bool m_WasRunning = false;   // utilisé pour tomber à la verticale
-    public bool finalDeath = false;     // fin du personnage, qui ne doit plus être contrôlé par le joueur
+    private bool m_WasRunning = false;   // utilisé pour tomber à la verticale
+    private bool finalDeath = false;     // fin du personnage, qui ne doit plus être contrôlé par le joueur
     
     public PlayerGUI m_GUI;
 
@@ -109,6 +111,9 @@ public class PlayerControllerScript : MonoBehaviour
 
     void Update()
     {
+        if (finalDeath)
+            return;
+        
         if (m_Grounded && Mathf.Abs(m_Body.velocity.y) > .1 &&
             (Time.realtimeSinceStartup * 1000 - m_GroundTimer) >= 100)
         {
@@ -201,19 +206,33 @@ public class PlayerControllerScript : MonoBehaviour
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
             {
-                if (m_AttackScript.IsAiming())
+                bool CanJumpAndAttack = true;
+                if (CanJumpAndAttack)
                 {
-                    m_AttackScript.ExitAiming();
-                    ChangeState(STATE_IDLE);
-                    m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                    m_DoubleJumped = !m_Grounded;
+                    if (!m_DoubleJumped)
+                        m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jump");
+                    else
+                        m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jumpdouble");
+                    _Jump();
+                    m_PhotonView.RPC("PhJump", PhotonTargets.Others);
                 }
-                m_DoubleJumped = !m_Grounded;
-                if (!m_DoubleJumped)
-                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jump");
                 else
-                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jumpdouble");
-                _Jump();
-                m_PhotonView.RPC("PhJump", PhotonTargets.Others);
+                {
+                    if (m_AttackScript.IsAiming())
+                    {
+                        m_AttackScript.ExitAiming();
+                        ChangeState(STATE_IDLE);
+                        m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_IDLE);
+                    }
+                    m_DoubleJumped = !m_Grounded;
+                    if (!m_DoubleJumped)
+                        m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jump");
+                    else
+                        m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "jumpdouble");
+                    _Jump();
+                    m_PhotonView.RPC("PhJump", PhotonTargets.Others);
+                }
             }
         }
         
@@ -351,9 +370,12 @@ public class PlayerControllerScript : MonoBehaviour
             m_Body.AddForce(new Vector2(0, JumpStrength));
         }
         m_Grounded = false;
-        ChangeState(STATE_JUMP);
+        if (!m_AttackScript.IsAiming())
+        {
+            ChangeState(STATE_JUMP);
+            m_PlayerAnimator.SetTrigger("Jump");
+        }
         _SendGroundInfos();
-        m_PlayerAnimator.SetTrigger("Jump");
         Instantiate(m_JumpParticles, transform.position, transform.rotation);
     }
     
@@ -391,7 +413,8 @@ public class PlayerControllerScript : MonoBehaviour
     {
         m_PlayerAnimator.SetBool("Grounded", m_Grounded);
         if (!m_Grounded && m_CurrentState != STATE_JUMP)
-            m_PlayerAnimator.SetTrigger("Fall");
+            if (!m_AttackScript.IsAiming())
+                m_PlayerAnimator.SetTrigger("Fall");
     }
     
     // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
@@ -426,14 +449,33 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts
     public bool canTakeDamage()
     {
-        return m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
+        return m_CurrentState != STATE_DASH &&
+            m_CurrentState != STATE_DEAD &&
+            m_CurrentState != STATE_HIT &&
+            ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) > HitInvincibilityMs);
     }
+    
+    // Retourne vrai si le joueur peut bloquer des dégât venant d'un côté
+    public bool canBlockAttackFromSide(bool rightSide)
+    {
+        return hasShield &&
+            m_CurrentState == STATE_IDLE &&
+            rightSide == m_CurrentFacing;
+    }
+    
+    
     [PunRPC]
     void PhTakeDamage(bool direction, PhotonPlayer attacker)
     {
-        if ((Time.realtimeSinceStartup * 1000 - m_LastHitTime) <= HitInvincibilityMs)
+        if (!canTakeDamage())
             // pas de spam
             return;
+        if (canBlockAttackFromSide(!direction))
+        {
+            Instantiate(m_BlockParticles, transform.position, transform.rotation);
+            return;
+        }
+        
         Debug.Log("Take damage");
         m_LastHitTime = Time.realtimeSinceStartup * 1000;
         
@@ -622,5 +664,17 @@ public class PlayerControllerScript : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         SetAlpha(1f);
+    }
+    
+    // animation d'attaque corps à corps du guerrier
+    [PunRPC]
+    public void PhPlayAttackAnimation()
+    {
+        PlayAttackAnimation();
+    }
+    
+    public void PlayAttackAnimation()
+    {
+        m_PlayerAnimator.SetTrigger("Attack");
     }
 }

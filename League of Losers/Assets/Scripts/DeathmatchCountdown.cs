@@ -47,7 +47,7 @@ public class DeathmatchCountdown : MonoBehaviour {
                 pl1 = player;
                 maxScore = player.GetScore();
             }
-            else if (player.GetScore() < minScore)
+            if (player.GetScore() < minScore)
             {
                 pl4 = player;
                 minScore = player.GetScore();
@@ -72,17 +72,17 @@ public class DeathmatchCountdown : MonoBehaviour {
         }
         
         panel.setWinner(pl1.name, pl1.GetScore());
-        if (pl4 != null)
-            panel.setLoser(pl4.name, pl4.GetScore());
         if (pl2 != null)
             panel.setPlayer2(pl2.name, pl2.GetScore());
         if (pl3 != null)
             panel.setPlayer3(pl3.name, pl3.GetScore());
+        if (pl4 != null)
+            panel.setLoser(pl4.name, pl4.GetScore());
         
         panel.show();
         
         
-        // supprime les joueurs
+        // freeze les joueurs perdants
         foreach (GameObject playerChar in GameObject.FindGameObjectsWithTag("Player")) {
             if (playerChar.GetComponent<PlayerControllerScript>().owner != pl1)
                 playerChar.GetComponent<PlayerControllerScript>().DieFinal();

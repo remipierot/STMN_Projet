@@ -10,6 +10,8 @@ public class PlayerAttackScript : MonoBehaviour {
     public bool rangedAttack = true;                //Indique que le joueur utilise une attaque à distance. Autrement, indique une attaque corps à corps.
     public int rangedAttackReleaseTimeMs = 300;     //Nombre de ms avant qu'un projectile puisse être lancé (correspondant à l'animation toAim)
     public int specialAttackCooldownMs = 15000;     //Nombre de ms de cooldown entre deux attaques spéciales
+    public float meleeAttackDelaySec = .3f;         //Nombre de sec lors du clic d'attaque avant d'effectuer des dégâts aux autres joueurs
+    public float meleeAttackCooldownSec = .3f;      //Nombre de sec (en plus de meleeAttackDelaySec) avant de pouvoir enchaîner une attaque
     
     public GameObject dummyProjectile;              //Prefab de projectile à afficher durant l'aim si le joueur contrôlé n'est pas celui-ci
     public GameObject dummySpecialProjectile;            //Pareil.
@@ -78,16 +80,12 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (!attacking)
                 {
                     attacking = true;
-                    foreach (var player in playersInAttackRange)
-                    {
-                        // nécessite d'être amélioré
-                        Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
-                        m_PhotonView.RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x);
-                    }
+                    m_PhotonView.RPC("PlayAttackAnimation", PhotonTargets.Others);
+                    m_ControlScript.PlayAttackAnimation();
+                    m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "fire");
+                    StartCoroutine(DelayAttack());
                 }
             }
-            else
-                attacking = false;
         }
         else
         {
@@ -205,6 +203,9 @@ public class PlayerAttackScript : MonoBehaviour {
     }
     
 	void LateUpdate () {
+        if (!rangedAttack)
+            return;
+        
         // appelé après le rendu du système d'animation, mais avant le rendu de la scène
         if (!m_PhotonView.isMine && attacking)
         {
@@ -316,6 +317,8 @@ public class PlayerAttackScript : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D coll) {
         if (coll.gameObject.tag == "Player")
         {
+            if (coll.gameObject.GetComponent<PlayerControllerScript>().owner == m_ControlScript.owner)
+                return;
             if (playersInAttackRange.Contains(coll.gameObject))
                 return;
             playersInAttackRange.Add(coll.gameObject);
@@ -324,5 +327,17 @@ public class PlayerAttackScript : MonoBehaviour {
     void OnTriggerExit2D(Collider2D coll) {
         if (coll.gameObject.tag == "Player")
             playersInAttackRange.Remove(coll.gameObject);
+    }
+    
+    IEnumerator DelayAttack()
+    {
+        yield return new WaitForSeconds(meleeAttackDelaySec);
+        foreach (GameObject player in playersInAttackRange)
+        {
+            Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
+            ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x, m_ControlScript.owner);
+        }
+        yield return new WaitForSeconds(meleeAttackCooldownSec);
+        attacking = false;
     }
 }
