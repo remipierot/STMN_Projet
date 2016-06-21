@@ -146,6 +146,7 @@
     <Compile Include="Assets\Scripts\GUI\Obsolete\GUIMainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\ResolutionManager.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
+    <Compile Include="Assets\Scripts\MainMenuMichaelBay.cs" />
     <Compile Include="Assets\Scripts\ParticleSystemAutodestroy.cs" />
     <Compile Include="Assets\Scripts\PlayerAttackScript.cs" />
     <Compile Include="Assets\Scripts\PlayerColor.cs" />
