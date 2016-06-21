@@ -352,10 +352,12 @@ public class PlayerAttackScript : MonoBehaviour {
     }
     void OnTriggerExit2D(Collider2D coll) {
         if (coll.gameObject.tag == "Player")
+        {
             playersInAttackRange.Remove(coll.gameObject);
         
-        if (attacking && isSpecialAttack)
-            ((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_ControlScript.GetCurrentFacing(), m_ControlScript.owner);
+            if (attacking && isSpecialAttack)
+                ((PhotonView)(coll.gameObject.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_ControlScript.GetCurrentFacing(), m_ControlScript.owner);
+        }
     }
     
     IEnumerator DelayAttack()
