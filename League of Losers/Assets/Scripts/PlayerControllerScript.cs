@@ -27,6 +27,7 @@ public class PlayerControllerScript : MonoBehaviour
                  HitAnimationMs = 1000,     // Temps durant lequel le joueur joue l'animation de prise de dégâts
                  HitInvincibilityMs = 3000, // Temps durant lequel le joueur est invincible après s'être pris des dégâts
                  MsBeforeDeathRespawn = 5000; // Temps avant le respawn du joueur après sa mort
+    public bool CanJumpAndAttack = true;
     
     public int m_Lives = 3; // nombre de vies restantes
     public bool hasShield = false; // vrai si le perso utilise un bouclier
@@ -207,8 +208,7 @@ public class PlayerControllerScript : MonoBehaviour
             //Si l'on est au sol ou qu'on a pas encore fait de double saut, on peut sauter
             if (m_Grounded || !m_DoubleJumped)
             {
-                bool CanJumpAndAttack = true;
-                if (CanJumpAndAttack)
+                if (CanJumpAndAttack || !m_AttackScript.rangedAttack) // la charge au CaC laisse toujours la possibilité de sauter, sinon elle est très peu utile
                 {
                     m_DoubleJumped = !m_Grounded;
                     if (!m_DoubleJumped)
@@ -430,7 +430,7 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
     public bool CanAttack()
     {
-        return m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE;
+        return m_CurrentState != STATE_DASH && (CanJumpAndAttack || m_Grounded) && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE;
     }
     
     // Retourne la direction du joueur
@@ -691,5 +691,10 @@ public class PlayerControllerScript : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         SetAlpha(1f);
+    }
+    
+    public bool canGrapple()
+    {
+        return m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE && m_CurrentState != STATE_AIMING;
     }
 }

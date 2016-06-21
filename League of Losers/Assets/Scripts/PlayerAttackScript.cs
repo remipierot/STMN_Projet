@@ -93,7 +93,10 @@ public class PlayerAttackScript : MonoBehaviour {
             if (Input.GetButtonDown("Skill") && m_ControlScript.CanAttack())
             {
                 if ((Time.realtimeSinceStartup * 1000 - AttackCooldownTimer) < specialAttackCooldownMs)
+                {
+                    m_ControlScript.PhPlayerSpeaks("specialrecharge");
                     return;
+                }
                 attacking = true;
                 isSpecialAttack = true;
                 m_PhotonView.RPC("PhPlayAttackSpecialAnimation", PhotonTargets.Others, true);
@@ -167,12 +170,19 @@ public class PlayerAttackScript : MonoBehaviour {
                 m_AttackInitializationTime = Time.realtimeSinceStartup * 1000;
                 m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "aim");
             }
-            if (attacking && (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill")))
+            if (Input.GetButtonUp("Attack") || Input.GetButtonUp("Skill"))
             {
-                // le joueur veut lancer son attaque
-                wantRelease = true;
-                wantAttack = false;
-                mouseEndPosition = (Vector2)(Input.mousePosition);
+                if (attacking)
+                {
+                    // le joueur veut lancer son attaque
+                    wantRelease = true;
+                    wantAttack = false;
+                    mouseEndPosition = (Vector2)(Input.mousePosition);
+                }
+                else
+                {
+                    wantAttack = false;
+                }
             }
             
             if (attacking && wantRelease && (Time.realtimeSinceStartup * 1000 - m_AttackInitializationTime) >= rangedAttackReleaseTimeMs)

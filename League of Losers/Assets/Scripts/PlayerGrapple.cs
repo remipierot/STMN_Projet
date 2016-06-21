@@ -15,6 +15,7 @@ public class PlayerGrapple : MonoBehaviour {
     public bool IsHooked = false;
     public LineRenderer Rope;
     public PhotonView m_PhotonView;
+    public PlayerControllerScript m_PlayerController;
     
     private float m_StartTime = 0;
 
@@ -58,7 +59,7 @@ public class PlayerGrapple : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetButtonDown("Grapple") && m_PhotonView.isMine)
+        if (Input.GetButtonDown("Grapple") && m_PhotonView.isMine && m_PlayerController.canGrapple())
         {
             IsGrappling = true;
             m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
