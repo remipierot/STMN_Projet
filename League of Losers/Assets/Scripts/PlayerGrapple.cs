@@ -62,7 +62,7 @@ public class PlayerGrapple : MonoBehaviour {
         if (Input.GetButtonDown("Grapple") && m_PhotonView.isMine && m_PlayerController.canGrapple())
         {
             IsGrappling = true;
-            m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
+            m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling, IsHooked);
         }
 
         if (IsGrappling)
@@ -72,7 +72,7 @@ public class PlayerGrapple : MonoBehaviour {
             if (1000 * (Time.realtimeSinceStartup - m_StartTime) > GrappleDurationInMilliseconds)
             {
                 IsGrappling = false;
-                m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
+                m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling, IsHooked);
             }
         }
 
@@ -91,14 +91,21 @@ public class PlayerGrapple : MonoBehaviour {
                 return;
             if (CollidedObject.gameObject.tag == "Player")
             {
-                // TODO
+                /*CollidedObject.gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(
+                    PopSpot.position.x - CollidedObject.gameObject.transform.position.x,
+                    PopSpot.position.y - CollidedObject.gameObject.transform.position.y,
+                    PopSpot.position.z - CollidedObject.gameObject.transform.position.z
+                );*/
             }
             else if (CollidedObject.gameObject.tag != "ArenaEdge" && CollidedObject.gameObject.tag != "Projectile")
             {
                 m_StartTime = 0;
                 IsGrappling = false;
-                m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling);
+                m_PhotonView.RPC("PhSetGrappling", PhotonTargets.Others, IsGrappling, IsHooked);
                 IsHooked = true;
+                
+                m_PlayerController.doGrappleAnim(true);
+                StartCoroutine(EndGrappleAnim());
             }
         }
     }
@@ -119,8 +126,20 @@ public class PlayerGrapple : MonoBehaviour {
     }
     
     [PunRPC]
-    void PhSetGrappling(bool grapple)
+    void PhSetGrappling(bool grapple, bool hooked)
     {
         IsGrappling = grapple;
+        IsHooked = hooked;
+        if (IsHooked)
+        {
+            m_PlayerController.doGrappleAnim(true);
+            StartCoroutine(EndGrappleAnim());
+        }
+    }
+    
+    IEnumerator EndGrappleAnim()
+    {
+        yield return new WaitForSeconds(.1f);
+        m_PlayerController.doGrappleAnim(false);
     }
 }

@@ -184,12 +184,7 @@ public class PlayerControllerScript : MonoBehaviour
 
         if (GrapplingHook.IsGrappling)
         {
-            if (m_CurrentState != STATE_DEAD)
-            {
-                ChangeState(STATE_GRAPPLE);
-                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, STATE_GRAPPLE);
-            }
-            else
+            if (m_CurrentState == STATE_DEAD)
                 GrapplingHook.IsGrappling = false;
         }
 
@@ -310,6 +305,7 @@ public class PlayerControllerScript : MonoBehaviour
                 && m_CurrentState != STATE_DASH
                 && m_CurrentState != STATE_DEAD
                 && m_CurrentState != STATE_HIT
+                && m_CurrentState != STATE_GRAPPLE
                 && m_CurrentState != STATE_AIMING
                 && m_CurrentState != STATE_CHARGE)
             {
@@ -696,5 +692,13 @@ public class PlayerControllerScript : MonoBehaviour
     public bool canGrapple()
     {
         return m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE && m_CurrentState != STATE_AIMING;
+    }
+    
+    public void doGrappleAnim(bool on)
+    {
+        if (on)
+            ChangeState(STATE_GRAPPLE);
+        else
+            ChangeState(STATE_IDLE);
     }
 }
