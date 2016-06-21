@@ -412,7 +412,7 @@ public class PlayerControllerScript : MonoBehaviour
     {
         float newVelocX;
         if (m_CurrentState == STATE_CHARGE)
-            newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed*1.2f)) ? m_Body.velocity.x : translation.x*RunningSpeed*1.2f;
+            newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed*1.8f)) ? m_Body.velocity.x : translation.x*RunningSpeed*1.8f;
         else
             newVelocX = (Mathf.Abs(m_Body.velocity.x) > Mathf.Abs(translation.x*RunningSpeed)) ? m_Body.velocity.x : translation.x*RunningSpeed;
         m_Body.velocity = new Vector2(newVelocX, m_Body.velocity.y);
@@ -430,7 +430,7 @@ public class PlayerControllerScript : MonoBehaviour
     // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
     public bool CanAttack()
     {
-        return m_Grounded && m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE;
+        return m_CurrentState != STATE_DASH && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE;
     }
     
     // Retourne la direction du joueur

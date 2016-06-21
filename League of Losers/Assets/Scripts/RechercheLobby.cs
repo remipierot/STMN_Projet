@@ -20,6 +20,7 @@ public class RechercheLobby : MonoBehaviour
     private Vector3 up;
     private Vector2 scrollPosition;
     private bool seConnecter = false;
+    public bool useKnightman = true;
 
     void Start()
     {
@@ -192,8 +193,11 @@ public class RechercheLobby : MonoBehaviour
     {
         //Instancie le joueur quand il arrive dans la pièce
         
-        //GameObject playerObj = PhotonNetwork.Instantiate("Bowman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
-        GameObject playerObj = PhotonNetwork.Instantiate("Knightman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
+        GameObject playerObj;
+        if (useKnightman)
+            playerObj = PhotonNetwork.Instantiate("Knightman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
+        else
+            playerObj = PhotonNetwork.Instantiate("Bowman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);
         playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = SpawnSpot;
     }
 
