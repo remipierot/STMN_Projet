@@ -6,8 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class roomConfig : Photon.MonoBehaviour {
 
+    //Texture
     public Texture archer;
-    public Texture classeTexture;
+    public Texture chevalier;
+    public Texture classeTexture; //texture choisit
+
 
     private GameObject player1;
     private GameObject player2;
@@ -34,6 +37,11 @@ public class roomConfig : Photon.MonoBehaviour {
     private RawImage player3Image;
     private RawImage player4Image;
 
+
+    private Text player1Couleur;
+    private Text player2Couleur;
+    private Text player3Couleur;
+    private Text player4Couleur;
 
 
     //Id des classes joueurs
@@ -129,6 +137,11 @@ public class roomConfig : Photon.MonoBehaviour {
         player3Image = player3.GetComponentInChildren<RawImage>();
         player4Image = player4.GetComponentInChildren<RawImage>();
 
+        player1Couleur= GameObject.Find("playerNumber1").GetComponent<Text>();
+        player2Couleur = GameObject.Find("playerNumber2").GetComponent<Text>();
+        player3Couleur = GameObject.Find("playerNumber3").GetComponent<Text>();
+        player4Couleur = GameObject.Find("playerNumber4").GetComponent<Text>();
+
         idJoueur = PhotonNetwork.player.ID;
         nombreJoueur = PhotonNetwork.playerList.Length;
 
@@ -161,13 +174,13 @@ public class roomConfig : Photon.MonoBehaviour {
             place++;
         }*/
         player1Image.texture = null;
-        player1.GetComponent<Image>().color = Color.white;
+        player1Couleur.color = Color.white;
         player2Image.texture = null;
-        player2.GetComponent<Image>().color = Color.white;
+        player2Couleur.color = Color.white;
         player3Image.texture = null;
-        player3.GetComponent<Image>().color = Color.white;
+        player3Couleur.color = Color.white;
         player4Image.texture = null;
-        player4.GetComponent<Image>().color = Color.white;
+        player4Couleur.color = Color.white;
 
         //Remise à zéro des boutons 
         buttonPlayer1Off.SetActive(true);
@@ -202,7 +215,6 @@ public class roomConfig : Photon.MonoBehaviour {
         {
             case 1:
                 player1.SetActive(true);
-                player1Image.color = Color.white;
                 player2.SetActive(false);
                 player3.SetActive(false);
                 player4.SetActive(false);
@@ -210,7 +222,6 @@ public class roomConfig : Photon.MonoBehaviour {
             case 2:
                 player1.SetActive(true);
                 player2.SetActive(true);
-                player2Image.color = Color.white;
                 player3.SetActive(false);
                 player4.SetActive(false);
                 break;
@@ -218,7 +229,6 @@ public class roomConfig : Photon.MonoBehaviour {
                 player1.SetActive(true);
                 player2.SetActive(true);
                 player3.SetActive(true);
-                player3Image.color = Color.white;
                 player4.SetActive(false);
                 break;
             case 4:
@@ -226,7 +236,6 @@ public class roomConfig : Photon.MonoBehaviour {
                 player2.SetActive(true);
                 player3.SetActive(true);
                 player4.SetActive(true);
-                player4Image.color = Color.white;
                 break;
             default:
                 break;
@@ -512,6 +521,13 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addImageArcher_RPC", PhotonTargets.All, idJoueur);
     }
 
+    public void onClickChevalier()
+    {
+        classeTexture = chevalier;
+        idClasseJoueur = idChevalier;
+        m_PhotonView.RPC("addImageChevalier_RPC", PhotonTargets.All, idJoueur);
+    }
+
     /**
      * Affiche l'image de la classe choisit par l'utilisateur
      * */
@@ -543,6 +559,8 @@ public class roomConfig : Photon.MonoBehaviour {
         {
             case idArcher:
                 return archer;
+            case idChevalier:
+                return chevalier;
             default :
                 return null; //Par défaut retourne la texture de l'archer
         }
@@ -555,7 +573,11 @@ public class roomConfig : Photon.MonoBehaviour {
         afficherImageClasse(idJoueur,idArcher);
     }
 
-
+    [PunRPC]
+    void addImageChevalier_RPC(int idJoueur)
+    {
+        afficherImageClasse(idJoueur, idChevalier);
+    }
     /**
      * 
      * COULEUR DU PERSO
@@ -609,16 +631,16 @@ public class roomConfig : Photon.MonoBehaviour {
         switch(placeDansEcran(idJoueur))
         {
             case 1:
-                return player1.GetComponent<Image>().color;
+                return player1Couleur.color;
 
             case 2:
-                return player2.GetComponent<Image>().color;
+                return player2Couleur.color;
 
             case 3 :
-                return player3.GetComponent<Image>().color;
+                return player3Couleur.color;
 
             case 4:
-                return player4.GetComponent<Image>().color;
+                return player4Couleur.color;
 
             default :
                 return Color.black;
@@ -633,16 +655,16 @@ public class roomConfig : Photon.MonoBehaviour {
         {
             case 1:
                 //Colorier le fond
-                player1.GetComponent<Image>().color = affecterColorClasse();
+                player1Couleur.color = affecterColorClasse();
                 break;
             case 2:
-                player2.GetComponent<Image>().color = affecterColorClasse();
+                player2Couleur.color = affecterColorClasse();
                 break;
             case 3:
-                player3.GetComponent<Image>().color = affecterColorClasse();
+                player3Couleur.color = affecterColorClasse();
                 break;
             case 4:
-                player4.GetComponent<Image>().color = affecterColorClasse();
+                player4Couleur.color = affecterColorClasse();
                 break;
         }
     }
@@ -680,16 +702,16 @@ public class roomConfig : Photon.MonoBehaviour {
         {
             case 1:
                 //Colorier le fond
-                player1.GetComponent<Image>().color = couleur;
+                player1Couleur.color = couleur;
                 break;
             case 2:
-                player2.GetComponent<Image>().color = couleur;
+                player2Couleur.color = couleur;
                 break;
             case 3:
-                player3.GetComponent<Image>().color = couleur;
+                player3Couleur.color = couleur;
                 break;
             case 4:
-                player4.GetComponent<Image>().color = couleur;
+                player4Couleur.color = couleur;
                 break;
         }
     }

@@ -19,6 +19,18 @@ public class connexionArene : MonoBehaviour {
 	void DoInstanciation () {
 
         Debug.Log(PhotonNetwork.player.ID);
+        switch((int)PhotonNetwork.player.customProperties["Classe"])
+        {
+            case 1:
+                playerPrefabName = "Bowman";
+                break;
+            case 2:
+                playerPrefabName = "Knightman";
+                break;
+            default:
+                playerPrefabName = "Bowman";
+                break;
+        }
 
         switch(PhotonNetwork.player.ID)
         {
