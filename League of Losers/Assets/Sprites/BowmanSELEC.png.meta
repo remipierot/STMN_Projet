@@ -1,0 +1,448 @@
+fileFormatVersion: 2
+guid: f90dc0c0286f58e4fa1bc813e1c45df0
+timeCreated: 1466662955
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: BowmanSELEC_0
+    21300002: BowmanSELEC_1
+    21300004: BowmanSELEC_2
+    21300006: BowmanSELEC_3
+    21300008: BowmanSELEC_4
+    21300010: BowmanSELEC_5
+    21300012: BowmanSELEC_6
+    21300014: BowmanSELEC_7
+    21300016: BowmanSELEC_8
+    21300018: BowmanSELEC_9
+    21300020: BowmanSELEC_10
+    21300022: BowmanSELEC_11
+    21300024: BowmanSELEC_12
+    21300026: BowmanSELEC_13
+    21300028: BowmanSELEC_14
+    21300030: BowmanSELEC_15
+    21300032: BowmanSELEC_16
+    21300034: BowmanSELEC_17
+    21300036: BowmanSELEC_18
+    21300038: BowmanSELEC_19
+    21300040: BowmanSELEC_20
+    21300042: BowmanSELEC_21
+    21300044: BowmanSELEC_22
+    21300046: BowmanSELEC_23
+    21300048: BowmanSELEC_24
+    21300050: BowmanSELEC_25
+    21300052: BowmanSELEC_26
+    21300054: BowmanSELEC_27
+    21300056: BowmanSELEC_28
+    21300058: BowmanSELEC_29
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 4096
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BowmanSELEC_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_1
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_2
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_3
+      rect:
+        serializedVersion: 2
+        x: 849
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_4
+      rect:
+        serializedVersion: 2
+        x: 1132
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_5
+      rect:
+        serializedVersion: 2
+        x: 1415
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_6
+      rect:
+        serializedVersion: 2
+        x: 1698
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_7
+      rect:
+        serializedVersion: 2
+        x: 1981
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_8
+      rect:
+        serializedVersion: 2
+        x: 2264
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_9
+      rect:
+        serializedVersion: 2
+        x: 2547
+        y: 848
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_11
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_12
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_13
+      rect:
+        serializedVersion: 2
+        x: 849
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_14
+      rect:
+        serializedVersion: 2
+        x: 1132
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_15
+      rect:
+        serializedVersion: 2
+        x: 1415
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_16
+      rect:
+        serializedVersion: 2
+        x: 1698
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_17
+      rect:
+        serializedVersion: 2
+        x: 1981
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_18
+      rect:
+        serializedVersion: 2
+        x: 2264
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_19
+      rect:
+        serializedVersion: 2
+        x: 2547
+        y: 424
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_21
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_22
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_23
+      rect:
+        serializedVersion: 2
+        x: 849
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_24
+      rect:
+        serializedVersion: 2
+        x: 1132
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_25
+      rect:
+        serializedVersion: 2
+        x: 1415
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_26
+      rect:
+        serializedVersion: 2
+        x: 1698
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_27
+      rect:
+        serializedVersion: 2
+        x: 1981
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_28
+      rect:
+        serializedVersion: 2
+        x: 2264
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    - serializedVersion: 2
+      name: BowmanSELEC_29
+      rect:
+        serializedVersion: 2
+        x: 2547
+        y: 0
+        width: 283
+        height: 424
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
