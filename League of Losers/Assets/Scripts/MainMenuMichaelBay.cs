@@ -1,27 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Créé aléatoirement des explosions dans la zone spécifiée (utilisé pour le menu principal)
+/// </summary>
 public class MainMenuMichaelBay : MonoBehaviour {
     
     public GameObject explosion;
     public float scale = .3f;
     public BoxCollider2D area;
 
-	// Use this for initialization
+    /// <summary>
+	/// Use this for initialization
+    /// </summary>
 	void Start () {
         StartCoroutine(PopExplosion());
 	}
-	
-	// Update is called once per frame
+    
+	/// <summary>
+	/// Update is called once per frame
+    /// </summary>
 	void Update () {
 	
 	}
     
+    /// <summary>
+    /// Appelé lors du déchargement de la scène.
+    /// </summary>
     void OnDestroy()
     {
         StopAllCoroutines();
     }
     
+    /// <summary>
+    /// Créé une explosion aléatoirement dans la zone spécifiée.
+    /// Fonction récursive.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator PopExplosion()
     {
         float time = Random.Range(.3f, 4f);

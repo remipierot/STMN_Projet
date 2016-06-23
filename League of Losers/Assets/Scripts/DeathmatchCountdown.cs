@@ -1,13 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Gère le compte à rebour en mode match à mort.
+/// </summary>
 public class DeathmatchCountdown : MonoBehaviour {
     public WinPanel panel;
     
+    /// <summary>
+    /// Use this for initialization
+    /// </summary>
 	void Start () {
         StartCoroutine(PrepareCountdown());
 	}
     
+    /// <summary>
+    /// Attend le chargement des joueurs, puis lance le compte à rebour.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator PrepareCountdown()
     {
         Room r = PhotonNetwork.room;
@@ -27,6 +37,11 @@ public class DeathmatchCountdown : MonoBehaviour {
         //    StartCoroutine(Countdown(.1f));
     }
     
+    /// <summary>
+    /// Effectue le compte à rebour, puis affiche le panneau des scores avec le nom des joueurs.
+    /// </summary>
+    /// <param name="minutes"></param>
+    /// <returns></returns>
     IEnumerator Countdown(float minutes)
     {
         yield return new WaitForSeconds(minutes * 60f);
@@ -82,7 +97,7 @@ public class DeathmatchCountdown : MonoBehaviour {
         panel.show();
         
         
-        // freeze les joueurs perdants
+        // joue les différentes animations de victoire/défaite
         foreach (GameObject playerChar in GameObject.FindGameObjectsWithTag("Player")) {
             if (playerChar.GetComponent<PlayerControllerScript>().owner != pl1)
                 playerChar.GetComponent<PlayerControllerScript>().DieFinal();
