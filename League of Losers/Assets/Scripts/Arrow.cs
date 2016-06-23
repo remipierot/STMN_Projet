@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-/**
- * Script gérant le comportement d'un projectile tel qu'une flèche.
- */
+/// <summary>
+/// Script gérant le comportement d'un projectile tel qu'une flèche.
+/// </summary>
 public class Arrow : MonoBehaviour {
     
     public bool isExplosive = false; // vrai pour une flèche explosive
@@ -23,8 +23,19 @@ public class Arrow : MonoBehaviour {
     private ParticleSystem particles;
     public int m_BrokenLifetimeSeconds=60;
     
+    /// <summary>
+    /// Retourne vrai si la flèche est au sol, ou en train de tomber
+    /// </summary>
+    /// <returns>vrai si la flèche est au sol, ou en train de tomber</returns>
     public bool isBroken() { return m_Broken || m_Fixed; }
+    /// <summary>
+    /// Retourne vrai si la flèche a été lancée
+    /// </summary>
+    /// <returns>vrai si lancée</returns>
     public bool isLaunched() { return m_Launched; }
+    /// <summary>
+    /// "Casse" la flèche, la rendant non dangereuse et la faisant tomber au sol. Dans le cas d'une flèche explosive, fait exploser la flèche.
+    /// </summary>
     public void _break() {
         m_Broken = true;
         if (isExplosive)
@@ -52,6 +63,11 @@ public class Arrow : MonoBehaviour {
         StartCoroutine(DisposeOfArrow());
     }
     
+    /// <summary>
+    /// Sérialisation des propriétés de la flèche.
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="info"></param>
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         // gère la synchronisation des attributs de la flèche pour les différents joueurs
@@ -101,6 +117,9 @@ public class Arrow : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Initialisation des différentes propriétés de la flèche.
+    /// </summary>
 	void Start () {
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
@@ -127,6 +146,9 @@ public class Arrow : MonoBehaviour {
                 renderer.enabled = false;
 	}
     
+    /// <summary>
+    /// Change les propriétés physiques de la flèche, lui permettant d'être lancée.
+    /// </summary>
     public void Launch()
     {
         m_Launched = true;
@@ -137,7 +159,9 @@ public class Arrow : MonoBehaviour {
             renderer.enabled = true;
     }
 	
-	// Update is called once per frame
+    /// <summary>
+	/// Update is called once per frame
+    /// </summary>
 	void Update () {
         if (!m_Launched || m_Body.velocity.magnitude < 1 || m_Fixed)
             return;
@@ -149,6 +173,11 @@ public class Arrow : MonoBehaviour {
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 	}
     
+    /// <summary>
+    /// Superposition de la flèche et d'un autre objet physique.
+    /// Gère les différentes collisions : avec joueur, avec terrain, etc.
+    /// </summary>
+    /// <param name="coll"></param>
     void OnTriggerEnter2D(Collider2D coll)
     {
         if (m_Fixed || !m_Launched)
@@ -214,11 +243,19 @@ public class Arrow : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// Définit le joueur ayant lancé la flèche. Permet d'actualiser le score.
+    /// </summary>
+    /// <param name="player"></param>
     public void setOwner(PhotonPlayer player)
     {
         m_Owner = player;
     }
     
+    /// <summary>
+    /// Joue un son.
+    /// </summary>
+    /// <param name="sound">type de son ou d'évènement à jouer</param>
     [PunRPC]
     void PhArrowSound(string sound)
     {
@@ -243,18 +280,28 @@ public class Arrow : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// Détruit la flèche après m_BrokenLifetimeSeconds secondes.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator DisposeOfArrow()
     {
         yield return new WaitForSeconds(m_BrokenLifetimeSeconds);
         PhotonNetwork.Destroy(this.gameObject);
     }
     
+    /// <summary>
+    /// Créé un effet visuel d'explosion pour les flèches explosives.
+    /// </summary>
     [PunRPC]
     void PhSpawnExplosion()
     {
         GameObject partSystem = (GameObject)Instantiate(explosionParticleSystem, transform.position, Quaternion.identity);
     }
     
+    /// <summary>
+    /// Créé un effet visuel d'impact.
+    /// </summary>
     [PunRPC]
     void PhSpawnHit()
     {

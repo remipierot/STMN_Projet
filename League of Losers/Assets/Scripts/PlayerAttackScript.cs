@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Script gérant l'attaque (rangée ou CaC) d'un joueur.
+/// </summary>
 public class PlayerAttackScript : MonoBehaviour {
     
     public float knockbackStrength = 4;             //Intensité du knockback
@@ -43,6 +46,9 @@ public class PlayerAttackScript : MonoBehaviour {
     
     public PlayerGUI m_GUI;
     
+    /// <summary>
+    /// Initialisation, récupère les différents composants.
+    /// </summary>
     void Awake() {
         m_Body = GetComponent<Rigidbody2D>();
         m_PhotonView = GetComponent<PhotonView>();
@@ -52,6 +58,12 @@ public class PlayerAttackScript : MonoBehaviour {
         //Cursor.lockState = CursorLockMode.Confined;
     }
     
+    /// <summary>
+    /// Récupère un objet enfant en fonction de son nom.
+    /// </summary>
+    /// <param name="obj">le parent</param>
+    /// <param name="name">le nom de l'enfant</param>
+    /// <returns></returns>
     Transform getChildByName(Transform obj, string name)
     {
         if (obj.name == name)
@@ -66,11 +78,10 @@ public class PlayerAttackScript : MonoBehaviour {
         
         return null;
     }
-
-	void Start () {
 	
-	}
-	
+    /// <summary>
+    /// Appelé à chaque trame. Gère les différentes étapes de l'entrée, et agis sur les personnages en conséquence.
+    /// </summary>
 	void Update () {
         // update exécuté uniquement par le possesseur du perso
         if (!m_PhotonView.isMine)
@@ -224,6 +235,10 @@ public class PlayerAttackScript : MonoBehaviour {
         }
 	}
     
+    /// <summary>
+    /// Retourne la direction visée par le joueur (souris ou joystick).
+    /// </summary>
+    /// <returns>un Vector2 de direction.</returns>
     Vector2 GetDirection()
     {
         Vector2 direction = ((Vector2) Input.mousePosition) - mouseStartPosition;
@@ -238,6 +253,9 @@ public class PlayerAttackScript : MonoBehaviour {
         return direction;
     }
     
+    /// <summary>
+    /// Appelé après MAJ du système d'animation. Utilisé pour orienter le tir de l'archer.
+    /// </summary>
 	void LateUpdate () {
         if (!rangedAttack)
             return;
@@ -276,6 +294,10 @@ public class PlayerAttackScript : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// Définit le nouvel angle de tir d'un joueur sur le réseau.
+    /// </summary>
+    /// <param name="angle"></param>
     [PunRPC]
     void PhSetAimDir(float angle)
     {
@@ -283,6 +305,11 @@ public class PlayerAttackScript : MonoBehaviour {
         SetAimDir();
     }
     
+    /// <summary>
+    /// Synchronise l'état d'attaque sur le réseau.
+    /// </summary>
+    /// <param name="attck">le joueur est en train d'attaquer</param>
+    /// <param name="special">l'attaque est une compétence spéciale</param>
     [PunRPC]
     void PhSetAttacking(bool attck, bool special)
     {
@@ -323,6 +350,9 @@ public class PlayerAttackScript : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// Définit l'angle de tir du personnage. Effectue une rotation de la partie haute du personnage en train de viser.
+    /// </summary>
     void SetAimDir()
     {
         Quaternion directionQuat = Quaternion.Euler(new Vector3(0, 0, aimingAngle));
@@ -335,11 +365,18 @@ public class PlayerAttackScript : MonoBehaviour {
             m_BodyBone.rotation = directionQuat;
     }
     
+    /// <summary>
+    /// Retourne vrai si le personnage est actuellement en train de viser (ou de charger pour le chevalier).
+    /// </summary>
+    /// <returns></returns>
     public bool IsAiming()
     {
         return attacking;
     }
     
+    /// <summary>
+    /// Force le joueur à quitter l'état de visée (en cas de prise de dégâts, etc).
+    /// </summary>
     public void ExitAiming()
     {
         if (rangedAttack)
@@ -353,6 +390,11 @@ public class PlayerAttackScript : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// Superposition de la zone d'attaque avec un autre élément.
+    /// Les éléments joueurs actuellement en contact avec la zone d'attaque sont stockés pour leur infliger des dégâts en CaC.
+    /// </summary>
+    /// <param name="coll"></param>
     void OnTriggerEnter2D(Collider2D coll) {
         if (coll.gameObject.tag == "Player")
         {
@@ -363,6 +405,12 @@ public class PlayerAttackScript : MonoBehaviour {
             playersInAttackRange.Add(coll.gameObject);
         }
     }
+    /// <summary>
+    /// Sortie d'un élément de la zone d'attaque.
+    /// Les éléments joueurs actuellement en contact avec la zone d'attaque sont stockés pour leur infliger des dégâts en CaC.
+    /// Dans le cas de la charge du chevalier, c'est à la sortie de la zone d'attaque que les dégâts sont infligés (plus réaliste que lors de l'entrée).
+    /// </summary>
+    /// <param name="coll"></param>
     void OnTriggerExit2D(Collider2D coll) {
         if (coll.gameObject.tag == "Player")
         {
@@ -373,6 +421,10 @@ public class PlayerAttackScript : MonoBehaviour {
         }
     }
     
+    /// <summary>
+    /// Attends un court temps avant d'appliquer des dégâts CaC, afin de synchroniser les dégâts avec l'animation.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator DelayAttack()
     {
         yield return new WaitForSeconds(.15f);
@@ -388,13 +440,19 @@ public class PlayerAttackScript : MonoBehaviour {
             m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
     }
     
-    // animation d'attaque corps à corps du guerrier
+    /// <summary>
+    /// Joue l'animation d'attaque CaC sur le réseau.
+    /// </summary>
     [PunRPC]
     public void PhPlayAttackAnimation()
     {
         PlayAttackAnimation();
     }
     
+    /// <summary>
+    /// Initialise l'animation d'attaque CaC.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator PlayAttackAnimation()
     {
         m_ControlScript.ChangeState(PlayerControllerScript.STATE_AIMING);
@@ -408,12 +466,20 @@ public class PlayerAttackScript : MonoBehaviour {
                 Quaternion.Euler(new Vector3(0, 180, 0)));
     }
     
+    /// <summary>
+    /// Joue l'animation d'attaque spéciale sur le réseau.
+    /// </summary>
+    /// <param name="playing">vrai si l'animation doit être jouée, faux si elle est interrompue</param>
     [PunRPC]
     public void PhPlayAttackSpecialAnimation(bool playing)
     {
         PlayAttackSpecialAnimation(playing);
     }
     
+    /// <summary>
+    /// Joue l'animation d'attaque spéciale (localement).
+    /// </summary>
+    /// <param name="playing">vrai si l'animation doit être jouée, faux si elle est interrompue</param>
     public void PlayAttackSpecialAnimation(bool playing)
     {
         if (playing)
@@ -436,6 +502,10 @@ public class PlayerAttackScript : MonoBehaviour {
             StartCoroutine(EndAttackAnimation());
         }
     }
+    /// <summary>
+    /// Finalise l'animation d'attaque spéciale CaC, infligeant des dégâts et faisant revenir le joueur à un état normal.
+    /// </summary>
+    /// <returns></returns>
     IEnumerator EndAttackAnimation()
     {
         yield return new WaitForSeconds(.05f);

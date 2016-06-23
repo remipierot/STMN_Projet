@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Force la caméra associée à suivre le déplacement d'un objet dans une zone spécifiée.
+/// </summary>
 public class CameraFollowGameobject : MonoBehaviour {
     
     public static GameObject target;
@@ -10,14 +13,18 @@ public class CameraFollowGameobject : MonoBehaviour {
     private float originalX;
     private float originalY;
 
-    // Use this for initialization
+    /// <summary>
+    /// Use this for initialization
+    /// </summary>
     void Start () {
         originalX = transform.position.x;
         originalY = transform.position.y;
         bounds = GetComponent<BoxCollider2D>();
     }
     
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame
+    /// </summary>
     void Update () {
         if (target != null)
         {

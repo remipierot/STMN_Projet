@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-/**
- * Script gérant le déplacement d'un joueur : course, saut, dash, etc.
- */
+/// <summary>
+/// Script gérant le déplacement d'un joueur : course, saut, dash, etc.
+/// </summary>
 public class PlayerControllerScript : MonoBehaviour
 {
     public const int STATE_IDLE = 0,       //Animation d'attente (immobile)
@@ -68,6 +68,9 @@ public class PlayerControllerScript : MonoBehaviour
     
     public PlayerGUI m_GUI;
 
+    /// <summary>
+    /// Initialise le joueur, récupère les différents composants, ainsi que la liste des joueurs dans la pièce.
+    /// </summary>
     void Awake()
     {
         m_PlayerAnimator = GetComponent<Animator>();
@@ -111,6 +114,9 @@ public class PlayerControllerScript : MonoBehaviour
             CameraFollowGameobject.target = gameObject;
     }
 
+    /// <summary>
+    /// Appelé à chaque nouvelle trame. Gère les différents inputs initiant le déplacement, dash, saut, etc.
+    /// </summary>
     void Update()
     {
         if (finalDeath)
@@ -315,9 +321,13 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Collision du joueur avec un objet.
+    /// Analyse la collision afin de savoir si le joueur touche actuellement le sol.
+    /// </summary>
+    /// <param name="collision"></param>
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // analyse la collision afin de savoir si le joueur touche actuellement le sol
         foreach (ContactPoint2D contact in collision.contacts) {
             Vector2 norm = contact.normal;
             norm.Normalize();
@@ -332,7 +342,10 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
-    //Changer la direction de regard du Player
+    /// <summary>
+    /// Change la direction de regard du joueur
+    /// </summary>
+    /// <param name="Direction"></param>
     public void ChangeDirection(bool Direction)
     {
         if (m_CurrentFacing != Direction)
@@ -343,7 +356,10 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
-    //Changer l'état d'animation
+    /// <summary>
+    /// Change l'état d'animation du personnage.
+    /// </summary>
+    /// <param name="State">l'identifiant de l'état</param>
     public void ChangeState(int State)
     {
         if (m_CurrentState != State)
@@ -363,7 +379,9 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
-    //Donne la force au Rigidbody2D de sauter
+    /// <summary>
+    /// Donne la force au Rigidbody2D de sauter.
+    /// </summary>
     private void _Jump()
     {
         if (m_PhotonView.isMine)
@@ -380,8 +398,10 @@ public class PlayerControllerScript : MonoBehaviour
         _SendGroundInfos();
         Instantiate(m_JumpParticles, transform.position, transform.rotation);
     }
-    
+
+    /// <summary>
     // Effectue un dash dans la direction visée par le joueur
+    /// </summary>
     private void _Dash()
     {
         if (m_PhotonView.isMine)
@@ -403,7 +423,10 @@ public class PlayerControllerScript : MonoBehaviour
         Instantiate(m_JumpParticles, transform.position, transform.rotation);
     }
 
-    //Déplace le Player horizontalement
+    /// <summary>
+    /// Déplace le Player horizontalement
+    /// </summary>
+    /// <param name="Translation">Vector2 définissant la direction du mouvement</param>
     private void _Move(Vector2 Translation)
     {
         float newVelocX;
@@ -414,7 +437,9 @@ public class PlayerControllerScript : MonoBehaviour
         m_Body.velocity = new Vector2(newVelocX, m_Body.velocity.y);
     }
 
-    //Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
+    /// <summary>
+    /// Précise à l'Animator si le Player est au sol, et donne sa vitesse verticale
+    /// </summary>
     private void _SendGroundInfos()
     {
         m_PlayerAnimator.SetBool("Grounded", m_Grounded);
@@ -423,41 +448,65 @@ public class PlayerControllerScript : MonoBehaviour
                 m_PlayerAnimator.SetTrigger("Fall");
     }
     
-    // Retourne vrai si le joueur est en mesure d'attaquer (sur le sol et immobile ou en train de courir)
+    /// <summary>
+    /// Retourne vrai si le joueur est en mesure d'attaquer (immobile ou en train de courir, ne se prenant pas de dégâts)
+    /// </summary>
+    /// <returns>vrai si le joueur peut attaquer</returns>
     public bool CanAttack()
     {
         return m_CurrentState != STATE_DASH && (CanJumpAndAttack || m_Grounded) && m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE;
     }
     
-    // Retourne la direction du joueur
+    /// <summary>
+    /// Retourne la direction du joueur
+    /// </summary>
+    /// <returns>vrai pour droite, faux pour gauche</returns>
     public bool GetCurrentFacing()
     {
         return m_CurrentFacing;
     }
     
+    /// <summary>
+    /// Retourne l'état d'animation actuel du joueur. 
+    /// </summary>
+    /// <returns></returns>
     public int GetCurrentState()
     {
         return m_CurrentState;
     }
 
+    /// <summary>
+    /// Change la direction de regard du joueur sur le réseau.
+    /// </summary>
+    /// <param name="Direction"></param>
     [PunRPC]
     void PhChangeDirection(bool Direction)
     {
         ChangeDirection(Direction);
     }
 
+    /// <summary>
+    /// Change l'état du joueur sur le réseau.
+    /// </summary>
+    /// <param name="State">l'identifiant de l'état</param>
     [PunRPC]
     void PhChangeState(int State)
     {
         ChangeState(State);
     }
+    /// <summary>
+    /// Force le joueur à sauter sur le réseau.
+    /// </summary>
     [PunRPC]
     void PhJump()
     {
         _Jump();
     }
     
-    // Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts
+    /// <summary>
+    /// Retourne vrai si le joueur n'est pas dans son cooldown le protégeant des dégâts, ou dans un dash, ou dans une charge.
+    /// </summary>
+    /// <returns></returns>
     public bool canTakeDamage()
     {
         return m_CurrentState != STATE_DASH &&
@@ -467,7 +516,11 @@ public class PlayerControllerScript : MonoBehaviour
             m_CurrentState != STATE_CHARGE;
     }
     
-    // Retourne vrai si le joueur peut bloquer des dégât venant d'un côté
+    /// <summary>
+    /// Retourne vrai si le joueur peut bloquer des dégât venant d'un côté (chevalier uniquement).
+    /// </summary>
+    /// <param name="rightSide">côté duquel vient le coup</param>
+    /// <returns>vrai si le coup est paré</returns>
     public bool canBlockAttackFromSide(bool rightSide)
     {
         return (hasShield &&
@@ -476,7 +529,12 @@ public class PlayerControllerScript : MonoBehaviour
             || m_CurrentState == STATE_CHARGE;
     }
     
-    
+    /// <summary>
+    /// Inflige un point de dégât au joueur (si il peut actuellement être touché), et le fait reculer. Le met ensuite dans un cooldown anti-dégât.
+    /// Si le joueur est mort, il respawn après un certain temps.
+    /// </summary>
+    /// <param name="direction">direction de l'attaque</param>
+    /// <param name="attacker">l'attaquant. Si l'attaque est réussie et que le joueur meurt, il gagne un point</param>
     [PunRPC]
     void PhTakeDamage(bool direction, PhotonPlayer attacker)
     {
@@ -545,6 +603,9 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Tue un joueur après une chute. Le fait respawn après quelques secondes, et lui enlève un point.
+    /// </summary>
     public void dieFall()
     {
         if (m_CurrentState == STATE_DEAD)
@@ -574,6 +635,9 @@ public class PlayerControllerScript : MonoBehaviour
         m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "falldie");
     }
 
+    /// <summary>
+    /// Supprime le joueur de la salle.
+    /// </summary>
     [PunRPC]
     void PhSendDestruction()
     {
@@ -582,6 +646,10 @@ public class PlayerControllerScript : MonoBehaviour
         recherche.instantiate();
     }
     
+    /// <summary>
+    /// Joue un son correspondant à une émotion du joueur.
+    /// </summary>
+    /// <param name="emotion">le nom de l'émotion</param>
     [PunRPC]
     public void PhPlayerSpeaks(string emotion)
     {
@@ -653,7 +721,9 @@ public class PlayerControllerScript : MonoBehaviour
         }
     }
     
-    // tue de manière permanente le joueur en fin de jeu
+    /// <summary>
+    /// Tue de manière permanente le joueur en fin de jeu.
+    /// </summary>
     public void DieFinal()
     {
         ChangeState(STATE_DEAD);
@@ -661,7 +731,9 @@ public class PlayerControllerScript : MonoBehaviour
         finalDeath = true;
     }
     
-    // animation de victoire finale. Note: en réalité, ça reste une mort avec juste une animation différente
+    /// <summary>
+    /// Joue l'animation de victoire finale. Note: en réalité, ça reste une mort avec juste une animation différente.
+    /// </summary>
     public void VictoryFinal()
     {
         ChangeState(STATE_DEAD);
@@ -669,6 +741,10 @@ public class PlayerControllerScript : MonoBehaviour
         finalDeath = true;
     }
     
+    /// <summary>
+    /// Change la transparence du joueur sur le réseau (indiquant une invulnérabilité).
+    /// </summary>
+    /// <param name="alpha">le taux d'opacité</param>
     [PunRPC]
     void PhSetAlpha(float alpha)
     {
@@ -676,6 +752,10 @@ public class PlayerControllerScript : MonoBehaviour
         StartCoroutine(RestoreAlpha(HitInvincibilityMs/1000f));
     }
     
+    /// <summary>
+    /// Change la transparence du joueur localement (indiquant une invulnérabilité).
+    /// </summary>
+    /// <param name="alpha">le taux d'opacité</param>
     void SetAlpha(float alpha)
     {
         SpriteRenderer[] ChildrenRenderer = GetComponentsInChildren<SpriteRenderer>() as SpriteRenderer[];
@@ -683,17 +763,30 @@ public class PlayerControllerScript : MonoBehaviour
             spRender.color = new Color(spRender.color.r, spRender.color.g, spRender.color.b, alpha);
     }
     
+    /// <summary>
+    /// Attend un certain nombre de secondes, puis restaure un alpha de 1 sur le joueur.
+    /// </summary>
+    /// <param name="time">le temps à attendre en secondes</param>
+    /// <returns></returns>
     IEnumerator RestoreAlpha(float time)
     {
         yield return new WaitForSeconds(time);
         SetAlpha(1f);
     }
     
+    /// <summary>
+    /// Retourne vrai si le joueur peut utiliser son grappin (si il est en vie, ne se prend pas de dégâts, etc).
+    /// </summary>
+    /// <returns>vrai si le joueur peut utiliser son grappin.</returns>
     public bool canGrapple()
     {
         return m_CurrentState != STATE_DEAD && m_CurrentState != STATE_HIT && m_CurrentState != STATE_CHARGE && m_CurrentState != STATE_AIMING;
     }
     
+    /// <summary>
+    /// Joue l'animation de lancer de grappin
+    /// </summary>
+    /// <param name="on">vrai pour lancer l'animation, faux pour la quitter</param>
     public void doGrappleAnim(bool on)
     {
         if (on)

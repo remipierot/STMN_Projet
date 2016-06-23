@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-/**
- * Script démontrant comment recolorer des éléments d'un personnage et l'échange d'un des éléments le composant.
- */
+/// <summary>
+/// Recolore des parties d'un personnage
+/// </summary>
 public class PlayerColor : MonoBehaviour {
+    /// <summary>
+    /// Initialisation. Recolore certaines parties du joueur en fonction de sa propriété photon "Couleur".
+    /// </summary>
 	void Awake () {
         PhotonPlayer owner = null;
         PhotonView m_PhotonView;
@@ -85,6 +88,12 @@ public class PlayerColor : MonoBehaviour {
         */
 	}
     
+    /// <summary>
+    /// Récupère un objet enfant en fonction de son nom.
+    /// </summary>
+    /// <param name="obj">le parent</param>
+    /// <param name="name">le nom de l'enfant</param>
+    /// <returns></returns>
     Transform getChildByName(Transform obj, string name)
     {
         // permet de récupérer un des descendants d'un objet

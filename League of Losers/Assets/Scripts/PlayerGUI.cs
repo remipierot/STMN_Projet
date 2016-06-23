@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Classe gérant l'interface utilisateur associée à un personnage.
+/// </summary>
 public class PlayerGUI : MonoBehaviour {
 
     public PlayerControllerScript playerController;
@@ -16,7 +19,9 @@ public class PlayerGUI : MonoBehaviour {
     private float dashAnimationLength;
     private float specialAnimationLength;
     
-    // Use this for initialization
+    /// <summary>
+    /// Initialisation
+    /// </summary>
     void Start () {
         if (!playerController.m_PhotonView.isMine)
             curseu.enabled = false;
@@ -24,7 +29,10 @@ public class PlayerGUI : MonoBehaviour {
         specialFullRechargeBar = specialRechargeTimer.localScale.x;
     }
 	
-	// Update is called once per frame
+    /// <summary>
+    /// Appelé à chaque nouvelle trame.
+    /// Met à jour les coeurs affichés et les barres de rechargement.
+    /// </summary>
 	void Update () {
         if (vie1.enabled && playerController.m_Lives < 1)
             vie1.enabled = false;
@@ -60,12 +68,20 @@ public class PlayerGUI : MonoBehaviour {
             specialRechargeTimer.localScale = new Vector3(specialScale, specialRechargeTimer.localScale.y, specialRechargeTimer.localScale.z);
     }
     
+    /// <summary>
+    /// Anime la barre de cooldown de dash.
+    /// </summary>
+    /// <param name="seconds">le nombre de secondes avant de faire disparaître la barre</param>
     public void AnimateDash(float seconds)
     {
         dashRechargeTimer.localScale = new Vector3(dashFullRechargeBar, dashRechargeTimer.localScale.y, dashRechargeTimer.localScale.z);
         dashAnimationLength = seconds;
     }
     
+    /// <summary>
+    /// Anime la barre de cooldown d'attaque spéciale.
+    /// </summary>
+    /// <param name="seconds">le nombre de secondes avant de faire disparaître la barre</param>
     public void AnimateSpecial(float seconds)
     {
         specialRechargeTimer.localScale = new Vector3(specialFullRechargeBar, specialRechargeTimer.localScale.y, specialRechargeTimer.localScale.z);
