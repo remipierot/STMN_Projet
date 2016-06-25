@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Classe qui permet de créer ou de rejoindre une salle de jeux
+/// </summary>
 public class connexionLobby : MonoBehaviour {
 
     private bool spawn = false;
@@ -21,14 +22,14 @@ public class connexionLobby : MonoBehaviour {
 
     private Hashtable propertiesGame;
 
-    //GameObject du matchmaking à masquer
+    ///GameObject du matchmaking à masquer
     private GameObject matchmaking;
     private GameObject createPanel;
     private GameObject sliderTemps;
 
     private GameObject textTemps;
 
-    //Parametre de création de partie à afficher
+    ///Parametre de création de partie à afficher
     private string tempsString;
 
 
@@ -36,7 +37,7 @@ public class connexionLobby : MonoBehaviour {
 	void Start () {
         matchmaking = GameObject.Find("Matchmaking");
         createPanel = GameObject.Find("CreatePanel");
-        sliderTemps = GameObject.Find("sliderTempsMax"); //récupération slider temps
+        sliderTemps = GameObject.Find("sliderTempsMax"); ///récupération slider temps
 
         textTemps = GameObject.Find("textTemps");
 
@@ -44,8 +45,8 @@ public class connexionLobby : MonoBehaviour {
 
         textTemps.GetComponent<Text>().text = tempsPartie.ToString();
 
-        createPanel.SetActive(false); //Masquage du panel de creation du serveur
-        matchmaking.SetActive(false); //Masquage du matchmaking
+        createPanel.SetActive(false); ///Masquage du panel de creation du serveur
+        matchmaking.SetActive(false); ///Masquage du matchmaking
 
         PhotonNetwork.player.name = PlayerPrefs.GetString("Username", "My Player name");
         GameObject.Find("Username").GetComponent<InputField>().text = PhotonNetwork.player.name;
@@ -63,7 +64,10 @@ public class connexionLobby : MonoBehaviour {
     {
         PhotonNetwork.ConnectUsingSettings(Version);
     }
-
+    /// <summary>
+    /// Enregistrer le nom d'utilisateur
+    /// </summary>
+    /// <param name="name"></param>
     public void usernameChanged(string name)
     {
         username = name;
@@ -71,16 +75,28 @@ public class connexionLobby : MonoBehaviour {
         Debug.Log(username);
     }
 
+    /// <summary>
+    /// Changement du nom de la partie à créer
+    /// </summary>
+    /// <param name="name"></param>
     public void gameNameChanged(string name)
     {
         gameName = name;
     }
 
+    /// <summary>
+    /// Changement d'une salle privée à public et inversement
+    /// </summary>
+    /// <param name="enabled"></param>
     public void gamePrivateChanged(bool enabled)
     {
         gamePrivate = !enabled;
     }
 
+    /// <summary>
+    /// Selection du mode de jeux
+    /// </summary>
+    /// <param name="index"></param>
     public void gameModeChanged(int index)
     {
         Text mode = GameObject.Find("gameMode").GetComponent<Dropdown>().captionText;
@@ -88,12 +104,18 @@ public class connexionLobby : MonoBehaviour {
         Debug.Log(nom);
     }
 
+    /// <summary>
+    /// Rejoindre une salle
+    /// </summary>
     public void joinRoom()
     {
         //Connexion à la partie
         PhotonNetwork.JoinRoom(gameName);
     }
 
+    /// <summary>
+    /// Créer une salle avec ses parametres
+    /// </summary>
     public void createRoom()
     {
         //Créer la partie
@@ -113,7 +135,10 @@ public class connexionLobby : MonoBehaviour {
         PhotonNetwork.CreateRoom(gameName, roomOptions, TypedLobby.Default);
     }
 
-
+    /// <summary>
+    /// Selection du temps de la partie
+    /// </summary>
+    /// <param name="temps"></param>
     public void tempsPartieChanged(int temps)
     {
         tempsPartie = (int)sliderTemps.GetComponent<Slider>().value;

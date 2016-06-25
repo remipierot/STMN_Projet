@@ -3,7 +3,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
-
+/// <summary>
+/// Classe de recherche et de connexion au lobby pour tout nos test
+/// Cette classe est la première version de la connexion avant l'intégration
+/// de la selection du personnage et de l'arene
+/// </summary>
 public class RechercheLobby : MonoBehaviour
 {
 
@@ -39,6 +43,10 @@ public class RechercheLobby : MonoBehaviour
         GetComponent<PhotonView>().RPC("AddChatMessage_RPC", PhotonTargets.AllBuffered, m);
     }
 
+    /// <summary>
+    /// Action pour récupérer des messages chat
+    /// </summary>
+    /// <param name="m"></param>
     [PunRPC]
     void AddChatMessage_RPC(string m)
     {
@@ -51,9 +59,12 @@ public class RechercheLobby : MonoBehaviour
 
     void Connect()
     {
-        PhotonNetwork.ConnectUsingSettings(Version);
+        PhotonNetwork.ConnectUsingSettings(Version);///Connexion avec la version du logiciel qui est définie
     }
 
+    /// <summary>
+    /// Déclaration des GUI
+    /// </summary>
     void OnGUI()
     {
         GUI.color = Color.grey;
@@ -188,11 +199,11 @@ public class RechercheLobby : MonoBehaviour
         Debug.Log("OnPhotonRandomJoinFailed");
         PhotonNetwork.CreateRoom(null);
     }
-
+    /// <summary>
+    /// Instanciation du joueur quand il arrive dans la salle
+    /// </summary>
     public void instantiate()
     {
-        //Instancie le joueur quand il arrive dans la pièce
-        
         GameObject playerObj;
         if (useKnightman)
             playerObj = PhotonNetwork.Instantiate("Knightman", SpawnSpot.transform.position, SpawnSpot.transform.rotation, 0);

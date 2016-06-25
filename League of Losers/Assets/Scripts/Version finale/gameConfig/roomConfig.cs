@@ -3,13 +3,15 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-
+/// <summary>
+/// Classe de selection du personnage et de l'arene
+/// </summary>
 public class roomConfig : Photon.MonoBehaviour {
 
     //Texture
     public Texture archer;
     public Texture chevalier;
-    public Texture classeTexture; //texture choisit
+    public Texture classeTexture; ///texture choisit
 
 
     private GameObject player1;
@@ -44,12 +46,12 @@ public class roomConfig : Photon.MonoBehaviour {
     private Text player4Couleur;
 
 
-    //Id des classes joueurs
+    ///Id des classes joueurs
     private const int idArcher = 1;
     private const int idChevalier = 2;
     private int idClasseJoueur = 1;
 
-    //Id des couleurs pour les joueurs
+    ///Id des couleurs pour les joueurs
     public const int couleurVert = 1;
     public const int couleurRouge = 2;
     public const int couleurBleu = 3;
@@ -61,22 +63,22 @@ public class roomConfig : Photon.MonoBehaviour {
     private int idJoueur = 0;
     private int nombreJoueur = 0;
 
-    //Timer pour la selection du personnage
+    ///Timer pour la selection du personnage
     private float timer = 30;
     private int timerInt = 0;
 
 
-    //Timer pour la selection de l'arene
+    ///Timer pour la selection de l'arene
     private float timerArene =  0;
 
-    //Vote pour les arenes
+    ///Vote pour les arenes
     private int voteArene1 = 0;
     private int voteArene2 = 0;
     private int voteArene3 = 0;
     private int nbVote = 0;
     private string nomArene = "";
 
-    //Bouton pret on/off
+    ///Bouton pret on/off
     public GameObject buttonPlayer1On;
     public GameObject buttonPlayer2On;
     public GameObject buttonPlayer3On;
@@ -89,18 +91,18 @@ public class roomConfig : Photon.MonoBehaviour {
 
     bool allPlayerReady;
 
-    //Photon View
+    ///Photon View
     private PhotonView m_PhotonView;
 
     Text tempsAfficherCharacter;
     Text tempsAfficherArene;
 
-    //Boolean
+    ///Boolean
     private bool enJeu = false;
     private bool stopTimer = true;
     private bool areneSelection = false;
 
-	// Use this for initialization
+	/// Use this for initialization
 	void Start () {
 
         characterSelection = GameObject.Find("CharacterSelection");
@@ -126,7 +128,7 @@ public class roomConfig : Photon.MonoBehaviour {
         startTimerButton = GameObject.Find("StartTimer");
         menuButton = GameObject.Find("Menu");
 
-        //Si ce n'est pas l'admin on masque le bouton
+        ///Si ce n'est pas l'admin on masque le bouton
         if(!PhotonNetwork.isMasterClient)
         {
             startTimerButton.SetActive(false);
@@ -145,10 +147,10 @@ public class roomConfig : Photon.MonoBehaviour {
         idJoueur = PhotonNetwork.player.ID;
         nombreJoueur = PhotonNetwork.playerList.Length;
 
-        //Liste des joueurs pret
+        ///Liste des joueurs pret
         allPlayerReady = false;
 
-        //placeDansEcran();
+        ///placeDansEcran();
         activationCanvasPlayer();
         onlyReadyInteractable();
 
@@ -157,22 +159,16 @@ public class roomConfig : Photon.MonoBehaviour {
 
         timerInt = (int)timer;
         timerArene = (int)timer;
-        arenaSelection.SetActive(false); // Desactivation de la selection de l'arene
+        arenaSelection.SetActive(false); /// Desactivation de la selection de l'arene
     }
-
+    /// <summary>
+    /// Remise a zero des canvas quand un joueurarrive dans la salle
+    /// </summary>
     void remiseAZeroCanvas()
     {
         couleurActuelle = 0;
         idClasseJoueur = 1;
-        int place = 1;
-        Color couleur;
-        /*foreach (var player in PhotonNetwork.playerList)
-        {
-            couleur = Color.white;//(Color)player.customProperties["Couleur"];
-            afficherImageClasse(placeDansEcran(player.ID), 2);
-            remiseAZeroCouleur(idJoueur,Color.white);
-            place++;
-        }*/
+
         player1Image.texture = null;
         player1Couleur.color = Color.white;
         player2Image.texture = null;
@@ -182,7 +178,7 @@ public class roomConfig : Photon.MonoBehaviour {
         player4Image.texture = null;
         player4Couleur.color = Color.white;
 
-        //Remise à zéro des boutons 
+        ///Remise à zéro des boutons 
         buttonPlayer1Off.SetActive(true);
         buttonPlayer1On.SetActive(false);
         buttonPlayer2Off.SetActive(true);
@@ -193,11 +189,14 @@ public class roomConfig : Photon.MonoBehaviour {
         buttonPlayer4On.SetActive(false);
         allPlayerReady = false;
     }
-    
-    //Affichage du canvas en fonction du nombre de joueurs
+
+    /// <summary>
+    /// Affichage du canvas en fonction de la place des joueurs
+    /// </summary>
+
     int placeDansEcran(int id)
     {
-        int place = 1; //On commence à 1
+        int place = 1; ///On commence à 1
         foreach(var player in PhotonNetwork.playerList)
         {
             if(player.ID == id)
@@ -208,7 +207,9 @@ public class roomConfig : Photon.MonoBehaviour {
         }
         return -1;
     }
-
+    /// <summary>
+    /// Activation des canvas en fonction des joueurs
+    /// </summary>
     void activationCanvasPlayer()
     {
         switch (PhotonNetwork.playerList.Length)
@@ -241,7 +242,9 @@ public class roomConfig : Photon.MonoBehaviour {
                 break;
         }
     }
-
+    /// <summary>
+    /// Fonction pour savoir si tous les joueurs sont prets
+    /// </summary>
     void detectButtonReady()
     {
         switch(PhotonNetwork.playerList.Length)
@@ -282,6 +285,9 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Active les boutons interactibles en fonction de la place du joueur dans la salle
+    /// </summary>
     void onlyReadyInteractable()
     {
         switch(placeDansEcran(idJoueur))
@@ -343,7 +349,7 @@ public class roomConfig : Photon.MonoBehaviour {
 
         if(!timerInt.Equals(0) && !allPlayerReady)
         {
-            //Si un joueur rejoint la partie on affiche son canvas
+            ///Si un joueur rejoint la partie on affiche son canvas
             if (nombreJoueur != PhotonNetwork.playerList.Length)
             {
                 nombreJoueur = PhotonNetwork.playerList.Length;
@@ -351,11 +357,11 @@ public class roomConfig : Photon.MonoBehaviour {
                 remiseAZeroCanvas();
                 activationCanvasPlayer();
                 onlyReadyInteractable();
-                stopTimer = true; //Si le nombre de joueurs changent on arrete le timer.
+                stopTimer = true; ///Si le nombre de joueurs changent on arrete le timer.
                 menuButton.SetActive(true);
             }
 
-            //Si le nombre de joueur est supérieur à 1, on active le timer
+            ///Si le nombre de joueur est supérieur à 1, on active le timer
             if (PhotonNetwork.isMasterClient)
             {
                 detectButtonReady();
@@ -378,13 +384,13 @@ public class roomConfig : Photon.MonoBehaviour {
              }
         }
 
-        //Lorsque le timer est à 0 on passe à la selection de l'arène
+        ///Lorsque le timer est à 0 on passe à la selection de l'arène
         else
         {
-            //Si ils ne sont pas dans la selection d'arene
+            ///Si ils ne sont pas dans la selection d'arene
             if(!areneSelection)
             {
-                //Si la partie n'a pas débuté on passe à la selection de l'arene
+                ///Si la partie n'a pas débuté on passe à la selection de l'arene
                 if(!enJeu)
                 {
                     if (PhotonNetwork.isMasterClient)
@@ -392,13 +398,13 @@ public class roomConfig : Photon.MonoBehaviour {
                         m_PhotonView.RPC("initialisationVoteArene_RPC", PhotonTargets.All);
                     }
                 }
-                    //Si la partie a débuté
+                    ///Si la partie a débuté
                 else
                 {
-                    //On passe directement au mode de jeu selectionné ainsi qu'à la partie
+                    ///On passe directement au mode de jeu selectionné ainsi qu'à la partie
                 }
             }
-                //Partie gestion de l'arene
+                ///Partie gestion de l'arene
             else
             {
                 if (PhotonNetwork.isMasterClient)
@@ -414,8 +420,7 @@ public class roomConfig : Photon.MonoBehaviour {
                 Debug.Log(nbVote);
                 if(timerArene.Equals(0) || nbVote.Equals(PhotonNetwork.playerList.Length))
                 {
-                    //On instancie la scène selectionné
-                    //PhotonNetwork.LoadLevel(areneVote());
+                    ///On instancie la scène selectionné
                     Debug.Log("Nombre de joueurs : " + nbVote);
 
                     if (PhotonNetwork.isMasterClient)
@@ -428,6 +433,10 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Charge la scene en fonction du resultat du vote
+    /// </summary>
+    /// <param name="nomArene"></param>
     [PunRPC]
     public void loadArene_RPC(string nomArene)
     {
@@ -444,9 +453,11 @@ public class roomConfig : Photon.MonoBehaviour {
             SceneManager.LoadScene(5);
         }
     }
-                
 
-    //Initialisation des variables pour tout le monde
+
+    /// <summary>
+    /// Initialisation des variables pour tout le monde
+    /// </summary>
     [PunRPC]
     void initialisationVoteArene_RPC()
     {
@@ -462,16 +473,18 @@ public class roomConfig : Photon.MonoBehaviour {
         timerInt = 0;
     }
 
-    /**
-     * Fonction qui retourne la carte avec le plus de vote
-     * */
+    /// <summary>
+    /// Fonction qui retourne la carte avec le plus de vote
+    /// </summary>
     string areneVote()
     {
         int voteGagnant = returnNombre(returnNombre(voteArene1, voteArene2,"Arene1","Arene2"), voteArene3,nomArene,"Arene3");
         return nomArene;     
     }
 
-    //Algo de tri pour le vote
+    /// <summary>
+    /// Algo de tri pour le vote
+    /// </summary>
     int returnNombre(int a, int b,string nA, string nB)
     {
         if (a > b)
@@ -511,9 +524,9 @@ public class roomConfig : Photon.MonoBehaviour {
     }
 
 
-    /**
-     * lors du clic sur l'image de l'archer
-     * */
+    /// <summary>
+    /// lors du clic sur l'image de l'archer
+    /// </summary>
     public void onClickArcher()
     {
         classeTexture = archer;
@@ -521,6 +534,9 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addImageArcher_RPC", PhotonTargets.All, idJoueur);
     }
 
+    /// <summary>
+    /// Lors du clic sur l'image du chevalier
+    /// </summary>
     public void onClickChevalier()
     {
         classeTexture = chevalier;
@@ -528,9 +544,11 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addImageChevalier_RPC", PhotonTargets.All, idJoueur);
     }
 
-    /**
-     * Affiche l'image de la classe choisit par l'utilisateur
-     * */
+    /// <summary>
+    /// Affiche l'image de la classe choisit par l'utilisateur
+    /// </summary>
+    /// <param name="idJoueur"></param>
+    /// <param name="classe"></param>
     void afficherImageClasse(int idJoueur, int classe)
     {
         switch (placeDansEcran(idJoueur))
@@ -553,6 +571,11 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Retourne la texture de la classe choisit
+    /// </summary>
+    /// <param name="idClasse"></param>
+    /// <returns></returns>
     Texture affecterTextureClasse(int idClasse)
     {
         switch(idClasse)
@@ -562,10 +585,15 @@ public class roomConfig : Photon.MonoBehaviour {
             case idChevalier:
                 return chevalier;
             default :
-                return null; //Par défaut retourne la texture de l'archer
+                return null; ///Par défaut retourne la texture de l'archer
         }
     }
 
+
+    /// <summary>
+    /// Mise en ligne de l'affichage de l'image de l'archer
+    /// </summary>
+    /// <param name="idJoueur"></param>
     [PunRPC]
     void addImageArcher_RPC(int idJoueur)
     {
@@ -573,38 +601,55 @@ public class roomConfig : Photon.MonoBehaviour {
         afficherImageClasse(idJoueur,idArcher);
     }
 
+    /// <summary>
+    /// Mise en ligne de l'affichage de l'image du chevalier
+    /// </summary>
+    /// <param name="idJoueur"></param>
     [PunRPC]
     void addImageChevalier_RPC(int idJoueur)
     {
         afficherImageClasse(idJoueur, idChevalier);
     }
+
     /**
      * 
      * COULEUR DU PERSO
      * 
      * */
 
+    /// <summary>
+    /// Clique bouton de la couleur vert
+    /// </summary>
     public void clickCouleurVert()
     {
         Debug.Log("Vert");
 
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.All, idJoueur, couleurVert);
     }
-
+    /// <summary>
+    /// Clique bouton de la couleur rouge
+    /// </summary>
     public void clickCouleuRouge()
     {
         Debug.Log("Rouge");
 
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.All, idJoueur, couleurRouge);
     }
-    
+
+    /// <summary>
+    /// Clique bouton de la couleur bleu
+    /// </summary>
     public void clickCouleurBleu()
     {
         Debug.Log("Bleu");
 
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.All, idJoueur, couleurBleu);
     }
-        
+
+    /// <summary>
+    /// Clique bouton de la couleur jaune
+    /// </summary>
+
     public void clickCouleurJaune()
     {
         Debug.Log("Jaune");
@@ -612,6 +657,9 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.All, idJoueur, couleurJaune);
     }
 
+    /// <summary>
+    /// Clique bouton de la couleur noir
+    /// </summary>
     public void clickCouleurNoir()
     {
         Debug.Log("Noir");
@@ -619,6 +667,9 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.All, idJoueur, couleurNoir);
     }
 
+    /// <summary>
+    /// Clique bouton de la couleur rose
+    /// </summary>
     public void clickCouleurRose()
     {
         Debug.Log("Rose");
@@ -626,6 +677,10 @@ public class roomConfig : Photon.MonoBehaviour {
         m_PhotonView.RPC("addCouleur_RPC", PhotonTargets.All, idJoueur, couleurRose);
     }
 
+    /// <summary>
+    /// Retourne la couleur du joueur
+    /// </summary>
+    /// <returns></returns>
     Color couleurJoueurCourant()
     {
         switch(placeDansEcran(idJoueur))
@@ -647,7 +702,10 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
- 
+    /// <summary>
+    /// Colorie le bon joueur en fonction de sa selection
+    /// </summary>
+    /// <param name="idJoueur"></param>
     void couleurClasse(int idJoueur)
     {
 
@@ -669,6 +727,10 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Retourne la couleur en fonction du code couleur
+    /// </summary>
+    /// <returns></returns>
     Color affecterColorClasse()
     {
         switch (couleurActuelle)
@@ -695,7 +757,11 @@ public class roomConfig : Photon.MonoBehaviour {
                 return Color.green;
         }
     }
-
+    /// <summary>
+    /// Remet la couleur a zero en fonction de l'id du joueur
+    /// </summary>
+    /// <param name="idJoueur"></param>
+    /// <param name="couleur"></param>
     void remiseAZeroCouleur(int idJoueur, Color couleur)
     {
         switch (placeDansEcran(idJoueur))
@@ -716,7 +782,11 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Assigne une couleur a un joueur
+    /// </summary>
+    /// <param name="idJoueur"></param>
+    /// <param name="couleur"></param>
     [PunRPC]
     void addCouleur_RPC(int idJoueur, int couleur)
     {
@@ -731,6 +801,12 @@ public class roomConfig : Photon.MonoBehaviour {
      * TIMER
      * 
      * */
+
+
+    /// <summary>
+    /// Update du timer de l'arene ou de la selection du personnage
+    /// </summary>
+    /// <param name="timer"></param>
     void updateTimer(float timer)
     {
         if(areneSelection)
@@ -745,7 +821,10 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
-
+    /// <summary>
+    /// Mise en ligne du timer
+    /// </summary>
+    /// <param name="timer"></param>
     [PunRPC]
     void updateTimer_RPC(float timer)
     {
@@ -761,7 +840,10 @@ public class roomConfig : Photon.MonoBehaviour {
     }
 
 
-
+    /// <summary>
+    /// Mise en ligne des boutons "pret"
+    /// </summary>
+    /// <param name="idJoueur"></param>
     [PunRPC]
     void buttonReady_RPC( int idJoueur)
     {
@@ -804,24 +886,37 @@ public class roomConfig : Photon.MonoBehaviour {
      *  VOTE DE L'ARENE
      * 
      * */
+
+    /// <summary>
+    ///  Clique sur le bouton de l'arene 1
+    /// </summary>
     public void clickArene1()
     {
         buttonInteractable();
         m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,1);
     }
 
+    /// <summary>
+    /// Clique sur le bouton de l'arene 2
+    /// </summary>
     public void clickArene2()
     {
         buttonInteractable();
         m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,2);
     }
 
+    /// <summary>
+    /// Clique sur le bouton de l'arene 3
+    /// </summary>
     public void clickArene3()
     {
         buttonInteractable();
         m_PhotonView.RPC("addArene_RPC", PhotonTargets.AllBuffered, idJoueur,3);
     }
 
+    /// <summary>
+    /// Désactive les boutons de vote de l'arene apres un vote
+    /// </summary>
     public void buttonInteractable()
     {
         arene1.GetComponent<Button>().interactable = false;
@@ -830,6 +925,9 @@ public class roomConfig : Photon.MonoBehaviour {
         randomArene.GetComponent<Button>().interactable = false;
     }
 
+    /// <summary>
+    /// Vote aléatoire de l'arene
+    /// </summary>
     public void clickAleatoire()
     {
         randomArene.GetComponent<Button>().interactable = false;
@@ -852,6 +950,11 @@ public class roomConfig : Photon.MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Ajout d'une voix au vote des arenes 
+    /// </summary>
+    /// <param name="idJoueur"></param>
+    /// <param name="arene"></param>
     [PunRPC]
     void addArene_RPC(int idJoueur, int arene)
     {
@@ -884,17 +987,26 @@ public class roomConfig : Photon.MonoBehaviour {
         nbVote++;
     }
 
+    /// <summary>
+    /// Retour au menu
+    /// </summary>
     public void clickRetourMenu()
     {
         PhotonNetwork.Disconnect();
         SceneManager.LoadScene(0);
     }
 
+    /// <summary>
+    /// Demarre le timer 
+    /// </summary>
     public void clickStartTimer()
     {
         m_PhotonView.RPC("startTimer_RPC", PhotonTargets.All);
     }
 
+    /// <summary>
+    /// Mise en ligne du timer
+    /// </summary>
     [PunRPC]
     private void startTimer_RPC()
     {

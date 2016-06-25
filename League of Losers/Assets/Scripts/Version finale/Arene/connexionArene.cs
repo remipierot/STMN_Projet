@@ -1,22 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Classe de connexion à l'arene
+/// </summary>
 public class connexionArene : MonoBehaviour {
    
-    public string playerPrefabName = "Bowman"; //Le nom du prefab des joueurs qui apparaissent
-    public GameObject spawnPoint1; // Le point d'apparition des joueurs
-    public GameObject spawnPoint2; // Le point d'apparition des joueurs
-    public GameObject spawnPoint3; // Le point d'apparition des joueurs
-    public GameObject spawnPoint4; // Le point d'apparition des joueurs
+    public string playerPrefabName = "Bowman"; ///Le nom du prefab des joueurs qui apparaissent
+    public GameObject spawnPoint1; /// Le point d'apparition des joueurs
+    public GameObject spawnPoint2; /// Le point d'apparition des joueurs
+    public GameObject spawnPoint3; /// Le point d'apparition des joueurs
+    public GameObject spawnPoint4; /// Le point d'apparition des joueurs
 
-    public GameObject SpawnSpot; //spawn du joueur
+    public GameObject SpawnSpot; ///spawn du joueur
     
     int hackCounter = 0;
 
-    
 
-	// Use this for initialization
-	void DoInstanciation () {
+
+    /// <summary>
+    ///     Use this for initialization
+    ///     Récupère la propriété "Classe" du joueur pour savoir quels prefabs lancer
+    ///     Attribue un point de spawn a chaque joueur
+    /// </summary>
+    /// <param name=""></param>
+    /// <param name="DoInstanciation"></param>
+    /// <returns></returns>
+
+    void DoInstanciation () {
 
         Debug.Log(PhotonNetwork.player.ID);
         switch((int)PhotonNetwork.player.customProperties["Classe"])
@@ -59,10 +70,6 @@ public class connexionArene : MonoBehaviour {
                     playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint4;
                 }
                 break;
-        }
-        if(PhotonNetwork.isMasterClient)
-        {
-            Debug.Log(PhotonNetwork.room.customProperties["Mode"]);
         }
 	}
 	
