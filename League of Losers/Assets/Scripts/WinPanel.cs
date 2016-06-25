@@ -103,6 +103,8 @@ public class WinPanel : MonoBehaviour {
     {
         if (shown)
         {
+            string[] listePropriete = new string[] { "Classe", "Couleur" };
+            PhotonNetwork.RemovePlayerCustomProperties(listePropriete);
             PhotonNetwork.Disconnect();
             SceneManager.LoadScene(0);
         }
