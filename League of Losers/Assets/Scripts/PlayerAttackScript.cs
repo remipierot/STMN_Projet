@@ -221,8 +221,11 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (isSpecialAttack)
                     AttackCooldownTimer = Time.realtimeSinceStartup * 1000;
                 // retour à une stance normale
-                m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
-                m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_IDLE);
+                if (m_ControlScript.GetCurrentState() == PlayerControllerScript.STATE_AIMING)
+                {
+                    m_ControlScript.ChangeState(PlayerControllerScript.STATE_IDLE);
+                    m_PhotonView.RPC("PhChangeState", PhotonTargets.Others, PlayerControllerScript.STATE_IDLE);
+                }
                 m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false, false);
                 // fait parler le personnage
                 if (isSpecialAttack)
@@ -464,6 +467,7 @@ public class PlayerAttackScript : MonoBehaviour {
             m_ControlScript.GetCurrentFacing() ?
                 Quaternion.identity :
                 Quaternion.Euler(new Vector3(0, 180, 0)));
+        meleeAttackEffectInstance.transform.SetParent(transform, true);
     }
     
     /// <summary>
@@ -486,12 +490,12 @@ public class PlayerAttackScript : MonoBehaviour {
         {
             m_ControlScript.ChangeState(PlayerControllerScript.STATE_CHARGE);
             meleeAttackEffectInstance = (GameObject) Instantiate(meleeAttackSpecialEffect, new Vector3(
-            transform.position.x+.07f * (m_ControlScript.GetCurrentFacing() ? 1:-1),
-            transform.position.y+.24f,
-            transform.position.z),
-            m_ControlScript.GetCurrentFacing() ?
-                Quaternion.identity :
-                Quaternion.Euler(new Vector3(0, 180, 0)));
+                transform.position.x+.07f * (m_ControlScript.GetCurrentFacing() ? 1:-1),
+                transform.position.y+.24f,
+                transform.position.z),
+                m_ControlScript.GetCurrentFacing() ?
+                    Quaternion.identity :
+                    Quaternion.Euler(new Vector3(0, 180, 0)));
             meleeAttackEffectInstance.transform.SetParent(transform, true);
         }
         else

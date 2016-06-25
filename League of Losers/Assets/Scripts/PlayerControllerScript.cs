@@ -789,9 +789,9 @@ public class PlayerControllerScript : MonoBehaviour
     /// <param name="on">vrai pour lancer l'animation, faux pour la quitter</param>
     public void doGrappleAnim(bool on)
     {
-        if (on)
+        if (on && m_CurrentState != STATE_DASH)
             ChangeState(STATE_GRAPPLE);
-        else
+        else if (m_CurrentState != STATE_DASH)
             ChangeState(STATE_IDLE);
     }
 }
