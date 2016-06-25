@@ -25,10 +25,8 @@ public class PlayerColor : MonoBehaviour {
         }
         
         Color col;
-        if(owner.customProperties["Classe"].Equals(1))
+        if (owner.customProperties.ContainsKey("Couleur"))
         {
-            if (owner.customProperties.ContainsKey("Couleur"))
-            {
                 col = (Color)owner.customProperties["Couleur"];
 
                 Color colClothes = Color.white;
@@ -65,6 +63,8 @@ public class PlayerColor : MonoBehaviour {
                     colHair = new Color(0f, 0f, 0, 1);
                     colClothes = new Color(0f, 0f, 0, 1);
                 }
+            if (owner.customProperties["Classe"].Equals(1))
+            {
                 // recolore le joueur
                 transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
                 getChildByName(transform, "ClassicLegF1").GetComponent<SpriteRenderer>().color = colClothes;
@@ -72,6 +72,15 @@ public class PlayerColor : MonoBehaviour {
                 getChildByName(transform, "ClassicPelvis").GetComponent<SpriteRenderer>().color = colClothes;
                 getChildByName(transform, "ClassicHead").GetComponent<SpriteRenderer>().color = colHair;
                 getChildByName(transform, "ClassicHair").GetComponent<SpriteRenderer>().color = colHair;
+            }
+            else if (owner.customProperties["Classe"].Equals(2))
+            {
+                transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
+                getChildByName(transform, "ClassicKLegF1").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKLegB1").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKBody").GetComponent<SpriteRenderer>().color = colClothes;
+               // getChildByName(transform, "KHead").GetComponent<SpriteRenderer>().color = colHair;
+                getChildByName(transform, "ClassicKHelmetColor).GetComponent<SpriteRenderer>().color = colHair;
             }
         }
 
