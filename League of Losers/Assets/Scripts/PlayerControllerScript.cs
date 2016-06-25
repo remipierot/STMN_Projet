@@ -659,42 +659,66 @@ public class PlayerControllerScript : MonoBehaviour
         switch (emotion)
         {
             case "respawn":
+                SoundHandler.PlayRespawnEmote();
                 // respawn après être mort
                 // "Hohoho !"
                 break;
             case "fire":
+                if (transform.name.Contains("Bowman"))
+                {
+                    SoundHandler.PlayFireBowmanEmote();
+                }
+                else if (transform.name.Contains("Knightman"))
+                {
+                    SoundHandler.PlayFireKnightEmote();
+                }
                 // tir d'une flèche
                 // "Yah !"
                 break;
             case "firespecial":
+                if (transform.name.Contains("Bowman"))
+                {
+                    SoundHandler.PlayFireSpecialBowmanEmote();
+                }
+                else if (transform.name.Contains("Knightman"))
+                {
+                    SoundHandler.PlayFireSpecialKnightEmote();
+                }
                 // tir d'un poulet
                 // "Muhaha !"
                 break;
             case "die":
+                SoundHandler.PlayDeathEmote();
                 // meurt (explosion/flèche)
                 // "Nooooo !"
                 break;
             case "falldie":
+                SoundHandler.PlayFallingDeathEmote();
                 // meurt (chute hors terrain)
                 // "NOOooooo..."
                 break;
             case "dash":
+                SoundHandler.PlayDashEmote();
                 // effectue un dash
                 // "Yeeha !"
                 break;
             case "jump":
+                SoundHandler.PlayJumpEmote();
                 // saute
                 // "Huh !"
                 break;
             case "jumpdouble":
+                SoundHandler.PlayDoubleJumpEmote();
                 // double saut
                 // "Yaah !"
                 break;
             case "aim":
+                SoundHandler.PlayAimEmote();
                 // vise avec l'arc
                 // "Hmmm !"
                 break;
             case "hitground":
+                SoundHandler.PlayHitGroundEmote();
                 // tombe à terre
                 // "ow"
                 break;
@@ -708,10 +732,12 @@ public class PlayerControllerScript : MonoBehaviour
                 // "Naargh !"
                 break;
             case "killother":
+                SoundHandler.PlayKillPlayerEmote();
                 // a tué un adversaire
                 // "Huhuhu" ou "Muhahaha !"
                 break;
             case "takedamage":
+                SoundHandler.PlayTakeDamageEmote();
                 // se prend un coup
                 // "Owww !"
                 break;
