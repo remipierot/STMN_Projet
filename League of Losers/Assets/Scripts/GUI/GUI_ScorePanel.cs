@@ -2,6 +2,9 @@
 using System.Collections;
 using UnityEngine.UI;
 
+/// <summary>
+/// Classe pour afficher le score de la partie en cours 
+/// </summary>
 public class GUI_ScorePanel : MonoBehaviour {
 
     public GameObject scoresPanel;
@@ -37,13 +40,13 @@ public class GUI_ScorePanel : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        // Gestion de l'apparition/disparition du menu
+        /// Gestion de l'apparition/disparition du menu
         if (Input.GetButton("Stats"))
             scoresPanel.SetActive(true);
         else
             scoresPanel.SetActive(false);
 
-        //Activation des encarts joueurs présents
+        ///Activation des encarts joueurs présents
         if (PhotonNetwork.playerList.Length >= 2)
             SPJ2.SetActive(true);
         else
@@ -59,9 +62,9 @@ public class GUI_ScorePanel : MonoBehaviour {
         else
             SPJ4.SetActive(false);
 
-        //Remplissage du menu
+        ///Remplissage du menu
         int pNumber = 1;
-        foreach (var player in PhotonNetwork.playerList) //Pour chaque joueur de la salle
+        foreach (var player in PhotonNetwork.playerList) ///Pour chaque joueur de la salle
         {
             switch (pNumber)
             {
@@ -84,7 +87,5 @@ public class GUI_ScorePanel : MonoBehaviour {
             }
             pNumber++;
         }
-
-
     }
 }

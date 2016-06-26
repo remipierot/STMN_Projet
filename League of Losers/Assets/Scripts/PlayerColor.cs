@@ -27,51 +27,64 @@ public class PlayerColor : MonoBehaviour {
         Color col;
         if (owner.customProperties.ContainsKey("Couleur"))
         {
-            col = (Color) owner.customProperties["Couleur"];
+                col = (Color)owner.customProperties["Couleur"];
 
-            Color colClothes = Color.white;
-            Color colHair = Color.white;
-            Color colSkin = Color.white;
-            
-            if (col == Color.green)
+                Color colClothes = Color.white;
+                Color colHair = Color.white;
+                Color colSkin = Color.white;
+
+                if (col == Color.green)
+                {
+                    // couleur normale
+                    colClothes = new Color(110 / 255f, 220 / 255f, 110 / 255f, 1);
+                }
+                else if (col == Color.red)
+                {
+                    colHair = new Color(100 / 255f, 80 / 255f, 40 / 255f, 1);
+                    colClothes = new Color(1, 30 / 255f, 20 / 255f, 1);
+                }
+                else if (col == Color.blue)
+                {
+                    colHair = new Color(1, 200 / 255f, 90 / 255f, 1);
+                    colClothes = new Color(130 / 255f, 160 / 255f, 1, 1);
+                }
+                else if (col == Color.yellow)
+                {
+                    colHair = new Color(140 / 255f, 80 / 255f, 0, 1);
+                    colClothes = new Color(200 / 255f, 200 / 255f, 0, 1);
+                }
+                else if (col == Color.magenta)
+                {
+                    colHair = new Color(204 / 255f, 0f, 153 / 255f, 1);
+                    colClothes = new Color(204 / 255f, 0f, 153 / 255f, 1);
+                }
+                else if (col == Color.black)
+                {
+                    colHair = new Color(0f, 0f, 0, 1);
+                    colClothes = new Color(0f, 0f, 0, 1);
+                }
+            if (owner.customProperties["Classe"].Equals(1))
             {
-                // couleur normale
-                colClothes = new Color(110/255f, 220/255f, 110/255f, 1);
+                // recolore le joueur
+                transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
+                getChildByName(transform, "ClassicLegF1").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicLegB1").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicPelvis").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicHead").GetComponent<SpriteRenderer>().color = colHair;
+                getChildByName(transform, "ClassicHair").GetComponent<SpriteRenderer>().color = colHair;
             }
-            else if (col == Color.red)
+            else if (owner.customProperties["Classe"].Equals(2))
             {
-                colHair = new Color(100/255f, 80/255f, 40/255f, 1);
-                colClothes = new Color(1, 30/255f, 20/255f, 1);
+                transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
+                getChildByName(transform, "ClassicKLegF1").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKLegB1").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKBody").GetComponent<SpriteRenderer>().color = colClothes;
+               // getChildByName(transform, "KHead").GetComponent<SpriteRenderer>().color = colHair;
+                getChildByName(transform, "ClassicKHelmetColor").GetComponent<SpriteRenderer>().color = colHair;
             }
-            else if (col == Color.blue)
-            {
-                colHair = new Color(1, 200/255f, 90/255f, 1);
-                colClothes = new Color(130/255f, 160/255f, 1, 1);
-            }
-            else if (col == Color.yellow)
-            {
-                colHair = new Color(140/255f, 80/255f, 0, 1);
-                colClothes = new Color(200/255f, 200/255f, 0, 1);
-            }
-            else if(col == Color.magenta)
-            {
-                colHair = new Color(204 / 255f, 0f, 153/255f, 1);
-                colClothes = new Color(204 / 255f, 0f, 153 / 255f, 1);
-            }
-            else if(col == Color.black)
-            {
-                colHair = new Color(0f, 0f, 0, 1);
-                colClothes = new Color(0f, 0f, 0, 1);
-            }
-            // recolore le joueur
-            transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
-            getChildByName(transform, "ClassicLegF1").GetComponent<SpriteRenderer>().color = colClothes;
-            getChildByName(transform, "ClassicLegB1").GetComponent<SpriteRenderer>().color = colClothes;
-            getChildByName(transform, "ClassicPelvis").GetComponent<SpriteRenderer>().color = colClothes;
-            getChildByName(transform, "ClassicHead").GetComponent<SpriteRenderer>().color = colHair;
-            getChildByName(transform, "ClassicHair").GetComponent<SpriteRenderer>().color = colHair;
         }
-        
+
+
         /*
         // exemple de changement de sprite
         
@@ -86,7 +99,7 @@ public class PlayerColor : MonoBehaviour {
                 break;
         }
         */
-	}
+    }
     
     /// <summary>
     /// Récupère un objet enfant en fonction de son nom.

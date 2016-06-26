@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Gère l'affichage des joueurs (perdants et victorieux) dans le panneau des scores.
@@ -101,6 +102,12 @@ public class WinPanel : MonoBehaviour {
     public void ReturnToMainMenu()
     {
         if (shown)
-            Application.LoadLevel(0);
+        {
+            string[] listePropriete = new string[] { "Classe", "Couleur" };
+            PhotonNetwork.RemovePlayerCustomProperties(listePropriete);
+            PhotonNetwork.Disconnect();
+            SceneManager.LoadScene(0);
+        }
+            
     }
 }
