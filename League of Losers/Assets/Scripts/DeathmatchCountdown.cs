@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// <summary>
@@ -6,12 +7,15 @@ using System.Collections;
 /// </summary>
 public class DeathmatchCountdown : MonoBehaviour {
     public WinPanel panel;
+    public Text timer;
     
     /// <summary>
     /// Use this for initialization
     /// </summary>
 	void Start () {
         StartCoroutine(PrepareCountdown());
+        if (timer != null)
+            timer.text = "";
 	}
     
     /// <summary>
@@ -44,7 +48,22 @@ public class DeathmatchCountdown : MonoBehaviour {
     /// <returns></returns>
     IEnumerator Countdown(float minutes)
     {
-        yield return new WaitForSeconds(minutes * 60f);
+        int seconds = 0;
+        while (seconds < minutes * 60f)
+        {
+            yield return new WaitForSeconds(1);
+            seconds++;
+            int remainingSeconds = (int) (minutes * 60 - seconds);
+            int displayMinutes = remainingSeconds / 60;
+            int displaySeconds = remainingSeconds - displayMinutes * 60;
+            if (timer != null)
+            {
+                if (displayMinutes != 0)
+                    timer.text = "" + displayMinutes + "m " + displaySeconds + "s";
+                else
+                    timer.text = "" + displaySeconds + "s";
+            }
+        }
         Debug.Log("Fin de partie");
         
         panel.Clear();
