@@ -12,6 +12,7 @@ public class GUI_ScorePanel : MonoBehaviour {
     GameObject SPJ2;
     GameObject SPJ3;
     GameObject SPJ4;
+
     Text NameJ1;
     Text NameJ2;
     Text NameJ3;
@@ -21,6 +22,10 @@ public class GUI_ScorePanel : MonoBehaviour {
     Text ScoreJ3;
     Text ScoreJ4;
 
+    Color couleurJ1;
+    Color couleurJ2;
+    Color couleurJ3;
+    Color couleurJ4;
 
     // Use this for initialization
     void Start () {
@@ -36,6 +41,10 @@ public class GUI_ScorePanel : MonoBehaviour {
         ScoreJ2 = GameObject.Find("ScoreJ2").GetComponent<Text>();
         ScoreJ3 = GameObject.Find("ScoreJ3").GetComponent<Text>();
         ScoreJ4 = GameObject.Find("ScoreJ4").GetComponent<Text>();
+        couleurJ1 = GameObject.Find("ColorJ1").GetComponent<RawImage>().color;
+        couleurJ2 = GameObject.Find("ColorJ2").GetComponent<RawImage>().color;
+        couleurJ3 = GameObject.Find("ColorJ3").GetComponent<RawImage>().color;
+        couleurJ4 = GameObject.Find("ColorJ4").GetComponent<RawImage>().color;
     }
 	
 	// Update is called once per frame
@@ -71,21 +80,48 @@ public class GUI_ScorePanel : MonoBehaviour {
                 case 1:
                     NameJ1.text = player.name;
                     ScoreJ1.text = player.GetScore().ToString();
+                    couleurJ1 = idCouleur((int)player.customProperties["Couleur"]); 
                     break;
                 case 2:
                     NameJ2.text = player.name;
                     ScoreJ2.text = player.GetScore().ToString();
+                    couleurJ2 = idCouleur((int)player.customProperties["Couleur"]);
                     break;
                 case 3:
                     NameJ3.text = player.name;
                     ScoreJ3.text = player.GetScore().ToString();
+                    couleurJ3 = idCouleur((int)player.customProperties["Couleur"]);
                     break;
                 case 4:
                     NameJ4.text = player.name;
                     ScoreJ4.text = player.GetScore().ToString();
+                    couleurJ3 = idCouleur((int)player.customProperties["Couleur"]);
                     break;
             }
             pNumber++;
+        }
+    }
+
+    Color idCouleur(int idCouleur)
+    {
+        switch(idCouleur)
+        {
+            case 1:
+                return Color.red; 
+                
+            case 2:
+                return Color.blue;
+                
+            case 3:
+                return Color.black;
+            case 4:
+                return Color.magenta;
+            case 5:
+                return Color.green;
+            case 6:
+                return Color.yellow;
+            default:
+                return Color.white;
         }
     }
 }

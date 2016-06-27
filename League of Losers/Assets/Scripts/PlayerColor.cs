@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 /// <summary>
 /// Recolore des parties d'un personnage
@@ -11,7 +12,6 @@ public class PlayerColor : MonoBehaviour {
 	void Awake () {
         PhotonPlayer owner = null;
         PhotonView m_PhotonView;
-        
         // récupère l'ID du joueur
         m_PhotonView = GetComponent<PhotonView>();
         
@@ -20,45 +20,45 @@ public class PlayerColor : MonoBehaviour {
                 owner = player;
         if (owner == null)
         {
-            Debug.Log("Couldn't find PhotonPlayer !");
+            Debug.LogError("Couldn't find PhotonPlayer !");
             return;
         }
         
-        Color col;
+        int col;
         if (owner.customProperties.ContainsKey("Couleur"))
         {
-                col = (Color)owner.customProperties["Couleur"];
-
+                int couleurID = (int)owner.customProperties["Couleur"];
+                col = couleurID;
                 Color colClothes = Color.white;
                 Color colHair = Color.white;
                 Color colSkin = Color.white;
 
-                if (col == Color.green)
+                if (col == 5) ///GREEN
                 {
-                    // couleur normale
+                    /// couleur normale
                     colClothes = new Color(110 / 255f, 220 / 255f, 110 / 255f, 1);
                 }
-                else if (col == Color.red)
+                else if (col == 1) ///ROUGE
                 {
                     colHair = new Color(100 / 255f, 80 / 255f, 40 / 255f, 1);
                     colClothes = new Color(1, 30 / 255f, 20 / 255f, 1);
                 }
-                else if (col == Color.blue)
+                else if (col == 2) ///BLEU
                 {
                     colHair = new Color(1, 200 / 255f, 90 / 255f, 1);
                     colClothes = new Color(130 / 255f, 160 / 255f, 1, 1);
                 }
-                else if (col == Color.yellow)
+                else if (col == 6) //JAUNE
                 {
                     colHair = new Color(140 / 255f, 80 / 255f, 0, 1);
                     colClothes = new Color(200 / 255f, 200 / 255f, 0, 1);
                 }
-                else if (col == Color.magenta)
+                else if (col == 4) //MAGENTA
                 {
                     colHair = new Color(204 / 255f, 0f, 153 / 255f, 1);
                     colClothes = new Color(204 / 255f, 0f, 153 / 255f, 1);
                 }
-                else if (col == Color.black)
+                else if (col == 3) //NOIR
                 {
                     colHair = new Color(0f, 0f, 0, 1);
                     colClothes = new Color(0f, 0f, 0, 1);

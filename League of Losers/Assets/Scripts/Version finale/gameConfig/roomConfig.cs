@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using ExitGames.Client.Photon;
 
 /// <summary>
 /// Classe de selection du personnage et de l'arene
@@ -461,9 +462,14 @@ public class roomConfig : Photon.MonoBehaviour {
     [PunRPC]
     void initialisationVoteArene_RPC()
     {
-        PhotonNetwork.player.customProperties = new ExitGames.Client.Photon.Hashtable();
-        PhotonNetwork.player.customProperties.Add("Classe", idClasseJoueur);
-        PhotonNetwork.player.customProperties.Add("Couleur", couleurJoueurCourant());
+        ExitGames.Client.Photon.Hashtable proprieteJoueur = new ExitGames.Client.Photon.Hashtable();
+        //PhotonNetwork.player.customProperties = new ExitGames.Client.Photon.Hashtable();
+        //PhotonNetwork.player.customProperties.Add("Classe", idClasseJoueur);
+        //PhotonNetwork.player.customProperties.Add("Couleur", couleurJoueurCourant());
+        proprieteJoueur.Add("Classe", idClasseJoueur);
+        proprieteJoueur.Add("Couleur", couleurJoueurCourant());
+        PhotonNetwork.SetPlayerCustomProperties(proprieteJoueur);
+
         stopTimer = true;
         arenaSelection.SetActive(true);
         characterSelection.SetActive(false);
@@ -681,25 +687,54 @@ public class roomConfig : Photon.MonoBehaviour {
     /// Retourne la couleur du joueur
     /// </summary>
     /// <returns></returns>
-    Color couleurJoueurCourant()
+    int couleurJoueurCourant()
     {
         switch(placeDansEcran(idJoueur))
         {
             case 1:
-                return player1Couleur.color;
+                return idCouleur(player1Couleur.color);
 
             case 2:
-                return player2Couleur.color;
+                return idCouleur(player2Couleur.color);
 
             case 3 :
-                return player3Couleur.color;
+                return idCouleur(player3Couleur.color);
 
             case 4:
-                return player4Couleur.color;
+                return idCouleur(player4Couleur.color);
 
             default :
-                return Color.black;
+                return -1;
         }
+    }
+
+    int idCouleur(Color couleur)
+    {
+        if(couleur == Color.red)
+        {
+            return 1;
+        }
+        if (couleur == Color.blue)
+        {
+            return 2;
+        }
+        if (couleur == Color.black)
+        {
+            return 3;
+        }
+        if (couleur == Color.magenta)
+        {
+            return 4;
+        }
+        if (couleur == Color.green)
+        {
+            return 5;
+        }
+        if (couleur == Color.yellow)
+        {
+            return 6;
+        }
+        return -1;
     }
 
     /// <summary>

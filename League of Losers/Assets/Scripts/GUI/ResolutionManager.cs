@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 using System;
 
+/// <summary>
+/// Classe pour gérer la résolution dans les paramètres
+/// </summary>
 public class ResolutionManager : MonoBehaviour {
 
     Dropdown dropdown;
