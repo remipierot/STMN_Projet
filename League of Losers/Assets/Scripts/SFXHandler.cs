@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SoundHandler : MonoBehaviour {
-    private static SoundHandler instance;
+public class SFXHandler : MonoBehaviour {
+    private static SFXHandler instance;
 
     #region Instance Audio Library
     public AudioSource menuButtonSound,

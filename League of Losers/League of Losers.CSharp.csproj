@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -154,6 +148,7 @@
     <Compile Include="Assets\Scripts\GUI\ResolutionManager.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\MainMenuMichaelBay.cs" />
+    <Compile Include="Assets\Scripts\MusicHandler.cs" />
     <Compile Include="Assets\Scripts\Parallaxing.cs" />
     <Compile Include="Assets\Scripts\ParticleSystemAutodestroy.cs" />
     <Compile Include="Assets\Scripts\PlayerAttackScript.cs" />
@@ -163,7 +158,7 @@
     <Compile Include="Assets\Scripts\PlayerGrapple.cs" />
     <Compile Include="Assets\Scripts\PlayerNetwork.cs" />
     <Compile Include="Assets\Scripts\RechercheLobby.cs" />
-    <Compile Include="Assets\Scripts\SoundHandler.cs" />
+    <Compile Include="Assets\Scripts\SFXHandler.cs" />
     <Compile Include="Assets\Scripts\SpawnSingleObjects.cs" />
     <Compile Include="Assets\Scripts\Version finale\Arene\connexionArene.cs" />
     <Compile Include="Assets\Scripts\Version finale\MainMenu\connexionLobby.cs" />
