@@ -291,10 +291,14 @@ public class roomConfig : Photon.MonoBehaviour {
     /// </summary>
     void onlyReadyInteractable()
     {
+        Debug.LogError(placeDansEcran(idJoueur));
         switch(placeDansEcran(idJoueur))
         {
             case 1:
                 {
+                    buttonPlayer1Off.GetComponent<Button>().interactable = true;
+                    buttonPlayer1On.GetComponent<Button>().interactable = true;
+
                     buttonPlayer2Off.GetComponent<Button>().interactable = false;
                     buttonPlayer2On.GetComponent<Button>().interactable = false;
 
@@ -311,6 +315,9 @@ public class roomConfig : Photon.MonoBehaviour {
                     buttonPlayer1Off.GetComponent<Button>().interactable = false;
                     buttonPlayer1On.GetComponent<Button>().interactable = false;
 
+                    buttonPlayer2Off.GetComponent<Button>().interactable = true;
+                    buttonPlayer2On.GetComponent<Button>().interactable = true;
+
                     buttonPlayer3Off.GetComponent<Button>().interactable = false;
                     buttonPlayer3On.GetComponent<Button>().interactable = false;
 
@@ -326,6 +333,9 @@ public class roomConfig : Photon.MonoBehaviour {
                     buttonPlayer2Off.GetComponent<Button>().interactable = false;
                     buttonPlayer2On.GetComponent<Button>().interactable = false;
 
+                    buttonPlayer3Off.GetComponent<Button>().interactable = true;
+                    buttonPlayer3On.GetComponent<Button>().interactable = true;
+
                     buttonPlayer4Off.GetComponent<Button>().interactable = false;
                     buttonPlayer4On.GetComponent<Button>().interactable = false;
                 }
@@ -340,6 +350,9 @@ public class roomConfig : Photon.MonoBehaviour {
 
                     buttonPlayer3Off.GetComponent<Button>().interactable = false;
                     buttonPlayer3On.GetComponent<Button>().interactable = false;
+
+                    buttonPlayer4Off.GetComponent<Button>().interactable = true;
+                    buttonPlayer4On.GetComponent<Button>().interactable = true;
                 }
                 break;
         }
@@ -443,15 +456,15 @@ public class roomConfig : Photon.MonoBehaviour {
     {
         if (nomArene == "Arene1")
         {
-            SceneManager.LoadScene(3);
+            SceneManager.LoadScene(2);
         }
         else if (nomArene == "Arene2")
         {
-            SceneManager.LoadScene(4);
+            SceneManager.LoadScene(3);
         }
         else if (nomArene == "Arene3")
         {
-            SceneManager.LoadScene(5);
+            SceneManager.LoadScene(4);
         }
     }
 
@@ -743,7 +756,6 @@ public class roomConfig : Photon.MonoBehaviour {
     /// <param name="idJoueur"></param>
     void couleurClasse(int idJoueur)
     {
-
         switch(placeDansEcran(idJoueur))
         {
             case 1:

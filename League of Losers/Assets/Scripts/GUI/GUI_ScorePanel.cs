@@ -41,19 +41,15 @@ public class GUI_ScorePanel : MonoBehaviour {
         ScoreJ2 = GameObject.Find("ScoreJ2").GetComponent<Text>();
         ScoreJ3 = GameObject.Find("ScoreJ3").GetComponent<Text>();
         ScoreJ4 = GameObject.Find("ScoreJ4").GetComponent<Text>();
-        couleurJ1 = GameObject.Find("ColorJ1").GetComponent<RawImage>().color;
-        couleurJ2 = GameObject.Find("ColorJ2").GetComponent<RawImage>().color;
+
+        couleurJ1 = SPJ1.GetComponent<RawImage>().color;
+        couleurJ2 = SPJ2.GetComponent<RawImage>().color;
         couleurJ3 = GameObject.Find("ColorJ3").GetComponent<RawImage>().color;
         couleurJ4 = GameObject.Find("ColorJ4").GetComponent<RawImage>().color;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        /// Gestion de l'apparition/disparition du menu
-        if (Input.GetButton("Stats"))
-            scoresPanel.SetActive(true);
-        else
-            scoresPanel.SetActive(false);
 
         ///Activation des encarts joueurs présents
         if (PhotonNetwork.playerList.Length >= 2)
@@ -79,31 +75,42 @@ public class GUI_ScorePanel : MonoBehaviour {
             {
                 case 1:
                     NameJ1.text = player.name;
-                    ScoreJ1.text = player.GetScore().ToString();
-                    couleurJ1 = idCouleur((int)player.customProperties["Couleur"]); 
+                    ScoreJ1.text = player.GetScore().ToString();    
+                    if(player.customProperties.ContainsKey("Couleur"))
+                        couleurJ1 = idCouleur((int)player.customProperties["Couleur"]); 
                     break;
                 case 2:
                     NameJ2.text = player.name;
                     ScoreJ2.text = player.GetScore().ToString();
-                    couleurJ2 = idCouleur((int)player.customProperties["Couleur"]);
+                    if (player.customProperties.ContainsKey("Couleur"))
+                        couleurJ2 = idCouleur((int)player.customProperties["Couleur"]);
                     break;
                 case 3:
                     NameJ3.text = player.name;
                     ScoreJ3.text = player.GetScore().ToString();
-                    couleurJ3 = idCouleur((int)player.customProperties["Couleur"]);
+                    if (player.customProperties.ContainsKey("Couleur"))
+                        couleurJ3 = idCouleur((int)player.customProperties["Couleur"]);
                     break;
                 case 4:
                     NameJ4.text = player.name;
                     ScoreJ4.text = player.GetScore().ToString();
-                    couleurJ3 = idCouleur((int)player.customProperties["Couleur"]);
+                    if (player.customProperties.ContainsKey("Couleur"))
+                        couleurJ4 = idCouleur((int)player.customProperties["Couleur"]);
                     break;
             }
             pNumber++;
         }
+
+        /// Gestion de l'apparition/disparition du menu
+        if (Input.GetButton("Stats"))
+            scoresPanel.SetActive(true);
+        else
+            scoresPanel.SetActive(false);
     }
 
     Color idCouleur(int idCouleur)
     {
+    
         switch(idCouleur)
         {
             case 1:

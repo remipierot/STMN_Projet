@@ -76,9 +76,10 @@ public class PlayerColor : MonoBehaviour {
             else if (owner.customProperties["Classe"].Equals(2))
             {
                 transform.GetComponent<Spriter2UnityDX.EntityRenderer>().Color = colSkin;
-                getChildByName(transform, "ClassicKLegF1").GetComponent<SpriteRenderer>().color = colClothes;
-                getChildByName(transform, "ClassicKLegB1").GetComponent<SpriteRenderer>().color = colClothes;
-                getChildByName(transform, "ClassicKBody").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKArmF2").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKArmB2").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKBodyColor").GetComponent<SpriteRenderer>().color = colClothes;
+                getChildByName(transform, "ClassicKShieldColor").GetComponent<SpriteRenderer>().color = colClothes;
                // getChildByName(transform, "KHead").GetComponent<SpriteRenderer>().color = colHair;
                 getChildByName(transform, "ClassicKHelmetColor").GetComponent<SpriteRenderer>().color = colHair;
             }

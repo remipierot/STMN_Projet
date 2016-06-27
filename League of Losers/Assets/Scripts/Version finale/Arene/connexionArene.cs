@@ -43,6 +43,15 @@ public class connexionArene : MonoBehaviour {
                 break;
         }
 
+        /*int place = 0;
+        foreach(var player in PhotonNetwork.playerList)
+        {
+            if(comparePlace(player.ID,place))
+            {
+                
+            }
+        }*/
+
         switch(PhotonNetwork.player.ID)
         {
                 
@@ -81,4 +90,9 @@ public class connexionArene : MonoBehaviour {
             DoInstanciation();
         }
 	}
+
+    bool comparePlace(int a, int b)
+    {
+        return a > b;
+    }
 }
