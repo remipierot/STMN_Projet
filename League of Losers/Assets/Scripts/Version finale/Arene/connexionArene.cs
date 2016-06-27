@@ -43,43 +43,38 @@ public class connexionArene : MonoBehaviour {
                 break;
         }
 
-        /*int place = 0;
-        foreach(var player in PhotonNetwork.playerList)
+        if(PhotonNetwork.player.customProperties.ContainsKey("Spawn"))
         {
-            if(comparePlace(player.ID,place))
+            switch ((int)PhotonNetwork.player.customProperties["Spawn"])
             {
-                
-            }
-        }*/
 
-        switch(PhotonNetwork.player.ID)
-        {
-                
-            case 1:
-                {
-                   GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint1.transform.position, spawnPoint1.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                   playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint1;
-                }
-                break;
-            case 2:
-                {
-                    GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint2.transform.position, spawnPoint2.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint2;
-                }
-                break;
-            case 3:
-                {
-                    GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint3.transform.position, spawnPoint3.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint3;
-                }
-                break;
-            case 4:
-                {
-                    GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint4.transform.position, spawnPoint4.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
-                    playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint4;
-                }
-                break;
+                case 1:
+                    {
+                        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint1.transform.position, spawnPoint1.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+                        playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint1;
+                    }
+                    break;
+                case 2:
+                    {
+                        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint2.transform.position, spawnPoint2.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+                        playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint2;
+                    }
+                    break;
+                case 3:
+                    {
+                        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint3.transform.position, spawnPoint3.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+                        playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint3;
+                    }
+                    break;
+                case 4:
+                    {
+                        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabName, spawnPoint4.transform.position, spawnPoint4.transform.rotation, 0); //Instancie le joueur quand il arrive dans la pièce
+                        playerObj.GetComponent<PlayerControllerScript>().m_RespawnPoint = spawnPoint4;
+                    }
+                    break;
+            }
         }
+       
 	}
 	
 	// Update is called once per frame
@@ -91,8 +86,4 @@ public class connexionArene : MonoBehaviour {
         }
 	}
 
-    bool comparePlace(int a, int b)
-    {
-        return a > b;
-    }
 }

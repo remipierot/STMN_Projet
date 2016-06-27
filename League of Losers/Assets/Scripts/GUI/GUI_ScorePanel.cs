@@ -42,8 +42,8 @@ public class GUI_ScorePanel : MonoBehaviour {
         ScoreJ3 = GameObject.Find("ScoreJ3").GetComponent<Text>();
         ScoreJ4 = GameObject.Find("ScoreJ4").GetComponent<Text>();
 
-        couleurJ1 = SPJ1.GetComponent<RawImage>().color;
-        couleurJ2 = SPJ2.GetComponent<RawImage>().color;
+        couleurJ1 = GameObject.Find("ColorJ1").GetComponent<RawImage>().color;
+        couleurJ2 = GameObject.Find("ColorJ2").GetComponent<RawImage>().color;
         couleurJ3 = GameObject.Find("ColorJ3").GetComponent<RawImage>().color;
         couleurJ4 = GameObject.Find("ColorJ4").GetComponent<RawImage>().color;
     }

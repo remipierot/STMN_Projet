@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using ExitGames.Client.Photon;
+using System.Collections.Generic;
 
 /// <summary>
 /// Classe de selection du personnage et de l'arene
@@ -291,7 +292,6 @@ public class roomConfig : Photon.MonoBehaviour {
     /// </summary>
     void onlyReadyInteractable()
     {
-        Debug.LogError(placeDansEcran(idJoueur));
         switch(placeDansEcran(idJoueur))
         {
             case 1:
@@ -440,11 +440,59 @@ public class roomConfig : Photon.MonoBehaviour {
                     if (PhotonNetwork.isMasterClient)
                     {
                         nomArene = areneVote();
+                        Dictionary<int, int> listeSpawn = new Dictionary<int, int>();
+                        ArrayList liste = new ArrayList();
+                        int key = 1;
+                        int idComparer = 0;
+                        foreach (var player in PhotonNetwork.playerList)
+                        {
+                            /*if (comparePlace(player.ID, idComparer))
+                            {
+                                listeSpawn.Add(key, player.ID);
+                                idComparer = player.ID;
+                            }
+                            else liste.Add(player);
+                            key++;*/
+
+                            listeSpawn.Add(player.ID, placeDansEcran(player.ID));
+                        }
+  
+                        m_PhotonView.RPC("setPlaceSpawn", PhotonTargets.All, listeSpawn);
                         m_PhotonView.RPC("loadArene_RPC", PhotonTargets.All, nomArene);
                     } 
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Fonction pour la place de spawn des joueurs
+    /// </summary>
+    /// <param name="listeSpawn"></param>
+    [PunRPC]
+    void setPlaceSpawn(Dictionary<int,int> listeSpawn)
+    {
+        foreach (KeyValuePair<int, int> keyValue in listeSpawn)
+        {
+            if(keyValue.Key == idJoueur)
+            {
+                ExitGames.Client.Photon.Hashtable propriete = new ExitGames.Client.Photon.Hashtable();
+                propriete.Add("Spawn", keyValue.Value);
+                PhotonNetwork.SetPlayerCustomProperties(propriete);
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Compare les id pour gerer les places
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    bool comparePlace(int a, int b)
+    {
+        return a >= b;
     }
 
     /// <summary>
