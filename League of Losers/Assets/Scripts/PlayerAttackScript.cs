@@ -95,7 +95,7 @@ public class PlayerAttackScript : MonoBehaviour {
                 if (!attacking)
                 {
                     attacking = true;
-                    m_PhotonView.RPC("PlayAttackAnimation", PhotonTargets.Others);
+                    m_PhotonView.RPC("PhPlayAttackAnimation", PhotonTargets.Others);
                     StartCoroutine(PlayAttackAnimation());
                     m_PhotonView.RPC("PhPlayerSpeaks", PhotonTargets.All, "fire");
                     StartCoroutine(DelayAttack());
@@ -431,10 +431,13 @@ public class PlayerAttackScript : MonoBehaviour {
     IEnumerator DelayAttack()
     {
         yield return new WaitForSeconds(.15f);
-        foreach (GameObject player in playersInAttackRange)
+        if (m_PhotonView.isMine)
         {
-            Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
-            ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x, m_ControlScript.owner);
+            foreach (GameObject player in playersInAttackRange)
+            {
+                Rigidbody2D otherBody = player.GetComponent<Rigidbody2D>();
+                ((PhotonView)(player.GetComponent<PhotonView>())).RPC("PhTakeDamage", PhotonTargets.All, m_Body.transform.position.x < otherBody.transform.position.x, m_ControlScript.owner);
+            }
         }
         Destroy(meleeAttackEffectInstance);
         yield return new WaitForSeconds(meleeAttackCooldownSec);
@@ -449,7 +452,8 @@ public class PlayerAttackScript : MonoBehaviour {
     [PunRPC]
     public void PhPlayAttackAnimation()
     {
-        PlayAttackAnimation();
+        StartCoroutine(PlayAttackAnimation());
+        StartCoroutine(DelayAttack());
     }
     
     /// <summary>
