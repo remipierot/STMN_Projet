@@ -441,19 +441,9 @@ public class roomConfig : Photon.MonoBehaviour {
                     {
                         nomArene = areneVote();
                         Dictionary<int, int> listeSpawn = new Dictionary<int, int>();
-                        ArrayList liste = new ArrayList();
-                        int key = 1;
-                        int idComparer = 0;
+
                         foreach (var player in PhotonNetwork.playerList)
                         {
-                            /*if (comparePlace(player.ID, idComparer))
-                            {
-                                listeSpawn.Add(key, player.ID);
-                                idComparer = player.ID;
-                            }
-                            else liste.Add(player);
-                            key++;*/
-
                             listeSpawn.Add(player.ID, placeDansEcran(player.ID));
                         }
   
