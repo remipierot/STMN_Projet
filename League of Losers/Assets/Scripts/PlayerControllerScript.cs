@@ -82,7 +82,10 @@ public class PlayerControllerScript : MonoBehaviour
         // lie le gameobject au joueur
         foreach (var player in PhotonNetwork.playerList)
             if (player.ID == m_PhotonView.ownerId)
+            {
                 owner = player;
+                owner.SetScore(0);
+            }
         if (owner == null)
             Debug.Log("Couldn't find PhotonPlayer !");
         

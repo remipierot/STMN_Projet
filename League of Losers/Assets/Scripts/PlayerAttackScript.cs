@@ -387,7 +387,7 @@ public class PlayerAttackScript : MonoBehaviour {
             attacking = false;
             wantRelease = false;
             wantAttack = false;
-            m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false);
+            m_PhotonView.RPC("PhSetAttacking", PhotonTargets.Others, false, false);
             if (projectileInstance != null)
                 Destroy(projectileInstance);
         }
