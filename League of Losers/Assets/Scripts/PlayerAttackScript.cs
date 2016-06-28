@@ -391,6 +391,11 @@ public class PlayerAttackScript : MonoBehaviour {
             if (projectileInstance != null)
                 Destroy(projectileInstance);
         }
+        else
+        {
+            if (meleeAttackEffectInstance != null)
+                Destroy(meleeAttackEffectInstance);
+        }
     }
     
     /// <summary>

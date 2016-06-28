@@ -115,6 +115,8 @@ public class PlayerControllerScript : MonoBehaviour
         
         if (m_PhotonView.isMine)
             CameraFollowGameobject.target = gameObject;
+        
+        originalGravityScale = m_Body.gravityScale;
     }
 
     /// <summary>
@@ -416,7 +418,6 @@ public class PlayerControllerScript : MonoBehaviour
                 m_Body.AddForce(new Vector2(-DashStrength, 0));
             m_GUI.AnimateDash(MsBetweenDashes/1000f);
         }
-        originalGravityScale = m_Body.gravityScale;
         m_Body.gravityScale = 0;
         m_Body.drag = 10;
         m_LastDashTime = Time.realtimeSinceStartup * 1000;
@@ -615,6 +616,15 @@ public class PlayerControllerScript : MonoBehaviour
             return;
         Debug.Log("Mort par chute");
         m_Lives--;
+        if (m_AttackScript.IsAiming())
+        {
+            m_AttackScript.ExitAiming();
+        }
+        if (m_CurrentState == STATE_DASH)
+        {
+            m_Body.gravityScale = originalGravityScale;
+            m_Body.drag = 0;
+        }
         if (m_Lives <= 0)
         {
             m_Lives = 3;
