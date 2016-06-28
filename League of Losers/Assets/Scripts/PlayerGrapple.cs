@@ -112,17 +112,23 @@ public class PlayerGrapple : MonoBehaviour {
 
     void DrawRope()
     {
-        Vector3 start = Vector3.zero,
-                end = Vector3.zero;
+        if (IsGrappling)
+        {
+            Rope.enabled = true;
+            Vector3 start = Vector3.zero,
+                    end = Vector3.zero;
 
-        start.x = PopSpot.position.x;
-        start.y = PopSpot.transform.position.y;
-        start.z = -5;
-        end.x = transform.position.x;
-        end.y = transform.position.y;
-        end.z = -5;
+            start.x = (ParentBody.transform.right.x > 0) ? ParentBody.position.x + 0.1f : ParentBody.position.x - 0.1f;
+            start.y = ParentBody.transform.position.y + 0.45f;
+            start.z = -5;
+            end.x = transform.position.x;
+            end.y = transform.position.y;
+            end.z = -5;
 
-        Rope.SetPositions(new Vector3[] { start, end });
+            Rope.SetPositions(new Vector3[] { start, end });
+        }
+        else
+            Rope.enabled = false;
     }
     
     [PunRPC]
