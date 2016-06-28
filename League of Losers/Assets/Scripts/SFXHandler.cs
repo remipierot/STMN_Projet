@@ -23,6 +23,7 @@ public class SFXHandler : MonoBehaviour {
                        takeDamageEmote;
 
     public bool sfxEnabled = true;
+    public float sfxVolume = 1;
     #endregion
 
     #region Static Audio Library
@@ -43,6 +44,7 @@ public class SFXHandler : MonoBehaviour {
     public static AudioSource TakeDamageEmote { get { return instance.takeDamageEmote; } }
 
     public static bool SFXEnabled { get { return instance.sfxEnabled; } set { instance.sfxEnabled = value; } }
+    public static float SFXVolume { get { return instance.sfxVolume; } set { instance.sfxVolume = value; } }
     #endregion
 
     #region Unity Callbacks
@@ -207,10 +209,8 @@ public class SFXHandler : MonoBehaviour {
     {
         if (instance != null)
         {
-            if (MenuButtonSound != null)
-            {
-                MenuButtonSound.volume = Mathf.Clamp01(volume);
-            }
+            SFXVolume = volume;
+
             if (AimEmote != null)
             {
                 AimEmote.volume = Mathf.Clamp01(volume);

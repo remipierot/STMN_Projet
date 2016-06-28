@@ -10,6 +10,7 @@ public class MusicHandler : MonoBehaviour {
                        arenaMusic;
 
     public bool musicEnabled = true;
+    public float musicVolume = 1;
     #endregion
 
     #region Static Audio Library
@@ -29,6 +30,7 @@ public class MusicHandler : MonoBehaviour {
             }
         }
     }
+    public static float MusicVolume { get { return instance.musicVolume; } set { instance.musicVolume = value; } }
     #endregion
 
     #region Unity Callbacks
@@ -97,6 +99,8 @@ public class MusicHandler : MonoBehaviour {
     {
         if (instance != null)
         {
+            MusicVolume = volume;
+
             if (MenuMusic != null)
             {
                 MenuMusic.volume = Mathf.Clamp01(volume);
