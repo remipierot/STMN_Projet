@@ -384,6 +384,11 @@ public class PlayerControllerScript : MonoBehaviour
         if (m_CurrentState != State)
         {
             m_PlayerAnimator.SetInteger("State", State);
+            if (m_CurrentState == STATE_DASH)
+            {
+                m_Body.gravityScale = originalGravityScale;
+                m_Body.drag = 0;
+            }
             m_CurrentState = State;
         }
         switch (m_CurrentState)
