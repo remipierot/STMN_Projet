@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MusicHandler : MonoBehaviour {
@@ -7,11 +8,27 @@ public class MusicHandler : MonoBehaviour {
     #region Instance Audio Library
     public AudioSource menuMusic,
                        arenaMusic;
+
+    public bool musicEnabled = true;
     #endregion
 
     #region Static Audio Library
     public static AudioSource MenuMusic { get { return instance.menuMusic; } }
     public static AudioSource ArenaMusic { get { return instance.arenaMusic; } }
+
+    public static bool MusicEnabled
+    {
+        get { return instance.musicEnabled; }
+        set
+        {
+            instance.musicEnabled = value;
+            if(value == false)
+            {
+                MenuMusic.Stop();
+                ArenaMusic.Stop();
+            }
+        }
+    }
     #endregion
 
     #region Unity Callbacks
@@ -26,12 +43,12 @@ public class MusicHandler : MonoBehaviour {
     void Update()
     {
         UnityEngine.SceneManagement.Scene currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        if (currentScene.name.Equals("MainMenu") && !MenuMusic.isPlaying)
+        if (currentScene.name.Equals("MainMenu") && !MenuMusic.isPlaying && MusicEnabled)
         {
             ArenaMusic.Stop();
             PlayMenuMusic();
         }
-        else if(currentScene.name.Contains("Arene") && !ArenaMusic.isPlaying)
+        else if(currentScene.name.Contains("Arene") && !ArenaMusic.isPlaying && MusicEnabled)
         {
             MenuMusic.Stop();
             PlayArenaMusic();
@@ -54,6 +71,51 @@ public class MusicHandler : MonoBehaviour {
         {
             ArenaMusic.Play();
         }
+    }
+    #endregion
+
+    #region Volume Control
+    public void AutoUpdateMusicVolume()
+    {
+        GameObject MusicSliderGO = GameObject.Find("Music_Slider");
+        if (MusicSliderGO != null)
+        {
+            Slider MusicSlider = MusicSliderGO.GetComponent<Slider>();
+            if (MusicSlider != null)
+            {
+                SetMusicVolume(MusicSlider.value);
+            }
+        }
+    }
+
+    public void SetMusicVolumeWrapper(float volume)
+    {
+        SetMusicVolume(volume);
+    }
+
+    public static void SetMusicVolume(float volume)
+    {
+        if (instance != null)
+        {
+            if (MenuMusic != null)
+            {
+                MenuMusic.volume = Mathf.Clamp01(volume);
+            }
+            if (ArenaMusic != null)
+            {
+                ArenaMusic.volume = Mathf.Clamp01(volume);
+            }
+        }
+    }
+
+    public void ToggleMusicWrapper()
+    {
+        ToggleMusic();
+    }
+
+    public static void ToggleMusic()
+    {
+        MusicEnabled = !MusicEnabled;
     }
     #endregion
 }
