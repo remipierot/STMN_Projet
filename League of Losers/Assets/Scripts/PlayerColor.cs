@@ -81,7 +81,7 @@ public class PlayerColor : MonoBehaviour {
                 getChildByName(transform, "ClassicKBodyColor").GetComponent<SpriteRenderer>().color = colClothes;
                 getChildByName(transform, "ClassicKShieldColor").GetComponent<SpriteRenderer>().color = colClothes;
                // getChildByName(transform, "KHead").GetComponent<SpriteRenderer>().color = colHair;
-                getChildByName(transform, "ClassicKHelmetColor").GetComponent<SpriteRenderer>().color = colHair;
+                getChildByName(transform, "ClassicKHelmetColor").GetComponent<SpriteRenderer>().color = colClothes;
             }
         }
 

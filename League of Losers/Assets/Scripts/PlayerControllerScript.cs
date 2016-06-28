@@ -118,6 +118,20 @@ public class PlayerControllerScript : MonoBehaviour
         
         originalGravityScale = m_Body.gravityScale;
     }
+    
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // gère la synchronisation des coeurs
+        if (stream.isWriting)
+        {
+            stream.SendNext(m_Lives);
+        }
+        else
+        {
+            m_Lives = (int) stream.ReceiveNext();
+        }
+    }
 
     /// <summary>
     /// Appelé à chaque nouvelle trame. Gère les différents inputs initiant le déplacement, dash, saut, etc.
